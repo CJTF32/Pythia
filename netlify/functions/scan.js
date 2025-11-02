@@ -1,19 +1,39 @@
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+mport { URL } from 'url';
+
+export const handler = async (event) => {
+  // CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json'
+  };
+
+  // Handle OPTIONS preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers, body: '' };
   }
-  
-  const { url } = req.body || {};
-  if (!url) {
-    return res.status(400).json({ error: 'URL is required' });
+
+  // Only allow POST
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ error: 'Method not allowed' })
+    };
   }
 
   try {
+    const { url } = JSON.parse(event.body || '{}');
+    
+    if (!url) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'URL is required' })
+      };
+    }
+
     const result = { url, timestamp: new Date().toISOString() };
     
     // 1. PageSpeed Insights API
@@ -34,17 +54,13 @@ export default async function handler(req, res) {
       fetch(url, { redirect: 'follow' })
     ]);
     
-    const headers = headResponse.headers;
+    const siteHeaders = headResponse.headers;
     const html = await htmlResponse.text();
-    const contentLength = parseInt(headers.get('content-length') || html.length.toString(), 10);
+    const contentLength = parseInt(siteHeaders.get('content-length') || html.length.toString(), 10);
     
     // Calculate all indices
     
     // KARPOV: Speed & Performance (0-100)
-    const fcp = audits['first-contentful-paint']?.numericValue || 3000;
-    const tti = audits['interactive']?.numericValue || 5000;
-    const cls = audits['cumulative-layout-shift']?.numericValue || 0.25;
-    const lcp = audits['largest-contentful-paint']?.numericValue || 4000;
     const speedScore = categories.performance?.score || 0.5;
     result.karpov = Math.round(speedScore * 100);
     
@@ -55,11 +71,11 @@ export default async function handler(req, res) {
     // NOVA: Scalability & Infrastructure (0-100)
     let novaScore = 0;
     const cdnProviders = ['cloudflare', 'akamai', 'fastly', 'cloudfront', 'cdn'];
-    const serverHeader = headers.get('server')?.toLowerCase() || '';
+    const serverHeader = siteHeaders.get('server')?.toLowerCase() || '';
     if (cdnProviders.some(cdn => serverHeader.includes(cdn))) novaScore += 35;
-    if (headers.get('x-cache') || headers.get('cf-cache-status')) novaScore += 25;
-    if (headers.get('cache-control')?.includes('public')) novaScore += 20;
-    if (headers.get('content-encoding')?.includes('br') || headers.get('content-encoding')?.includes('gzip')) novaScore += 20;
+    if (siteHeaders.get('x-cache') || siteHeaders.get('cf-cache-status')) novaScore += 25;
+    if (siteHeaders.get('cache-control')?.includes('public')) novaScore += 20;
+    if (siteHeaders.get('content-encoding')?.includes('br') || siteHeaders.get('content-encoding')?.includes('gzip')) novaScore += 20;
     result.nova = Math.min(100, novaScore);
     
     // AETHER: Modern Tech & Future-Readiness (0-100)
@@ -94,10 +110,10 @@ export default async function handler(req, res) {
     let helixScore = 50;
     const trackers = html.match(/google-analytics|facebook\.com\/tr|pixel|hotjar|mixpanel|gtag|doubleclick|mouseflow|clarity\.ms/gi) || [];
     helixScore -= trackers.length * 8;
-    if (headers.get('strict-transport-security')) helixScore += 15;
-    if (headers.get('content-security-policy')) helixScore += 15;
-    if (headers.get('x-frame-options')) helixScore += 10;
-    if (headers.get('x-content-type-options')) helixScore += 10;
+    if (siteHeaders.get('strict-transport-security')) helixScore += 15;
+    if (siteHeaders.get('content-security-policy')) helixScore += 15;
+    if (siteHeaders.get('x-frame-options')) helixScore += 10;
+    if (siteHeaders.get('x-content-type-options')) helixScore += 10;
     result.helix = Math.max(0, Math.min(100, helixScore));
     
     // ECHO: Green Hosting & Sustainability (0-100)
@@ -125,39 +141,46 @@ export default async function handler(req, res) {
     result.nexus = Math.min(100, nexusScore);
     
     // P-SCORE: Unified Performance Score (0-100)
-    // Weighted average prioritizing what matters most
     const pScore = (
-      result.karpov * 0.25 +      // Performance: 25%
-      result.vortex * 0.15 +      // Accessibility: 15%
-      result.nova * 0.12 +        // Scalability: 12%
-      result.aether * 0.10 +      // Modern Tech: 10%
-      result.pulse * 0.10 +       // SEO: 10%
-      result.eden * 0.08 +        // Efficiency: 8%
-      result.helix * 0.08 +       // Privacy: 8%
-      result.echo * 0.07 +        // Sustainability: 7%
-      result.quantum * 0.03 +     // Best Practices: 3%
-      result.nexus * 0.02         // Mobile: 2%
+      result.karpov * 0.25 +
+      result.vortex * 0.15 +
+      result.nova * 0.12 +
+      result.aether * 0.10 +
+      result.pulse * 0.10 +
+      result.eden * 0.08 +
+      result.helix * 0.08 +
+      result.echo * 0.07 +
+      result.quantum * 0.03 +
+      result.nexus * 0.02
     );
     result.pscore = Math.round(pScore);
     
-    return res.status(200).json(result);
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify(result)
+    };
     
   } catch (error) {
     console.error('Scan error:', error);
-    return res.status(200).json({
-      error: true,
-      message: 'Scan completed with fallback values',
-      karpov: 65,
-      vortex: 70,
-      nova: 55,
-      aether: 45,
-      pulse: 60,
-      eden: 70,
-      helix: 65,
-      echo: 50,
-      quantum: 70,
-      nexus: 75,
-      pscore: 63
-    });
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        error: true,
+        message: 'Scan completed with fallback values',
+        karpov: 65,
+        vortex: 70,
+        nova: 55,
+        aether: 45,
+        pulse: 60,
+        eden: 70,
+        helix: 65,
+        echo: 50,
+        quantum: 70,
+        nexus: 75,
+        pscore: 63
+      })
+    };
   }
-}
+};
