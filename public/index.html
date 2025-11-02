@@ -17,7 +17,6 @@
   
   <div class="max-w-6xl mx-auto">
     
-    <!-- Header -->
     <div class="text-center mb-8">
       <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
         Pythia
@@ -27,7 +26,6 @@
       </p>
     </div>
     
-    <!-- Input Card -->
     <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
       <div class="flex flex-col md:flex-row gap-4">
         <input 
@@ -45,7 +43,6 @@
       </div>
     </div>
     
-    <!-- P-Score (Main Score) -->
     <div id="pscoreContainer" class="hidden mb-8">
       <div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-2xl p-8 text-center text-white">
         <div class="text-sm font-bold uppercase tracking-wider opacity-90 mb-2">Overall P-Score</div>
@@ -54,12 +51,9 @@
       </div>
     </div>
     
-    <!-- Detailed Metrics -->
     <div id="resultsContainer" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      <!-- Results will be injected here -->
     </div>
     
-    <!-- Info Footer -->
     <div class="mt-8 text-center text-sm text-gray-500">
       <p>Powered by PageSpeed Insights, Green Web Foundation, and advanced heuristics</p>
     </div>
@@ -99,7 +93,6 @@
         return;
       }
       
-      // UI Updates
       scanBtn.textContent = 'ANALYZING...';
       scanBtn.disabled = true;
       scanBtn.classList.add('scanning');
@@ -107,7 +100,7 @@
       pscoreContainer.classList.add('hidden');
       
       try {
-        const response = await fetch('/api/scan', {
+        const response = await fetch('/scan', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url })
@@ -119,11 +112,9 @@
         
         const data = await response.json();
         
-        // Display P-Score
         pscoreValue.textContent = data.pscore || '--';
         pscoreContainer.classList.remove('hidden');
         
-        // Display detailed metrics
         resultsContainer.innerHTML = '';
         metrics.forEach(metric => {
           const value = data[metric.id] ?? '--';
@@ -152,4 +143,3 @@
   
 </body>
 </html>
-
