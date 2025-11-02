@@ -100,17 +100,27 @@
       pscoreContainer.classList.add('hidden');
       
       try {
-        const response = await fetch('/scan', {
+        console.log('Sending request to /functions/scan with URL:', url);
+        const response = await fetch('/functions/scan', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url })
         });
         
+        console.log('Response status:', response.status);
+        
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
         
         const data = await response.json();
+        console.log('Received data:', data);
+        
+        if (data.error) {
+          throw new Error(data.message || 'Unknown error');
+        }
         
         pscoreValue.textContent = data.pscore || '--';
         pscoreContainer.classList.remove('hidden');
