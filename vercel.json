@@ -1,6 +1,6 @@
 {
-  "functions" {
-    "api/scan.js" {
+  "functions": {
+    "api/scan.js": {
       "maxDuration": 15
     }
   }
