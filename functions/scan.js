@@ -1,37 +1,19 @@
-import { URL } from 'url';
-
-export const handler = async (event) => {
-  // CORS headers
-  const headers = {
+export async function onRequestPost(context) {
+  const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
 
-  // Handle OPTIONS preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
-  }
-
-  // Only allow POST
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
-  }
-
   try {
-    const { url } = JSON.parse(event.body || '{}');
+    const { url } = await context.request.json();
     
     if (!url) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'URL is required' })
-      };
+      return new Response(JSON.stringify({ error: 'URL is required' }), {
+        status: 400,
+        headers: corsHeaders
+      });
     }
 
     const result = { url, timestamp: new Date().toISOString() };
@@ -155,32 +137,41 @@ export const handler = async (event) => {
     );
     result.pscore = Math.round(pScore);
     
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify(result)
-    };
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: corsHeaders
+    });
     
   } catch (error) {
     console.error('Scan error:', error);
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        error: true,
-        message: 'Scan completed with fallback values',
-        karpov: 65,
-        vortex: 70,
-        nova: 55,
-        aether: 45,
-        pulse: 60,
-        eden: 70,
-        helix: 65,
-        echo: 50,
-        quantum: 70,
-        nexus: 75,
-        pscore: 63
-      })
-    };
+    return new Response(JSON.stringify({
+      error: true,
+      message: 'Scan completed with fallback values',
+      karpov: 65,
+      vortex: 70,
+      nova: 55,
+      aether: 45,
+      pulse: 60,
+      eden: 70,
+      helix: 65,
+      echo: 50,
+      quantum: 70,
+      nexus: 75,
+      pscore: 63
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
   }
-};
+}
+
+export async function onRequestOptions(context) {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
+  });
+}
