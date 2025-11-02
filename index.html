@@ -100,8 +100,8 @@
       pscoreContainer.classList.add('hidden');
       
       try {
-        console.log('Sending request to /functions/scan with URL:', url);
-        const response = await fetch('/functions/scan', {
+        console.log('Sending request to /api/scan with URL:', url);
+        const response = await fetch('/api/scan', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url })
