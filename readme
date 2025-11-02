@@ -1,0 +1,42 @@
+# Pythia - Website Performance Analyzer
+
+A comprehensive website analysis tool that provides 10 specialized metrics plus a unified P-Score.
+
+## Metrics
+
+1. **Karpov Speed** (25% weight) - Page load performance
+2. **Vortex Access** (15% weight) - Accessibility score
+3. **Nova Scale** (12% weight) - Infrastructure & CDN
+4. **Aether Tech** (10% weight) - Modern web technologies
+5. **Pulse SEO** (10% weight) - Search & social optimization
+6. **Eden Efficiency** (8% weight) - Page weight & resource efficiency
+7. **Helix Privacy** (8% weight) - Security headers & tracking
+8. **Echo Green** (7% weight) - Sustainable hosting
+9. **Quantum Quality** (3% weight) - Code best practices
+10. **Nexus Mobile** (2% weight) - Mobile responsiveness
+
+## P-Score
+
+Unified performance score (0-100) combining all metrics with intelligent weighting based on real-world priorities.
+
+## Deploy to Vercel via GitHub
+
+1. Create new GitHub repository
+2. Add all files (api/scan.js, index.html, package.json, vercel.json, .gitignore)
+3. Push to GitHub
+4. Go to vercel.com/new
+5. Import your GitHub repository
+6. Deploy (Vercel auto-detects everything)
+
+No terminal commands required!
+
+## Local Development
+
+If you want to test locally:
+```
+npm install -g vercel
+vercel dev
+```
+
+But for production, just use GitHub → Vercel dashboard deployment.
+*/
