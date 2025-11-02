@@ -1,10 +1,26 @@
-export async function onRequestPost(context) {
+export async function onRequest(context) {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
+
+  // Handle OPTIONS preflight
+  if (context.request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: corsHeaders
+    });
+  }
+
+  // Only allow POST
+  if (context.request.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Only POST method allowed' }), {
+      status: 405,
+      headers: corsHeaders
+    });
+  }
 
   try {
     const { url } = await context.request.json();
@@ -146,32 +162,10 @@ export async function onRequestPost(context) {
     console.error('Scan error:', error);
     return new Response(JSON.stringify({
       error: true,
-      message: 'Scan completed with fallback values',
-      karpov: 65,
-      vortex: 70,
-      nova: 55,
-      aether: 45,
-      pulse: 60,
-      eden: 70,
-      helix: 65,
-      echo: 50,
-      quantum: 70,
-      nexus: 75,
-      pscore: 63
+      message: error.message,
+      details: error.stack
     }), {
-      status: 200,
+      status: 500,
       headers: corsHeaders
     });
   }
-}
-
-export async function onRequestOptions(context) {
-  return new Response(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    }
-  });
-}
