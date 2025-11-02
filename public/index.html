@@ -1,0 +1,156 @@
+*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pythia – Unified Website Performance Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+    }
+    .scanning { animation: pulse-glow 2s infinite; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8">
+  
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+        Pythia
+      </h1>
+      <p class="text-gray-600 text-lg">
+        Complete website performance analysis in seconds
+      </p>
+    </div>
+    
+    <!-- Input Card -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+      <div class="flex flex-col md:flex-row gap-4">
+        <input 
+          id="urlInput" 
+          type="url" 
+          placeholder="https://example.com" 
+          class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+        >
+        <button 
+          id="scanBtn" 
+          class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105"
+        >
+          ANALYZE
+        </button>
+      </div>
+    </div>
+    
+    <!-- P-Score (Main Score) -->
+    <div id="pscoreContainer" class="hidden mb-8">
+      <div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-2xl p-8 text-center text-white">
+        <div class="text-sm font-bold uppercase tracking-wider opacity-90 mb-2">Overall P-Score</div>
+        <div id="pscoreValue" class="text-7xl font-bold mb-2">--</div>
+        <div class="text-lg opacity-90">Performance • Sustainability • Future-Ready</div>
+      </div>
+    </div>
+    
+    <!-- Detailed Metrics -->
+    <div id="resultsContainer" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <!-- Results will be injected here -->
+    </div>
+    
+    <!-- Info Footer -->
+    <div class="mt-8 text-center text-sm text-gray-500">
+      <p>Powered by PageSpeed Insights, Green Web Foundation, and advanced heuristics</p>
+    </div>
+    
+  </div>
+  
+  <script>
+    const metrics = [
+      { id: 'karpov', name: 'Karpov Speed', desc: 'Page load performance', color: 'from-blue-500 to-cyan-500' },
+      { id: 'vortex', name: 'Vortex Access', desc: 'Accessibility score', color: 'from-green-500 to-emerald-500' },
+      { id: 'nova', name: 'Nova Scale', desc: 'Infrastructure & CDN', color: 'from-purple-500 to-pink-500' },
+      { id: 'aether', name: 'Aether Tech', desc: 'Modern technologies', color: 'from-orange-500 to-red-500' },
+      { id: 'pulse', name: 'Pulse SEO', desc: 'Search & social optimization', color: 'from-indigo-500 to-purple-500' },
+      { id: 'eden', name: 'Eden Efficiency', desc: 'Page weight & size', color: 'from-teal-500 to-green-500' },
+      { id: 'helix', name: 'Helix Privacy', desc: 'Security & tracking', color: 'from-gray-700 to-gray-900' },
+      { id: 'echo', name: 'Echo Green', desc: 'Sustainable hosting', color: 'from-lime-500 to-green-600' },
+      { id: 'quantum', name: 'Quantum Quality', desc: 'Best practices', color: 'from-violet-500 to-purple-600' },
+      { id: 'nexus', name: 'Nexus Mobile', desc: 'Mobile responsiveness', color: 'from-pink-500 to-rose-500' }
+    ];
+    
+    const urlInput = document.getElementById('urlInput');
+    const scanBtn = document.getElementById('scanBtn');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const pscoreContainer = document.getElementById('pscoreContainer');
+    const pscoreValue = document.getElementById('pscoreValue');
+    
+    scanBtn.addEventListener('click', analyzeSite);
+    urlInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') analyzeSite();
+    });
+    
+    async function analyzeSite() {
+      const url = urlInput.value.trim();
+      
+      if (!url || !url.startsWith('http')) {
+        alert('Please enter a valid URL starting with http:// or https://');
+        return;
+      }
+      
+      // UI Updates
+      scanBtn.textContent = 'ANALYZING...';
+      scanBtn.disabled = true;
+      scanBtn.classList.add('scanning');
+      resultsContainer.classList.add('hidden');
+      pscoreContainer.classList.add('hidden');
+      
+      try {
+        const response = await fetch('/api/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Display P-Score
+        pscoreValue.textContent = data.pscore || '--';
+        pscoreContainer.classList.remove('hidden');
+        
+        // Display detailed metrics
+        resultsContainer.innerHTML = '';
+        metrics.forEach(metric => {
+          const value = data[metric.id] ?? '--';
+          const card = document.createElement('div');
+          card.className = `bg-gradient-to-br ${metric.color} text-white p-5 rounded-xl shadow-lg transform transition hover:scale-105`;
+          card.innerHTML = `
+            <div class="text-xs font-bold uppercase opacity-90 mb-1">${metric.name}</div>
+            <div class="text-4xl font-bold mb-1">${value}</div>
+            <div class="text-xs opacity-80">${metric.desc}</div>
+          `;
+          resultsContainer.appendChild(card);
+        });
+        
+        resultsContainer.classList.remove('hidden');
+        
+      } catch (error) {
+        alert(`Analysis failed: ${error.message}`);
+        console.error('Error:', error);
+      } finally {
+        scanBtn.textContent = 'ANALYZE';
+        scanBtn.disabled = false;
+        scanBtn.classList.remove('scanning');
+      }
+    }
+  </script>
+  
+</body>
+</html>
+*/
