@@ -1,4 +1,4 @@
-mport { URL } from 'url';
+import { URL } from 'url';
 
 export const handler = async (event) => {
   // CORS headers
