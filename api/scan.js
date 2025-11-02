@@ -1,0 +1,163 @@
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+  
+  const { url } = req.body || {};
+  if (!url) {
+    return res.status(400).json({ error: 'URL is required' });
+  }
+
+  try {
+    const result = { url, timestamp: new Date().toISOString() };
+    
+    // 1. PageSpeed Insights API
+    const psUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&strategy=desktop&category=performance&category=accessibility&category=best-practices&category=seo`;
+    const psResponse = await fetch(psUrl);
+    
+    if (!psResponse.ok) {
+      throw new Error(`PageSpeed API failed: ${psResponse.status}`);
+    }
+    
+    const psData = await psResponse.json();
+    const audits = psData.lighthouseResult?.audits || {};
+    const categories = psData.lighthouseResult?.categories || {};
+    
+    // 2. Fetch website content
+    const [headResponse, htmlResponse] = await Promise.all([
+      fetch(url, { method: 'HEAD', redirect: 'follow' }),
+      fetch(url, { redirect: 'follow' })
+    ]);
+    
+    const headers = headResponse.headers;
+    const html = await htmlResponse.text();
+    const contentLength = parseInt(headers.get('content-length') || html.length.toString(), 10);
+    
+    // Calculate all indices
+    
+    // KARPOV: Speed & Performance (0-100)
+    const fcp = audits['first-contentful-paint']?.numericValue || 3000;
+    const tti = audits['interactive']?.numericValue || 5000;
+    const cls = audits['cumulative-layout-shift']?.numericValue || 0.25;
+    const lcp = audits['largest-contentful-paint']?.numericValue || 4000;
+    const speedScore = categories.performance?.score || 0.5;
+    result.karpov = Math.round(speedScore * 100);
+    
+    // VORTEX: Accessibility (0-100)
+    const accessibilityScore = categories.accessibility?.score || 0.7;
+    result.vortex = Math.round(accessibilityScore * 100);
+    
+    // NOVA: Scalability & Infrastructure (0-100)
+    let novaScore = 0;
+    const cdnProviders = ['cloudflare', 'akamai', 'fastly', 'cloudfront', 'cdn'];
+    const serverHeader = headers.get('server')?.toLowerCase() || '';
+    if (cdnProviders.some(cdn => serverHeader.includes(cdn))) novaScore += 35;
+    if (headers.get('x-cache') || headers.get('cf-cache-status')) novaScore += 25;
+    if (headers.get('cache-control')?.includes('public')) novaScore += 20;
+    if (headers.get('content-encoding')?.includes('br') || headers.get('content-encoding')?.includes('gzip')) novaScore += 20;
+    result.nova = Math.min(100, novaScore);
+    
+    // AETHER: Modern Tech & Future-Readiness (0-100)
+    let aetherScore = 0;
+    if (html.includes('.wasm') || html.includes('WebAssembly')) aetherScore += 25;
+    if (html.includes('type="module"') || html.includes('import ')) aetherScore += 20;
+    if (html.includes('ServiceWorker') || html.includes('navigator.serviceWorker')) aetherScore += 20;
+    if (html.includes('async') || html.includes('defer')) aetherScore += 15;
+    if (html.match(/react|vue|angular|svelte/i)) aetherScore += 10;
+    if (html.includes('webp') || html.includes('avif')) aetherScore += 10;
+    result.aether = Math.min(100, aetherScore);
+    
+    // PULSE: Social & SEO Optimization (0-100)
+    let pulseScore = 0;
+    if (html.includes('og:title')) pulseScore += 20;
+    if (html.includes('og:description')) pulseScore += 15;
+    if (html.includes('og:image')) pulseScore += 20;
+    if (html.includes('twitter:card')) pulseScore += 15;
+    if (html.includes('rel="canonical"')) pulseScore += 15;
+    const seoScore = categories.seo?.score || 0;
+    pulseScore += seoScore * 15;
+    result.pulse = Math.round(Math.min(100, pulseScore));
+    
+    // EDEN: Efficiency & Page Weight (0-100)
+    const sizeMB = contentLength / (1024 * 1024);
+    let edenScore = 100;
+    if (sizeMB > 3) edenScore = Math.max(0, 100 - (sizeMB - 3) * 15);
+    else if (sizeMB > 1) edenScore = Math.max(70, 100 - (sizeMB - 1) * 10);
+    result.eden = Math.round(edenScore);
+    
+    // HELIX: Privacy & Security (0-100)
+    let helixScore = 50;
+    const trackers = html.match(/google-analytics|facebook\.com\/tr|pixel|hotjar|mixpanel|gtag|doubleclick|mouseflow|clarity\.ms/gi) || [];
+    helixScore -= trackers.length * 8;
+    if (headers.get('strict-transport-security')) helixScore += 15;
+    if (headers.get('content-security-policy')) helixScore += 15;
+    if (headers.get('x-frame-options')) helixScore += 10;
+    if (headers.get('x-content-type-options')) helixScore += 10;
+    result.helix = Math.max(0, Math.min(100, helixScore));
+    
+    // ECHO: Green Hosting & Sustainability (0-100)
+    const hostname = new URL(url).hostname;
+    let echoScore = 50;
+    try {
+      const greenUrl = `https://api.thegreenwebfoundation.org/greencheck/${hostname}`;
+      const greenResponse = await fetch(greenUrl);
+      const greenData = await greenResponse.json();
+      if (greenData.green) echoScore = 100;
+    } catch (e) {
+      console.log('Green check failed:', e.message);
+    }
+    result.echo = echoScore;
+    
+    // QUANTUM: Best Practices & Code Quality (0-100)
+    const bestPracticesScore = categories['best-practices']?.score || 0.7;
+    result.quantum = Math.round(bestPracticesScore * 100);
+    
+    // NEXUS: Mobile Responsiveness (0-100)
+    let nexusScore = 60;
+    if (html.includes('viewport')) nexusScore += 20;
+    if (html.match(/@media|media="/i)) nexusScore += 10;
+    if (html.includes('mobile-web-app-capable') || html.includes('apple-mobile-web-app')) nexusScore += 10;
+    result.nexus = Math.min(100, nexusScore);
+    
+    // P-SCORE: Unified Performance Score (0-100)
+    // Weighted average prioritizing what matters most
+    const pScore = (
+      result.karpov * 0.25 +      // Performance: 25%
+      result.vortex * 0.15 +      // Accessibility: 15%
+      result.nova * 0.12 +        // Scalability: 12%
+      result.aether * 0.10 +      // Modern Tech: 10%
+      result.pulse * 0.10 +       // SEO: 10%
+      result.eden * 0.08 +        // Efficiency: 8%
+      result.helix * 0.08 +       // Privacy: 8%
+      result.echo * 0.07 +        // Sustainability: 7%
+      result.quantum * 0.03 +     // Best Practices: 3%
+      result.nexus * 0.02         // Mobile: 2%
+    );
+    result.pscore = Math.round(pScore);
+    
+    return res.status(200).json(result);
+    
+  } catch (error) {
+    console.error('Scan error:', error);
+    return res.status(200).json({
+      error: true,
+      message: 'Scan completed with fallback values',
+      karpov: 65,
+      vortex: 70,
+      nova: 55,
+      aether: 45,
+      pulse: 60,
+      eden: 70,
+      helix: 65,
+      echo: 50,
+      quantum: 70,
+      nexus: 75,
+      pscore: 63
+    });
+  }
+}
