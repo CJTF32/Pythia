@@ -122,8 +122,12 @@ export async function onRequest(context) {
       
       // Privacy & Security
       trackers: (html.match(/google-analytics|googletagmanager|facebook\.com\/tr|gtag|doubleclick|mouseflow|clarity\.ms|hotjar|mixpanel|segment\.com/gi) || []),
-      thirdPartyScripts: (html.match(/<script[^>]*src=["']https?:\/\/(?!([^"'\/]+\.)?${new URL(url).hostname.replace(/\./g, '\\.')})/gi) || []).length,
     };
+    
+    // Count third-party scripts separately
+    const hostname = new URL(url).hostname;
+    const scriptMatches = html.match(/<script[^>]*src=["']https?:\/\/[^"']+["']/gi) || [];
+    analysis.thirdPartyScripts = scriptMatches.filter(script => !script.includes(hostname)).length;
     
     // Calculate KARPOV: Speed & Performance (0-100)
     let karpovScore = 100;
