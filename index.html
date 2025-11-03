@@ -14,38 +14,65 @@
     
     /* Retro Mode Styles */
     body.retro {
-      background: #008080 !important;
+      background: #000000 !important;
       font-family: 'Courier New', monospace !important;
       image-rendering: pixelated;
+      color: #00ff00 !important;
     }
     body.retro * {
       font-family: 'Courier New', monospace !important;
+      image-rendering: pixelated;
     }
     body.retro .modern-card {
-      background: #c0c0c0 !important;
-      border: 3px outset #dfdfdf !important;
+      background: #1a1a1a !important;
+      border: 4px solid #00ff00 !important;
       border-radius: 0 !important;
-      box-shadow: 2px 2px 0 #000 !important;
+      box-shadow: 0 0 20px #00ff00 !important;
     }
     body.retro .retro-button {
-      background: #c0c0c0 !important;
-      border: 2px outset #ffffff !important;
+      background: #003300 !important;
+      border: 3px solid #00ff00 !important;
       border-radius: 0 !important;
-      color: #000 !important;
+      color: #00ff00 !important;
       font-weight: bold !important;
       padding: 8px 16px !important;
+      text-shadow: 0 0 5px #00ff00;
+    }
+    body.retro .retro-button:hover {
+      background: #005500 !important;
+      box-shadow: 0 0 15px #00ff00;
     }
     body.retro .retro-button:active {
-      border-style: inset !important;
+      background: #001100 !important;
     }
     body.retro .score-card {
-      border: 2px solid #000 !important;
+      border: 3px solid #00ff00 !important;
       border-radius: 0 !important;
       image-rendering: pixelated !important;
+      box-shadow: 0 0 10px currentColor !important;
     }
-    body.retro h1 {
-      color: #ffff00 !important;
-      text-shadow: 2px 2px 0 #000 !important;
+    body.retro h1, body.retro h2, body.retro h3 {
+      color: #00ff00 !important;
+      text-shadow: 2px 2px 0 #003300, 0 0 10px #00ff00 !important;
+      font-weight: bold !important;
+    }
+    body.retro p, body.retro div, body.retro span, body.retro label {
+      color: #00ff00 !important;
+    }
+    body.retro input {
+      background: #000000 !important;
+      border: 2px solid #00ff00 !important;
+      color: #00ff00 !important;
+      border-radius: 0 !important;
+    }
+    body.retro input::placeholder {
+      color: #006600 !important;
+    }
+    body.retro .bg-gradient-to-br {
+      background: #000000 !important;
+    }
+    body.retro .leaderboard-entry:hover {
+      background: #003300 !important;
     }
     
     /* Tooltip */
@@ -99,7 +126,7 @@
         </button>
       </div>
       <div class="flex items-center justify-center gap-4 mb-2">
-        <img id="oracleImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect fill='%236366f1' width='80' height='80'/%3E%3Ctext x='40' y='50' font-size='40' text-anchor='middle' fill='white'%3E🔮%3C/text%3E%3C/svg%3E" alt="Pythia Oracle" class="w-20 h-20" style="display:none;">
+        <img id="oracleImage" src="pythia-oracle.png" alt="Pythia Oracle" class="w-20 h-20" style="display:none; image-rendering: pixelated;">
         <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
           Pythia
         </h1>
@@ -156,54 +183,79 @@
     
     <!-- Leaderboard -->
     <div id="leaderboard" class="hidden modern-card bg-white rounded-2xl shadow-xl p-6 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">🏆 Leaderboard</h2>
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">🏆 Global Leaderboard</h2>
       <div class="grid md:grid-cols-2 gap-6">
         <div>
-          <h3 class="text-lg font-bold text-green-600 mb-3">Top 10 Sites</h3>
+          <h3 class="text-lg font-bold text-green-600 mb-3">Top 10 Sites (User Scanned)</h3>
           <div id="topSites" class="space-y-2"></div>
         </div>
         <div>
-          <h3 class="text-lg font-bold text-red-600 mb-3">Bottom 10 Sites</h3>
+          <h3 class="text-lg font-bold text-red-600 mb-3">Bottom 10 Sites (User Scanned)</h3>
           <div id="bottomSites" class="space-y-2"></div>
         </div>
       </div>
     </div>
     
-    <!-- Rivalry Battle Arena -->
-    <div class="modern-card bg-white rounded-2xl shadow-xl p-6 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-2">⚔️ Rivalry Battle Arena</h2>
-      <p class="text-sm text-gray-600 mb-4">Pit legendary rivals against each other in the ultimate website showdown</p>
+    <!-- Main Grid: Rivalries + Top 50 -->
+    <div class="grid lg:grid-cols-2 gap-8 mb-8">
       
-      <!-- Preset Rivalries -->
-      <div class="mb-6">
-        <h3 class="text-lg font-bold text-indigo-600 mb-3">Epic Rivalries</h3>
-        <div id="rivalryList" class="max-h-96 overflow-y-auto space-y-2 border rounded-lg p-3">
-          <!-- Rivalries will be injected here -->
+      <!-- Left: Rivalry Battle Arena -->
+      <div class="modern-card bg-white rounded-2xl shadow-xl p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">⚔️ Rivalry Battle Arena</h2>
+        <p class="text-sm text-gray-600 mb-4">Pit legendary rivals against each other</p>
+        
+        <!-- Preset Rivalries -->
+        <div class="mb-6">
+          <h3 class="text-lg font-bold text-indigo-600 mb-3">Epic Rivalries</h3>
+          <div id="rivalryList" class="max-h-96 overflow-y-auto space-y-2 border rounded-lg p-3">
+            <!-- Rivalries will be injected here -->
+          </div>
         </div>
-      </div>
-      
-      <!-- Custom Rivalry -->
-      <div class="border-t pt-6">
-        <h3 class="text-lg font-bold text-purple-600 mb-3">Custom Battle</h3>
-        <div class="grid md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="block text-sm font-bold text-gray-700 mb-2">Competitor 1 URL</label>
+        
+        <!-- Custom Rivalry -->
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-bold text-purple-600 mb-3">Custom Battle</h3>
+          <div class="grid gap-4 mb-4">
             <input id="customUrl1" type="url" placeholder="https://example1.com" 
               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500">
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-gray-700 mb-2">Competitor 2 URL</label>
             <input id="customUrl2" type="url" placeholder="https://example2.com"
               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500">
           </div>
+          <button id="customBattleBtn" class="retro-button w-full py-3 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition">
+            ⚔️ START CUSTOM BATTLE
+          </button>
         </div>
-        <button id="customBattleBtn" class="retro-button w-full py-3 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition">
-          ⚔️ START CUSTOM BATTLE
-        </button>
       </div>
       
-      <!-- Battle Results -->
-      <div id="battleResults" class="hidden mt-6 p-6 rounded-lg border-4 border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50">
+      <!-- Right: World's Top 50 -->
+      <div class="modern-card bg-white rounded-2xl shadow-xl p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">🌍 World's Top 50 Websites</h2>
+        <p class="text-sm text-gray-600 mb-4">Scan the most popular sites globally</p>
+        
+        <button id="scanTop50Btn" class="retro-button w-full py-4 bg-gradient-to-r from-green-600 to-teal-600 text-white font-bold rounded-lg hover:from-green-700 hover:to-teal-700 transition mb-4">
+          🚀 SCAN TOP 50 WEBSITES
+        </button>
+        
+        <div id="top50Loading" class="hidden text-center py-8">
+          <div class="text-4xl mb-2">⏳</div>
+          <div class="font-bold text-gray-700">Scanning top 50 websites...</div>
+          <div class="text-sm text-gray-500 mt-2">This takes 2-3 minutes</div>
+          <div id="scanProgress" class="text-xs text-gray-400 mt-1"></div>
+        </div>
+        
+        <div id="top50Results" class="hidden">
+          <h3 class="text-lg font-bold text-green-600 mb-3">🥇 Top 10 Global Sites</h3>
+          <div id="top50TopList" class="space-y-2 mb-6"></div>
+          
+          <h3 class="text-lg font-bold text-red-600 mb-3">🔻 Bottom 10 Global Sites</h3>
+          <div id="top50BottomList" class="space-y-2"></div>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- Battle Results (Full Width) -->
+    <div id="battleResults" class="hidden modern-card mb-8 p-6 rounded-lg border-4 border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50">
         <div class="text-center">
           <div id="winnerAnnouncement" class="text-4xl font-bold mb-4"></div>
           <div class="grid md:grid-cols-2 gap-4 mt-4">
@@ -273,7 +325,6 @@
       { category: 'Football Clubs', name1: 'Chelsea', url1: 'https://www.chelseafc.com', name2: 'Arsenal', url2: 'https://www.arsenal.com' },
       { category: 'Comic Publishers', name1: 'Marvel', url1: 'https://www.marvel.com', name2: 'DC', url2: 'https://www.dc.com' },
       { category: 'Tech Companies', name1: 'Apple', url1: 'https://www.apple.com', name2: 'Samsung', url2: 'https://www.samsung.com' }
-    ];
     
     const metrics = [
       { 
@@ -366,7 +417,7 @@
     themeToggle.addEventListener('click', () => {
       isRetro = !isRetro;
       document.body.classList.toggle('retro');
-      themeToggle.textContent = isRetro ? '✨ MODERN MODE' : '🕹️ RETRO MODE';
+      themeToggle.textContent = isRetro ? '✨ BORING MODE' : '🕹️ RETRO MODE';
       oracleImage.style.display = isRetro ? 'block' : 'none';
       document.getElementById('retroQuote').style.display = isRetro ? 'block' : 'none';
     });
@@ -533,6 +584,71 @@
     updateLeaderboardDisplay();
     renderRivalries();
     
+    // Top 50 scan button
+    document.getElementById('scanTop50Btn').addEventListener('click', scanTop50Websites);
+    
+    async function scanTop50Websites() {
+      const btn = document.getElementById('scanTop50Btn');
+      const loading = document.getElementById('top50Loading');
+      const results = document.getElementById('top50Results');
+      const progress = document.getElementById('scanProgress');
+      
+      btn.disabled = true;
+      btn.textContent = '⏳ SCANNING...';
+      loading.classList.remove('hidden');
+      results.classList.add('hidden');
+      
+      try {
+        const response = await fetch('/cron/daily-scan?action=scan');
+        
+        // Update progress
+        let dots = 0;
+        const progressInterval = setInterval(() => {
+          dots = (dots + 1) % 4;
+          progress.textContent = 'Processing' + '.'.repeat(dots);
+        }, 500);
+        
+        const data = await response.json();
+        clearInterval(progressInterval);
+        
+        if (data.results && data.results.length > 0) {
+          // Sort by P-Score
+          const sorted = data.results.sort((a, b) => b.pscore - a.pscore);
+          const top10 = sorted.slice(0, 10);
+          const bottom10 = sorted.slice(-10).reverse();
+          
+          // Display top 10
+          document.getElementById('top50TopList').innerHTML = top10.map((site, i) => `
+            <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-green-50">
+              <span class="text-sm font-bold text-gray-700">${i + 1}. ${new URL(site.url).hostname}</span>
+              <span class="text-lg font-bold text-green-600">${site.pscore}</span>
+            </div>
+          `).join('');
+          
+          // Display bottom 10
+          document.getElementById('top50BottomList').innerHTML = bottom10.map((site, i) => `
+            <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-red-50">
+              <span class="text-sm font-bold text-gray-700">${sorted.length - i}. ${new URL(site.url).hostname}</span>
+              <span class="text-lg font-bold text-red-600">${site.pscore}</span>
+            </div>
+          `).join('');
+          
+          loading.classList.add('hidden');
+          results.classList.remove('hidden');
+        } else {
+          throw new Error('No results returned');
+        }
+        
+      } catch (error) {
+        alert(`Top 50 scan failed: ${error.message}`);
+        console.error('Scan error:', error);
+      } finally {
+        btn.textContent = '🚀 SCAN TOP 50 WEBSITES';
+        btn.disabled = false;
+        loading.classList.add('hidden');
+      }
+    }
+    
     // Render rivalry list
     function renderRivalries() {
       const rivalryList = document.getElementById('rivalryList');
@@ -540,7 +656,7 @@
         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition">
           <div class="flex-1">
             <div class="text-xs font-bold text-gray-500 mb-1">${rivalry.category}</div>
-            <div class="font-bold text-gray-800">${rivalry.name1} vs ${rivalry.name2}</div>
+            <div class="font-bold text-gray-800">${rivalry.name1} v ${rivalry.name2}</div>
           </div>
           <button onclick="startBattle('${rivalry.url1}', '${rivalry.url2}', '${rivalry.name1}', '${rivalry.name2}')" 
             class="retro-button px-4 py-2 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition text-sm">
