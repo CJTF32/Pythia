@@ -316,17 +316,19 @@ export async function onRequest(context) {
     result.nexus = Math.min(100, Math.round(nexusScore));
     
     // Calculate P-SCORE: Unified Performance Score (0-100)
+    // New weightings: Speed 20%, Access 20%, SEO 15%, Privacy 15%, Mobile 10%, 
+    // Green 7%, CDN 7%, Code 3%, Infrastructure 2%, Sustainability 1%
     const pScore = (
-      result.karpov * 0.25 +
-      result.vortex * 0.15 +
-      result.nova * 0.12 +
-      result.aether * 0.10 +
-      result.pulse * 0.10 +
-      result.eden * 0.08 +
-      result.helix * 0.08 +
-      result.echo * 0.07 +
-      result.quantum * 0.03 +
-      result.nexus * 0.02
+      result.karpov * 0.20 +    // Karpov Speed: 20%
+      result.vortex * 0.20 +    // Vortex Access: 20%
+      result.pulse * 0.15 +     // Pulse SEO: 15%
+      result.helix * 0.15 +     // Helix Privacy: 15%
+      result.nexus * 0.10 +     // Nexus Mobile: 10%
+      result.echo * 0.07 +      // Echo Green: 7%
+      result.nova * 0.07 +      // CDN Edge (Nova): 7%
+      result.quantum * 0.03 +   // Code Clean (Quantum): 3%
+      result.aether * 0.02 +    // Infrastructure (Aether): 2%
+      result.eden * 0.01        // Sustainability (Eden): 1%
     );
     result.pscore = Math.round(pScore);
     
