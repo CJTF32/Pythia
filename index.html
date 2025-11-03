@@ -586,6 +586,26 @@
     document.getElementById('scanTop50Btn').addEventListener('click', scanTop50Websites);
     
     async function scanTop50Websites() {
+      const TOP_50_URLS = [
+        'https://google.com', 'https://youtube.com', 'https://facebook.com',
+        'https://twitter.com', 'https://instagram.com', 'https://linkedin.com',
+        'https://reddit.com', 'https://wikipedia.org', 'https://amazon.com',
+        'https://netflix.com', 'https://yahoo.com', 'https://ebay.com',
+        'https://microsoft.com', 'https://apple.com', 'https://pinterest.com',
+        'https://github.com', 'https://stackoverflow.com', 'https://twitch.tv',
+        'https://wordpress.com', 'https://paypal.com', 'https://bbc.com',
+        'https://cnn.com', 'https://nytimes.com', 'https://espn.com',
+        'https://imdb.com', 'https://quora.com', 'https://medium.com',
+        'https://tumblr.com', 'https://shopify.com', 'https://etsy.com',
+        'https://target.com', 'https://walmart.com', 'https://bestbuy.com',
+        'https://homedepot.com', 'https://ikea.com', 'https://spotify.com',
+        'https://soundcloud.com', 'https://vimeo.com', 'https://dropbox.com',
+        'https://zoom.us', 'https://salesforce.com', 'https://adobe.com',
+        'https://oracle.com', 'https://ibm.com', 'https://cloudflare.com',
+        'https://airbnb.com', 'https://booking.com', 'https://tripadvisor.com',
+        'https://uber.com', 'https://lyft.com'
+      ];
+      
       const btn = document.getElementById('scanTop50Btn');
       const loading = document.getElementById('top50Loading');
       const results = document.getElementById('top50Results');
@@ -597,19 +617,50 @@
       results.classList.add('hidden');
       
       try {
-        const response = await fetch('/cron/daily-scan?action=scan');
+        const scanResults = [];
+        let completed = 0;
         
-        let dots = 0;
-        const progressInterval = setInterval(() => {
-          dots = (dots + 1) % 4;
-          progress.textContent = 'Processing' + '.'.repeat(dots);
-        }, 500);
+        // Scan in batches of 5 to avoid overwhelming
+        for (let i = 0; i < TOP_50_URLS.length; i += 5) {
+          const batch = TOP_50_URLS.slice(i, i + 5);
+          
+          const batchPromises = batch.map(async (url) => {
+            try {
+              const response = await fetch('/api/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+              });
+              
+              if (response.ok) {
+                const data = await response.json();
+                completed++;
+                progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
+                return {
+                  url: url,
+                  pscore: data.pscore,
+                  scores: {
+                    karpov: data.karpov,
+                    vortex: data.vortex,
+                    nova: data.nova
+                  }
+                };
+              }
+            } catch (error) {
+              console.error(`Failed to scan ${url}:`, error);
+              return null;
+            }
+          });
+          
+          const batchResults = await Promise.all(batchPromises);
+          scanResults.push(...batchResults.filter(r => r !== null));
+          
+          // Small delay between batches
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
         
-        const data = await response.json();
-        clearInterval(progressInterval);
-        
-        if (data.results && data.results.length > 0) {
-          const sorted = data.results.sort((a, b) => b.pscore - a.pscore);
+        if (scanResults.length > 0) {
+          const sorted = scanResults.sort((a, b) => b.pscore - a.pscore);
           const top10 = sorted.slice(0, 10);
           const bottom10 = sorted.slice(-10).reverse();
           
