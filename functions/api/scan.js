@@ -130,72 +130,74 @@ export async function onRequest(context) {
     analysis.thirdPartyScripts = scriptMatches.filter(script => !script.includes(hostname)).length;
     
     // Calculate KARPOV: Speed & Performance (0-100)
-    let karpovScore = 100;
+    let karpovScore = 85;
     
-    // Load time penalty
-    if (loadTime > 3000) karpovScore -= 25;
-    else if (loadTime > 2000) karpovScore -= 18;
-    else if (loadTime > 1000) karpovScore -= 12;
-    else if (loadTime > 500) karpovScore -= 6;
+    // Load time penalty (more aggressive)
+    if (loadTime > 5000) karpovScore -= 40;
+    else if (loadTime > 3000) karpovScore -= 30;
+    else if (loadTime > 2000) karpovScore -= 20;
+    else if (loadTime > 1000) karpovScore -= 10;
+    else if (loadTime < 500) karpovScore += 10;
     
-    // Resource penalties
-    karpovScore -= Math.min(20, analysis.scripts * 1.3);
-    karpovScore -= Math.min(12, analysis.images * 0.4);
-    karpovScore -= Math.min(8, analysis.stylesheets * 2.5);
-    karpovScore -= Math.min(10, analysis.videos * 5);
+    // Resource penalties (harsher)
+    karpovScore -= Math.min(30, analysis.scripts * 2);
+    karpovScore -= Math.min(15, analysis.images * 0.6);
+    karpovScore -= Math.min(12, analysis.stylesheets * 3.5);
+    karpovScore -= Math.min(15, analysis.videos * 8);
     
-    // Size penalty
+    // Size penalty (much harsher)
     const sizeMB = contentLength / (1024 * 1024);
-    karpovScore -= Math.min(18, sizeMB * 7);
+    karpovScore -= Math.min(25, sizeMB * 10);
     
     // Performance bonuses
-    if (analysis.hasAsync > 0) karpovScore += 4;
-    if (analysis.hasDefer > 0) karpovScore += 3;
-    if (analysis.hasPreload > 0) karpovScore += 2;
-    if (analysis.hasLazyLoad) karpovScore += 5;
-    if (analysis.hasMinified) karpovScore += 4;
+    if (analysis.hasAsync > 0) karpovScore += 5;
+    if (analysis.hasDefer > 0) karpovScore += 4;
+    if (analysis.hasPreload > 0) karpovScore += 3;
+    if (analysis.hasLazyLoad) karpovScore += 8;
+    if (analysis.hasMinified) karpovScore += 6;
     
     result.karpov = Math.max(0, Math.min(100, Math.round(karpovScore)));
     
     // Calculate VORTEX: Accessibility (0-100)
-    let vortexScore = 50;
+    let vortexScore = 40;
     
-    // Image accessibility
+    // Image accessibility (stricter)
     const imageAccessScore = analysis.images > 0 
-      ? ((analysis.altTags - analysis.emptyAlts) / analysis.images) * 25
-      : 10;
+      ? ((analysis.altTags - analysis.emptyAlts) / analysis.images) * 30
+      : 5;
     vortexScore += imageAccessScore;
     
     // ARIA attributes
-    vortexScore += Math.min(15, analysis.ariaLabels * 2);
-    vortexScore += Math.min(10, analysis.ariaAttrs * 0.8);
-    vortexScore += Math.min(8, analysis.roles * 1.5);
+    vortexScore += Math.min(20, analysis.ariaLabels * 2.5);
+    vortexScore += Math.min(12, analysis.ariaAttrs * 1);
+    vortexScore += Math.min(10, analysis.roles * 2);
     
     // Form accessibility
-    vortexScore += Math.min(7, analysis.labels * 2);
+    vortexScore += Math.min(10, analysis.labels * 2.5);
     
     // Heading structure
-    if (analysis.headings.h1 === 1) vortexScore += 5;
-    else if (analysis.headings.h1 > 1) vortexScore -= 3;
-    if (analysis.headings.h2 >= 2) vortexScore += 3;
+    if (analysis.headings.h1 === 1) vortexScore += 8;
+    else if (analysis.headings.h1 > 1) vortexScore -= 5;
+    else if (analysis.headings.h1 === 0) vortexScore -= 10;
+    if (analysis.headings.h2 >= 2) vortexScore += 5;
     
     result.vortex = Math.max(0, Math.min(100, Math.round(vortexScore)));
     
     // Calculate NOVA: Scalability & Infrastructure (0-100)
-    let novaScore = 18;
+    let novaScore = 10;
     
     const cdnProviders = ['cloudflare', 'akamai', 'fastly', 'cloudfront', 'cdn77', 'bunnycdn', 'stackpath'];
     const serverHeader = siteHeaders.get('server')?.toLowerCase() || '';
     const viaHeader = siteHeaders.get('via')?.toLowerCase() || '';
     
-    if (cdnProviders.some(cdn => serverHeader.includes(cdn) || viaHeader.includes(cdn))) novaScore += 28;
-    if (siteHeaders.get('x-cache') || siteHeaders.get('cf-cache-status') || siteHeaders.get('x-varnish')) novaScore += 22;
-    if (siteHeaders.get('cache-control')?.includes('public')) novaScore += 16;
-    if (siteHeaders.get('cache-control')?.includes('max-age')) novaScore += 8;
+    if (cdnProviders.some(cdn => serverHeader.includes(cdn) || viaHeader.includes(cdn))) novaScore += 35;
+    if (siteHeaders.get('x-cache') || siteHeaders.get('cf-cache-status') || siteHeaders.get('x-varnish')) novaScore += 25;
+    if (siteHeaders.get('cache-control')?.includes('public')) novaScore += 18;
+    if (siteHeaders.get('cache-control')?.includes('max-age')) novaScore += 10;
     
     const encoding = siteHeaders.get('content-encoding') || '';
-    if (encoding.includes('br')) novaScore += 8;
-    else if (encoding.includes('gzip')) novaScore += 5;
+    if (encoding.includes('br')) novaScore += 12;
+    else if (encoding.includes('gzip')) novaScore += 6;
     
     result.nova = Math.min(100, Math.round(novaScore));
     
@@ -328,10 +330,64 @@ export async function onRequest(context) {
     );
     result.pscore = Math.round(pScore);
     
-    // Add metadata
+    // Add metadata and detailed breakdown
     result.analysisTime = Date.now() - startTime;
     result.pageSize = `${(sizeMB).toFixed(2)} MB`;
     result.loadTime = `${(loadTime / 1000).toFixed(2)}s`;
+    
+    // Detailed breakdown for export/analysis
+    result.breakdown = {
+      karpov: {
+        loadTimeMs: loadTime,
+        scripts: analysis.scripts,
+        images: analysis.images,
+        stylesheets: analysis.stylesheets,
+        videos: analysis.videos,
+        hasAsync: analysis.hasAsync,
+        hasDefer: analysis.hasDefer,
+        hasMinified: analysis.hasMinified
+      },
+      vortex: {
+        totalImages: analysis.images,
+        imagesWithAlt: analysis.altTags,
+        emptyAlts: analysis.emptyAlts,
+        ariaLabels: analysis.ariaLabels,
+        roles: analysis.roles,
+        labels: analysis.labels,
+        h1Count: analysis.headings.h1
+      },
+      nova: {
+        hasCDN: cdnProviders.some(cdn => serverHeader.includes(cdn) || viaHeader.includes(cdn)),
+        hasCache: !!(siteHeaders.get('x-cache') || siteHeaders.get('cf-cache-status')),
+        compression: encoding,
+        serverHeader: serverHeader
+      },
+      aether: {
+        hasWebAssembly: analysis.hasWebAssembly,
+        hasServiceWorker: analysis.hasServiceWorker,
+        hasModules: analysis.hasModules,
+        framework: Object.keys(analysis.frameworks).find(k => analysis.frameworks[k]) || 'none'
+      },
+      pulse: {
+        hasTitle: !!analysis.title,
+        hasMetaDescription: !!analysis.metaDescription,
+        ogTags: analysis.ogTags,
+        hasCanonical: analysis.canonical
+      },
+      eden: {
+        sizeBytes: contentLength,
+        sizeMB: sizeMB
+      },
+      helix: {
+        trackerCount: analysis.trackers.length,
+        thirdPartyScripts: analysis.thirdPartyScripts,
+        securityHeaders: {
+          hsts: !!siteHeaders.get('strict-transport-security'),
+          csp: !!siteHeaders.get('content-security-policy'),
+          xFrame: !!siteHeaders.get('x-frame-options')
+        }
+      }
+    };
     
     return new Response(JSON.stringify(result), {
       status: 200,
