@@ -60,13 +60,18 @@
       font-family: 'Courier New', monospace !important;
       image-rendering: pixelated;
       color: #00ff00 !important;
+      /* Add subtle grid pattern for texture */
+      background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 2px, #001100 2px, #001100 4px),
+        repeating-linear-gradient(90deg, transparent, transparent 2px, #001100 2px, #001100 4px);
+      background-size: 40px 40px;
     }
     body.retro * {
       font-family: 'Courier New', monospace !important;
       image-rendering: pixelated;
     }
     body.retro .modern-card {
-      background: #1a1a1a !important;
+      background: #0a0a0a !important;
       border: 4px solid #00ff00 !important;
       border-radius: 0 !important;
       box-shadow: 0 0 20px #00ff00 !important;
@@ -84,10 +89,37 @@
       background: #005500 !important;
       box-shadow: 0 0 15px #00ff00;
     }
+    
+    /* Darker green for readable buttons and important text */
+    body.retro #themeToggle,
+    body.retro .page-content button,
+    body.retro .menu-overlay button {
+      background: #001a00 !important;
+      color: #33ff33 !important;
+      border: 2px solid #33ff33 !important;
+      text-shadow: 0 0 3px #33ff33 !important;
+    }
+    body.retro #themeToggle:hover,
+    body.retro .page-content button:hover {
+      background: #003300 !important;
+      color: #66ff66 !important;
+    }
+    
+    /* Darker green for body text that needs to be readable */
+    body.retro .text-gray-500,
+    body.retro .text-gray-600,
+    body.retro .text-gray-700,
+    body.retro .text-gray-800,
+    body.retro p:not(.font-bold):not(h1):not(h2):not(h3) {
+      color: #33ff33 !important;
+      text-shadow: 0 0 2px #33ff33 !important;
+    }
+    
     body.retro .score-card {
       border: 3px solid #00ff00 !important;
       border-radius: 0 !important;
       box-shadow: 0 0 10px currentColor !important;
+      background: #001a00 !important;
     }
     body.retro h1, body.retro h2, body.retro h3 {
       color: #00ff00 !important;
@@ -100,7 +132,8 @@
       color: #00ff00 !important;
     }
     body.retro .bg-gray-50, body.retro .bg-green-50, body.retro .bg-red-50 {
-      background: #001100 !important;
+      background: #001a00 !important;
+      border: 1px solid #003300 !important;
     }
     body.retro .bg-white {
       background: #000000 !important;
@@ -118,10 +151,18 @@
       border-right: 4px solid #00ff00 !important;
     }
     
-    /* Make Pythia image bigger in retro mode */
+    /* Make Pythia image much bigger in retro mode */
     body.retro #pythiaLogo {
-      width: 280px !important;
+      width: 560px !important;
       height: auto !important;
+    }
+    
+    /* Make "ONE SCORE TO RANK THEM ALL" bigger */
+    #mainTagline {
+      font-size: 2rem !important;
+    }
+    body.retro #mainTagline {
+      font-size: 2.5rem !important;
     }
     
     /* Brighter text for battle/scan results in retro mode */
@@ -145,6 +186,62 @@
       border: 4px solid #00ff66 !important;
       color: #00ff66 !important;
       text-shadow: 0 0 10px #00ff66, 2px 2px 0 #001100 !important;
+    }
+    
+    /* Add pattern/texture to retro background so bars are visible */
+    body.retro {
+      background: 
+        repeating-linear-gradient(
+          0deg,
+          #000000 0px,
+          #001100 1px,
+          #000000 2px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          #000000 0px,
+          #000a00 1px,
+          #000000 2px
+        ) !important;
+    }
+    
+    /* Make separate bars for rivals visible with alternating background */
+    body.retro .rivalry-item:nth-child(odd) {
+      background: #002200 !important;
+      border: 1px solid #003300 !important;
+    }
+    body.retro .rivalry-item:nth-child(even) {
+      background: #001100 !important;
+      border: 1px solid #003300 !important;
+    }
+    
+    /* Darker/brighter green for better readability on specific elements */
+    body.retro #themeToggle {
+      color: #33ff33 !important;
+      background: #002200 !important;
+      text-shadow: 0 0 8px #33ff33, 1px 1px 2px #000 !important;
+      font-weight: 900 !important;
+      border: 3px solid #33ff33 !important;
+    }
+    
+    body.retro .back-button,
+    body.retro .about-content,
+    body.retro .weighting-philosophy,
+    body.retro .component-description {
+      color: #33ff33 !important;
+      text-shadow: 0 0 5px #33ff33, 1px 1px 0 #000 !important;
+    }
+    
+    /* Sword fighting animation */
+    @keyframes sword-fight {
+      0%, 100% { transform: rotate(-20deg) translateX(-5px); }
+      25% { transform: rotate(20deg) translateX(5px); }
+      50% { transform: rotate(-20deg) translateX(-5px); }
+      75% { transform: rotate(20deg) translateX(5px); }
+    }
+    .sword-fighting {
+      animation: sword-fight 0.6s infinite;
+      display: inline-block;
     }
     
     /* Tooltip */
@@ -200,6 +297,19 @@
     .cache-stored {
       background: #6366f1;
       color: white;
+    }
+    
+    /* Sword fighting animation */
+    @keyframes sword-fight {
+      0%, 100% { transform: rotate(-15deg) translateX(-5px); }
+      25% { transform: rotate(15deg) translateX(5px); }
+      50% { transform: rotate(-15deg) translateX(-5px); }
+      75% { transform: rotate(15deg) translateX(5px); }
+    }
+    .fighting-swords {
+      animation: sword-fight 0.6s infinite;
+      display: inline-block;
+      font-size: 1.5em;
     }
   </style>
 </head>
@@ -260,7 +370,7 @@
         <p class="text-gray-600 text-lg">
           Complete website performance oracle <span class="text-sm bg-yellow-200 px-2 py-1 rounded">BETA</span>
         </p>
-        <p class="text-xl font-bold text-indigo-600 mt-2 tracking-wide">
+        <p id="mainTagline" class="text-xl font-bold text-indigo-600 mt-2 tracking-wide">
           ONE SCORE TO RANK THEM ALL
         </p>
         <p class="text-xs text-gray-500 mt-2 max-w-2xl mx-auto">
@@ -420,7 +530,7 @@
     
     <!-- P-Score Explainer Page -->
     <div id="pscoreExplainerPage" class="page-content">
-      <button onclick="showPage('main')" class="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
+      <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
       <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
         <h1 class="text-4xl font-bold text-indigo-600 mb-6">📊 P-Score Explainer</h1>
         
@@ -437,14 +547,18 @@
           
           <div class="bg-indigo-50 p-6 rounded-lg my-6">
             <h3 class="text-xl font-bold text-indigo-600 mb-3">Weighting Philosophy</h3>
-            <p class="text-gray-700 mb-2">The P-Score prioritizes:</p>
-            <ul class="list-disc ml-6 text-gray-700 space-y-1">
-              <li><strong>Performance (25%)</strong> - Speed is king</li>
-              <li><strong>Accessibility (15%)</strong> - Inclusive design matters</li>
-              <li><strong>Infrastructure (12%)</strong> - Scalability and reliability</li>
-              <li><strong>Modern Tech (10%)</strong> - Future-readiness</li>
-              <li><strong>Plus 6 other critical factors</strong></li>
+            <p class="weighting-philosophy text-gray-700 mb-2">The P-Score intelligently balances multiple factors:</p>
+            <ul class="weighting-philosophy list-disc ml-6 text-gray-700 space-y-1">
+              <li><strong>Performance</strong> - Speed and responsiveness</li>
+              <li><strong>Accessibility</strong> - Inclusive design for all users</li>
+              <li><strong>Privacy & Security</strong> - User protection</li>
+              <li><strong>SEO & Discoverability</strong> - Search engine optimization</li>
+              <li><strong>Mobile Experience</strong> - Responsive design</li>
+              <li><strong>Sustainability</strong> - Environmental impact</li>
+              <li><strong>Modern Technology</strong> - Future-readiness</li>
+              <li><strong>And more...</strong></li>
             </ul>
+            <p class="text-sm text-gray-600 mt-3 italic">Each factor is weighted according to its impact on user experience and modern web standards.</p>
           </div>
           
           <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Score Ranges</h2>
@@ -477,59 +591,59 @@
     
     <!-- Components Page -->
     <div id="componentsPage" class="page-content">
-      <button onclick="showPage('main')" class="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
+      <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
       <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
         <h1 class="text-4xl font-bold text-indigo-600 mb-6">🔧 P-Score Components</h1>
         
         <div class="space-y-6">
           <div class="border-l-4 border-blue-500 pl-4">
-            <h3 class="text-xl font-bold text-blue-600">Karpov Speed (25% weight)</h3>
-            <p class="text-gray-700">Measures page load time, resource optimization, and rendering performance. Faster sites rank higher.</p>
+            <h3 class="text-xl font-bold text-blue-600">Karpov Speed</h3>
+            <p class="component-description text-gray-700">Measures page load time, resource optimization, and rendering performance. Faster sites rank higher.</p>
           </div>
           
           <div class="border-l-4 border-green-500 pl-4">
-            <h3 class="text-xl font-bold text-green-600">Vortex Accessibility (15% weight)</h3>
-            <p class="text-gray-700">Evaluates inclusive design: alt text, ARIA labels, semantic HTML, and keyboard navigation support.</p>
+            <h3 class="text-xl font-bold text-green-600">Vortex Accessibility</h3>
+            <p class="component-description text-gray-700">Evaluates inclusive design: alt text, ARIA labels, semantic HTML, and keyboard navigation support.</p>
           </div>
           
           <div class="border-l-4 border-purple-500 pl-4">
-            <h3 class="text-xl font-bold text-purple-600">Nova Scalability (12% weight)</h3>
-            <p class="text-gray-700">Checks infrastructure: CDN usage, caching strategies, compression, and global distribution.</p>
+            <h3 class="text-xl font-bold text-purple-600">Nova Scalability</h3>
+            <p class="component-description text-gray-700">Checks infrastructure: CDN usage, caching strategies, compression, and global distribution.</p>
           </div>
           
           <div class="border-l-4 border-orange-500 pl-4">
-            <h3 class="text-xl font-bold text-orange-600">Aether Technology (10% weight)</h3>
-            <p class="text-gray-700">Detects modern frameworks, WebAssembly, Service Workers, and next-gen image formats.</p>
+            <h3 class="text-xl font-bold text-orange-600">Aether Technology</h3>
+            <p class="component-description text-gray-700">Detects modern frameworks, WebAssembly, Service Workers, and next-gen image formats.</p>
           </div>
           
           <div class="border-l-4 border-indigo-500 pl-4">
-            <h3 class="text-xl font-bold text-indigo-600">Pulse SEO (10% weight)</h3>
-            <p class="text-gray-700">Analyzes meta tags, social cards, structured data, and search engine optimization basics.</p>
+            <h3 class="text-xl font-bold text-indigo-600">Pulse SEO</h3>
+            <p class="component-description text-gray-700">Analyzes meta tags, social cards, structured data, and search engine optimization basics.</p>
           </div>
           
           <div class="border-l-4 border-teal-500 pl-4">
-            <h3 class="text-xl font-bold text-teal-600">Eden Efficiency (8% weight)</h3>
-            <p class="text-gray-700">Measures page weight and resource usage. Leaner sites score better.</p>
+            <h3 class="text-xl font-bold text-teal-600">Eden Efficiency</h3>
+            <p class="component-description text-gray-700">Measures page weight and resource usage. Leaner sites score better.</p>
           </div>
           
           <div class="border-l-4 border-gray-700 pl-4">
-            <h3 class="text-xl font-bold text-gray-700">Helix Privacy (8% weight)</h3>
-            <p class="text-gray-700">Tracks third-party scripts, analytics, and security headers. Privacy-conscious sites win.</p>
+            <h3 class="text-xl font-bold text-gray-700">Helix Privacy</h3>
+            <p class="component-description text-gray-700">Tracks third-party scripts, analytics, and security headers. Privacy-conscious sites win.</p>
           </div>
           
           <div class="border-l-4 border-lime-500 pl-4">
-            <h3 class="text-xl font-bold text-lime-600">Echo Sustainability (7% weight)</h3>
-            <p class="text-gray-700">Checks green hosting and carbon-conscious practices via Green Web Foundation.</p>
+            <h3 class="text-xl font-bold text-lime-600">Echo Sustainability</h3>
+            <p class="component-description text-gray-700">Checks green hosting and carbon-conscious practices via Green Web Foundation.</p>
           </div>
           
           <div class="border-l-4 border-violet-500 pl-4">
-            <h3 class="text-xl font-bold text-violet-600">Quantum Quality (3% weight)</h3>
-            <p class="text-gray-700">Evaluates code quality, modern practices, and adherence to web standards.</p>
+            <h3 class="text-xl font-bold text-violet-600">Quantum Quality</h3>
+            <p class="component-description text-gray-700">Evaluates code quality, modern practices, and adherence to web standards.</p>
           </div>
           
           <div class="border-l-4 border-pink-500 pl-4">
-            <h3 class="text-xl font-bold text-pink-600">Nexus Mobile (2% weight)</h3>
-            <p class="text-gray-700">Assesses mobile responsiveness, viewport configuration, and touch optimization.</p>
+            <h3 class="text-xl font-bold text-pink-600">Nexus Mobile</h3>
+            <p class="component-description text-gray-700">Assesses mobile responsiveness, viewport configuration, and touch optimization.</p>
           </div>
         </div>
         
@@ -544,7 +658,7 @@
     
     <!-- Custom Scans Page -->
     <div id="customPage" class="page-content">
-      <button onclick="showPage('main')" class="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
+      <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
       <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
         <h1 class="text-4xl font-bold text-indigo-600 mb-6">💎 Custom Scans (Premium)</h1>
         
@@ -609,11 +723,11 @@
     
     <!-- About Page -->
     <div id="aboutPage" class="page-content">
-      <button onclick="showPage('main')" class="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
+      <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
       <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
         <h1 class="text-4xl font-bold text-indigo-600 mb-6">ℹ️ About Pythia</h1>
         
-        <div class="prose max-w-none">
+        <div class="prose max-w-none about-content">
           <h2 class="text-2xl font-bold text-gray-800 mb-3">The Oracle of Web Performance</h2>
           <p class="text-gray-700 leading-relaxed mb-4">
             Named after the legendary Oracle of Delphi, Pythia brings ancient wisdom to modern web analysis. We believe websites should be fast, accessible, private, and sustainable—not just profitable.
@@ -979,7 +1093,7 @@
     function renderRivalries() {
       const rivalryList = document.getElementById('rivalryList');
       rivalryList.innerHTML = RIVALRIES.map((rivalry, index) => `
-        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition">
+        <div class="rivalry-item flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition">
           <div class="flex-1">
             <div class="text-xs font-bold text-gray-500 mb-1">${rivalry.category}</div>
             <div class="font-bold text-gray-800">${rivalry.name1} v ${rivalry.name2}</div>
@@ -1010,7 +1124,7 @@
       document.getElementById('battleResults').classList.add('hidden');
       
       const btn = event.target;
-      btn.textContent = '⚔️';
+      btn.innerHTML = '<span class="sword-fighting">⚔️</span>';
       btn.disabled = true;
       
       try {
@@ -1100,12 +1214,15 @@
         `;
         
         document.getElementById('battleResults').classList.remove('hidden');
-        document.getElementById('battleResults').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Scroll to bottom of page where results are displayed
+        setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }, 100);
         
       } catch (error) {
         alert(`Battle failed: ${error.message}`);
       } finally {
-        btn.textContent = '⚔️';
+        btn.innerHTML = '⚔️';
         btn.disabled = false;
       }
     }
