@@ -256,16 +256,15 @@
     
     <!-- Battle Results (Full Width) -->
     <div id="battleResults" class="hidden modern-card mb-8 p-6 rounded-lg border-4 border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50">
-        <div class="text-center">
-          <div id="winnerAnnouncement" class="text-4xl font-bold mb-4"></div>
-          <div class="grid md:grid-cols-2 gap-4 mt-4">
-            <div id="contestant1Results" class="p-4 bg-white rounded-lg shadow"></div>
-            <div id="contestant2Results" class="p-4 bg-white rounded-lg shadow"></div>
-          </div>
-          <button id="shareRivalryBtn" class="mt-4 px-6 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600">
-            📢 SHARE THIS BATTLE
-          </button>
+      <div class="text-center">
+        <div id="winnerAnnouncement" class="text-4xl font-bold mb-4"></div>
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+          <div id="contestant1Results" class="p-4 bg-white rounded-lg shadow"></div>
+          <div id="contestant2Results" class="p-4 bg-white rounded-lg shadow"></div>
         </div>
+        <button id="shareRivalryBtn" class="mt-4 px-6 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600">
+          📢 SHARE THIS BATTLE
+        </button>
       </div>
     </div>
     
@@ -298,7 +297,7 @@
   </div>
   
   <script>
-    // Rivalry data from PDF
+    // Rivalry data
     const RIVALRIES = [
       { category: 'Academic Prestige', name1: 'Oxford', url1: 'https://www.ox.ac.uk', name2: 'Cambridge', url2: 'https://www.cam.ac.uk' },
       { category: 'Cricket Nations', name1: 'England (ECB)', url1: 'https://www.ecb.co.uk', name2: 'Australia', url2: 'https://www.cricket.com.au' },
@@ -325,6 +324,7 @@
       { category: 'Football Clubs', name1: 'Chelsea', url1: 'https://www.chelseafc.com', name2: 'Arsenal', url2: 'https://www.arsenal.com' },
       { category: 'Comic Publishers', name1: 'Marvel', url1: 'https://www.marvel.com', name2: 'DC', url2: 'https://www.dc.com' },
       { category: 'Tech Companies', name1: 'Apple', url1: 'https://www.apple.com', name2: 'Samsung', url2: 'https://www.samsung.com' }
+    ];
     
     const metrics = [
       { 
@@ -502,7 +502,6 @@
       resultsContainer.classList.remove('hidden');
       exportBtn.style.display = 'inline-block';
       
-      // Save to leaderboard
       saveToLeaderboard(data);
     }
     
@@ -542,7 +541,6 @@
       URL.revokeObjectURL(url);
     }
     
-    // Leaderboard functions
     function saveToLeaderboard(data) {
       let leaderboard = JSON.parse(localStorage.getItem('pythiaLeaderboard') || '[]');
       leaderboard.push({
@@ -601,7 +599,6 @@
       try {
         const response = await fetch('/cron/daily-scan?action=scan');
         
-        // Update progress
         let dots = 0;
         const progressInterval = setInterval(() => {
           dots = (dots + 1) % 4;
@@ -612,12 +609,10 @@
         clearInterval(progressInterval);
         
         if (data.results && data.results.length > 0) {
-          // Sort by P-Score
           const sorted = data.results.sort((a, b) => b.pscore - a.pscore);
           const top10 = sorted.slice(0, 10);
           const bottom10 = sorted.slice(-10).reverse();
           
-          // Display top 10
           document.getElementById('top50TopList').innerHTML = top10.map((site, i) => `
             <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-green-50">
               <span class="text-sm font-bold text-gray-700">${i + 1}. ${new URL(site.url).hostname}</span>
@@ -625,7 +620,6 @@
             </div>
           `).join('');
           
-          // Display bottom 10
           document.getElementById('top50BottomList').innerHTML = bottom10.map((site, i) => `
             <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-red-50">
               <span class="text-sm font-bold text-gray-700">${sorted.length - i}. ${new URL(site.url).hostname}</span>
@@ -649,7 +643,6 @@
       }
     }
     
-    // Render rivalry list
     function renderRivalries() {
       const rivalryList = document.getElementById('rivalryList');
       rivalryList.innerHTML = RIVALRIES.map((rivalry, index) => `
@@ -666,7 +659,6 @@
       `).join('');
     }
     
-    // Custom battle
     document.getElementById('customBattleBtn').addEventListener('click', () => {
       const url1 = document.getElementById('customUrl1').value.trim();
       const url2 = document.getElementById('customUrl2').value.trim();
@@ -681,7 +673,6 @@
       startBattle(url1, url2, name1, name2);
     });
     
-    // Battle function
     async function startBattle(url1, url2, name1, name2) {
       const battleResults = document.getElementById('battleResults');
       battleResults.classList.add('hidden');
@@ -691,7 +682,6 @@
       btn.disabled = true;
       
       try {
-        // Scan both sites
         const [result1, result2] = await Promise.all([
           fetch('/api/scan', {
             method: 'POST',
@@ -705,13 +695,11 @@
           }).then(r => r.json())
         ]);
         
-        // Determine winner
         const winner = result1.pscore > result2.pscore ? name1 : 
                        result2.pscore > result1.pscore ? name2 : 'TIE';
         
         currentBattleData = { name1, name2, result1, result2, winner };
         
-        // Display results
         const winnerAnnouncement = document.getElementById('winnerAnnouncement');
         if (winner === 'TIE') {
           winnerAnnouncement.innerHTML = `🤝 IT'S A TIE!<br><span class="text-2xl">${result1.pscore} - ${result2.pscore}</span>`;
@@ -722,7 +710,6 @@
           winnerAnnouncement.innerHTML = `🏆 ${winner.toUpperCase()} IS THE WINNER!<br><span class="text-2xl">${winScore} - ${loseScore}</span>`;
         }
         
-        // Show detailed scores
         document.getElementById('contestant1Results').innerHTML = `
           <div class="text-center">
             <div class="text-xl font-bold mb-2">${name1}</div>
@@ -758,16 +745,14 @@
       }
     }
     
-    // Share rivalry battle
     document.getElementById('shareRivalryBtn').addEventListener('click', () => {
       if (currentBattleData) {
         const { name1, name2, result1, result2, winner } = currentBattleData;
-        const text = `⚔️ PYTHIA BATTLE: ${name1} (${result1.pscore}) vs ${name2} (${result2.pscore}) - ${winner.toUpperCase()} WINS! 🏆`;
+        const text = `⚔️ PYTHIA BATTLE: ${name1} (${result1.pscore}) v ${name2} (${result2.pscore}) - ${winner.toUpperCase()} WINS! 🏆`;
         shareContent(text, window.location.href);
       }
     });
     
-    // Social sharing functions
     function shareOn(platform) {
       const text = 'Check out Pythia - The ultimate website performance oracle! ONE SCORE TO RANK THEM ALL 🔮';
       const url = window.location.href;
@@ -779,7 +764,6 @@
       const encodedUrl = encodeURIComponent(url);
       
       if (!platform) {
-        // Open share menu
         if (navigator.share) {
           navigator.share({ title: 'Pythia Battle', text: text, url: url });
         }
