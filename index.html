@@ -118,6 +118,35 @@
       border-right: 4px solid #00ff00 !important;
     }
     
+    /* Make Pythia image bigger in retro mode */
+    body.retro #pythiaLogo {
+      width: 280px !important;
+      height: auto !important;
+    }
+    
+    /* Brighter text for battle/scan results in retro mode */
+    body.retro #scanResults .score-card,
+    body.retro #contestant1Results,
+    body.retro #contestant2Results,
+    body.retro #winnerAnnouncement {
+      color: #00ff66 !important;
+      text-shadow: 0 0 8px #00ff66 !important;
+    }
+    body.retro #scanResults .score-card .text-2xl,
+    body.retro #scanResults .score-card .text-3xl,
+    body.retro #contestant1Results .text-3xl,
+    body.retro #contestant2Results .text-3xl {
+      color: #00ff66 !important;
+      text-shadow: 0 0 15px #00ff66, 0 0 25px #00ff00 !important;
+      font-weight: 900 !important;
+    }
+    body.retro #winnerAnnouncement {
+      background: #003300 !important;
+      border: 4px solid #00ff66 !important;
+      color: #00ff66 !important;
+      text-shadow: 0 0 10px #00ff66, 2px 2px 0 #001100 !important;
+    }
+    
     /* Tooltip */
     .tooltip {
       position: relative;
@@ -1095,7 +1124,7 @@
     async function scanTop50Websites() {
       const TOP_50_URLS = [
         'https://www.google.com', 'https://www.youtube.com', 'https://www.facebook.com',
-        'https://www.twitter.com', 'https://www.instagram.com', 'https://www.linkedin.com',
+        'https://www.x.com', 'https://www.instagram.com', 'https://www.linkedin.com',
         'https://www.reddit.com', 'https://www.wikipedia.org', 'https://www.amazon.com',
         'https://www.netflix.com', 'https://www.yahoo.com', 'https://www.ebay.com',
         'https://www.microsoft.com', 'https://www.apple.com', 'https://www.pinterest.com',
