@@ -1,5 +1,5 @@
 // functions/api/scan.js
-// Original Pythia scanning function
+// Updated Pythia scanning function with fixed Eden scoring and equal 10% weighting
 
 export async function onRequest(context) {
   const corsHeaders = {
@@ -208,11 +208,14 @@ export async function onRequest(context) {
     result.pulse = Math.min(100, Math.round(pulseScore));
     
     // Calculate EDEN: Efficiency & Page Weight (0-100)
+    // FIXED: More realistic scoring that doesn't always give 100
+    // Optimal page weight: 0.5-1.5 MB
     let edenScore = 100;
-    if (sizeMB > 5) edenScore = Math.max(15, 100 - (sizeMB - 5) * 16);
-    else if (sizeMB > 3) edenScore = Math.max(48, 100 - (sizeMB - 3) * 13);
-    else if (sizeMB > 1) edenScore = Math.max(72, 100 - (sizeMB - 1) * 9);
-    if (sizeMB < 0.5) edenScore = 100;
+    if (sizeMB > 10) edenScore = Math.max(10, 100 - (sizeMB - 10) * 8);
+    else if (sizeMB > 5) edenScore = Math.max(35, 100 - (sizeMB - 5) * 10);
+    else if (sizeMB > 3) edenScore = Math.max(55, 100 - (sizeMB - 3) * 12);
+    else if (sizeMB > 1.5) edenScore = Math.max(75, 100 - (sizeMB - 1.5) * 15);
+    else if (sizeMB < 0.3) edenScore = Math.max(70, 100 - (0.3 - sizeMB) * 50); // Penalty for too small (missing content)
     result.eden = Math.round(edenScore);
     
     // Calculate HELIX: Privacy & Security (0-100)
@@ -267,17 +270,18 @@ export async function onRequest(context) {
     result.nexus = Math.min(100, Math.round(nexusScore));
     
     // Calculate P-SCORE: Unified Performance Score (0-100)
+    // UPDATED: Equal 10% weighting for all components
     const pScore = (
-      result.karpov * 0.20 +
-      result.vortex * 0.20 +
-      result.pulse * 0.15 +
-      result.helix * 0.15 +
+      result.karpov * 0.10 +
+      result.vortex * 0.10 +
+      result.pulse * 0.10 +
+      result.helix * 0.10 +
       result.nexus * 0.10 +
-      result.echo * 0.07 +
-      result.nova * 0.07 +
-      result.quantum * 0.03 +
-      result.aether * 0.02 +
-      result.eden * 0.01
+      result.echo * 0.10 +
+      result.nova * 0.10 +
+      result.quantum * 0.10 +
+      result.aether * 0.10 +
+      result.eden * 0.10
     );
     result.pscore = Math.round(pScore);
     
