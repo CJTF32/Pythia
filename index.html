@@ -151,10 +151,11 @@
       border-right: 4px solid #00ff00 !important;
     }
     
-    /* Make Pythia image much bigger in retro mode */
+    /* Make Pythia image MUCH bigger in retro mode */
     body.retro #pythiaLogo {
-      width: 560px !important;
+      width: 800px !important;
       height: auto !important;
+      max-width: 90vw !important;
     }
     
     /* Make "ONE SCORE TO RANK THEM ALL" bigger */
@@ -165,7 +166,32 @@
       font-size: 2.5rem !important;
     }
     
-    /* Brighter text for battle/scan results in retro mode */
+    /* Add much more visible pattern/texture to retro background */
+    body.retro {
+      background: 
+        repeating-linear-gradient(
+          0deg,
+          #000000 0px,
+          #003300 2px,
+          #000000 4px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          #000000 0px,
+          #001a00 2px,
+          #000000 4px
+        ) !important;
+    }
+    
+    /* Make separate bars for rivals MUCH more visible with strong alternating background */
+    body.retro .rivalry-item:nth-child(odd) {
+      background: #003300 !important;
+      border: 2px solid #00ff00 !important;
+    }
+    body.retro .rivalry-item:nth-child(even) {
+      background: #001a00 !important;
+      border: 2px solid #006600 !important;
+    }
     body.retro #scanResults .score-card,
     body.retro #contestant1Results,
     body.retro #contestant2Results,
@@ -186,33 +212,6 @@
       border: 4px solid #00ff66 !important;
       color: #00ff66 !important;
       text-shadow: 0 0 10px #00ff66, 2px 2px 0 #001100 !important;
-    }
-    
-    /* Add pattern/texture to retro background so bars are visible */
-    body.retro {
-      background: 
-        repeating-linear-gradient(
-          0deg,
-          #000000 0px,
-          #001100 1px,
-          #000000 2px
-        ),
-        repeating-linear-gradient(
-          90deg,
-          #000000 0px,
-          #000a00 1px,
-          #000000 2px
-        ) !important;
-    }
-    
-    /* Make separate bars for rivals visible with alternating background */
-    body.retro .rivalry-item:nth-child(odd) {
-      background: #002200 !important;
-      border: 1px solid #003300 !important;
-    }
-    body.retro .rivalry-item:nth-child(even) {
-      background: #001100 !important;
-      border: 1px solid #003300 !important;
     }
     
     /* Darker/brighter green for better readability on specific elements */
@@ -522,7 +521,7 @@
         </div>
         
         <p id="retroQuote" class="mt-4 text-xs italic text-gray-400" style="display:none;">
-          "I am in doubt whether to pronounce you man or god,<br>But I think rather you are a god, Lycurgus."
+          "I am in doubt whether to pronounce you man or god,<br>but I think rather you are a god, Lycurgus."
         </p>
       </div>
       
@@ -1241,19 +1240,19 @@
     async function scanTop50Websites() {
       const TOP_50_URLS = [
         'https://www.google.com', 'https://www.youtube.com', 'https://www.facebook.com',
-        'https://www.x.com', 'https://www.instagram.com', 'https://www.linkedin.com',
+        'https://twitter.com', 'https://www.instagram.com', 'https://www.linkedin.com',
         'https://www.reddit.com', 'https://www.wikipedia.org', 'https://www.amazon.com',
         'https://www.netflix.com', 'https://www.yahoo.com', 'https://www.ebay.com',
         'https://www.microsoft.com', 'https://www.apple.com', 'https://www.pinterest.com',
-        'https://www.github.com', 'https://stackoverflow.com', 'https://www.twitch.tv',
-        'https://www.wordpress.com', 'https://www.paypal.com', 'https://www.bbc.com',
+        'https://github.com', 'https://www.stackoverflow.com', 'https://www.twitch.tv',
+        'https://wordpress.com', 'https://www.paypal.com', 'https://www.bbc.com',
         'https://www.cnn.com', 'https://www.nytimes.com', 'https://www.espn.com',
-        'https://www.imdb.com', 'https://www.quora.com', 'https://www.medium.com',
+        'https://www.imdb.com', 'https://www.quora.com', 'https://medium.com',
         'https://www.tumblr.com', 'https://www.shopify.com', 'https://www.etsy.com',
         'https://www.target.com', 'https://www.walmart.com', 'https://www.bestbuy.com',
         'https://www.homedepot.com', 'https://www.ikea.com', 'https://www.spotify.com',
-        'https://www.soundcloud.com', 'https://www.vimeo.com', 'https://www.dropbox.com',
-        'https://www.zoom.us', 'https://www.salesforce.com', 'https://www.adobe.com',
+        'https://soundcloud.com', 'https://vimeo.com', 'https://www.dropbox.com',
+        'https://zoom.us', 'https://www.salesforce.com', 'https://www.adobe.com',
         'https://www.oracle.com', 'https://www.ibm.com', 'https://www.cloudflare.com',
         'https://www.airbnb.com', 'https://www.booking.com', 'https://www.tripadvisor.com',
         'https://www.uber.com', 'https://www.tiktok.com'
@@ -1294,15 +1293,19 @@
               
               if (response.ok) {
                 const data = await response.json();
-                setCachedScan(url, data);
-                completed++;
-                progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
-                return { url, pscore: data.pscore };
+                if (data && data.pscore !== undefined) {
+                  setCachedScan(url, data);
+                  completed++;
+                  progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
+                  return { url, pscore: data.pscore };
+                }
+              } else {
+                console.error(`Failed ${url}: HTTP ${response.status}`);
               }
             } catch (error) {
-              console.error(`Failed: ${url}`);
-              return null;
+              console.error(`Failed ${url}:`, error.message);
             }
+            return null;
           });
           
           const batchResults = await Promise.all(batchPromises);
