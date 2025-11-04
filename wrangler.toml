@@ -1,0 +1,23 @@
+# wrangler.toml
+# Cloudflare Workers configuration for Pythia Top 50 automated scanning
+
+name = "pythia-top50"
+compatibility_date = "2024-01-01"
+
+# KV Namespace binding for storing Top 50 results and history
+[[kv_namespaces]]
+binding = "PYTHIA_TOP50_KV"
+id = "YOUR_KV_NAMESPACE_ID_HERE"  # ⚠️ Replace with your actual KV namespace ID
+
+# Cron triggers - Run daily at 12:01 AM Pacific Time (8:01 AM UTC)
+[triggers]
+crons = ["1 8 * * *"]  # 8:01 AM UTC = 12:01 AM PT (PST/PDT adjusted)
+
+# Routes configuration
+[[routes]]
+pattern = "pythia.pages.dev/api/top50"
+zone_name = "pythia.pages.dev"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
