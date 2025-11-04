@@ -1,14 +1,24 @@
 name = "pythia"
 compatibility_date = "2025-11-04"
 
+# KV Namespace (auto-bound to Pages + Workers)
 [[kv_namespaces]]
 binding = "PYTHIA_TOP50_KV"
-id = "REPLACE_WITH_YOUR_KV_ID"
+id = "6561d92e53c2470296e0ec367a44fa51"
 
-[[env.production.workers]]
+# Workers (cron jobs)
+[[workers]]
 name = "pythia-top50-cron"
 main = "workers/top50-scheduler.js"
 
-[[env.production.workers]]
+[[workers.kv_namespaces]]
+binding = "PYTHIA_TOP50_KV"
+id = "6561d92e53c2470296e0ec367a44fa51"
+
+[[workers]]
 name = "pythia-enterprise-daily"
 main = "workers/enterprise-daily-scanner.js"
+
+[[workers.kv_namespaces]]
+binding = "PYTHIA_TOP50_KV"
+id = "6561d92e53c2470296e0ec367a44fa51"
