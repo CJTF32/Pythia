@@ -1,42 +1,229 @@
-# Pythia - Website Performance Analyzer
+# Pythia™ - Website Performance Oracle
 
-A comprehensive website analysis tool that provides 10 specialized metrics plus a unified P-Score.
+**One Score to Rank Them All**
 
-## Metrics
+Pythia™ is the ultimate website performance analysis tool that evaluates websites across 10 critical dimensions and delivers a unified P-Score from 0-100.
 
-1. **Karpov Speed** (25% weight) - Page load performance
-2. **Vortex Access** (15% weight) - Accessibility score
-3. **Nova Scale** (12% weight) - Infrastructure & CDN
-4. **Aether Tech** (10% weight) - Modern web technologies
-5. **Pulse SEO** (10% weight) - Search & social optimization
-6. **Eden Efficiency** (8% weight) - Page weight & resource efficiency
-7. **Helix Privacy** (8% weight) - Security headers & tracking
-8. **Echo Green** (7% weight) - Sustainable hosting
-9. **Quantum Quality** (3% weight) - Code best practices
-10. **Nexus Mobile** (2% weight) - Mobile responsiveness
+## 🎨 New Features - November 2025
 
-## P-Score
+### Appearance Enhancements
 
-Unified performance score (0-100) combining all metrics with intelligent weighting based on real-world priorities.
+#### Retro Theme
+- ✅ **TM Symbol**: Added ™ to Pythia everywhere
+- ✅ **Retro Loading Spinner**: Custom animated spinner during scans
+- ✅ **P-Score Labeling**: All scores labeled as "P-Score: XX"
+- ✅ **CRT Effects**: 
+  - Scanline overlay animation
+  - Flicker effect for authentic CRT feel
+  - Curved distortion filter
+- ✅ **Typing Animation**: Headers use typewriter effect
+- ✅ **Boot Sequence**: Fake terminal initialization on first retro load
+- ✅ **Sound Toggle**: Retro beeps/clicks for interactions
+- ✅ **Collapsible Details**: Expand/collapse scan details
+- ✅ **ASCII Art Dividers**: `═══ ⚡ ORACLE REPORT ⚡ ═══` in reports
+- ✅ **Summon Mode**: Secret Konami code (↑↑↓↓←→←→BA) activates purple theme
 
-## Deploy to Vercel via GitHub
+#### General UI
+- ✅ **Pythia Description**: Historical context about the Delphic Oracle
+- ✅ **Retro/Boring Toggle**: Switch between retro and modern themes
+- ✅ **Visit Counter**: Bottom-right visitor count display
 
-1. Create new GitHub repository
-2. Add all files (api/scan.js, index.html, package.json, vercel.json, .gitignore)
-3. Push to GitHub
-4. Go to vercel.com/new
-5. Import your GitHub repository
-6. Deploy (Vercel auto-detects everything)
+### Functionality
 
-No terminal commands required!
+#### Core Features
+- ✅ **Auto-HTTPS**: Automatically adds `https://` to URLs
+- ✅ **Try Demo URL**: Random top 50 site for testing
+- ✅ **Consult Pythia**: AI-powered witty prophecies about websites
+- ✅ **Enter Key Support**: Press Enter to trigger analysis
+- ✅ **Top 5 & Bottom 5**: Shows best and worst of top 50
 
-## Local Development
+#### Badges & Sharing
+- ✅ **Downloadable Badges**: Generate custom badges with:
+  - P-Score comparison vs top 50 sites
+  - "Better than X" messaging
+  - Pythia™ branding
+  - Export as PNG (coming soon)
+- ✅ **Open Graph Tags**: Rich social media previews with "Scanned by Pythia™ 🔮"
+- ✅ **Share Buttons**: Twitter, Facebook, WhatsApp, Email
 
-If you want to test locally:
+#### Workers & Automation
+- ✅ **Top 50 Cron Worker**: Daily scans with 5-day running averages
+- ✅ **Enterprise Daily Worker**: Scans 1000 random enterprise sites, picks winner
+- ✅ **Visit Counter Worker**: Tracks total site visitors
+
+### Legal & Compliance
+
+#### Rate Limiting
+- ✅ **25 scans/hour per IP**: Prevents abuse
+- ✅ **Cloudflare KV storage**: Tracks rate limits with 1-hour TTL
+
+#### Robots.txt Compliance
+- ✅ **Respects robots.txt**: Checks for PythiaBot blocking
+- ✅ **User-Agent**: Proper identification as `PythiaBot/1.0 (+https://p-score.me)`
+- ✅ **Rotating User Agents**: Two variants for stealth
+
+#### Legal Pages
+- ✅ **Terms of Service**: Clear disclaimer about automated scores
+- ✅ **Privacy Policy**: GDPR-compliant, no PII collection
+- ✅ **Dispute Process**: Email contacts for appeals
+- ✅ **Accessibility Statement**: WCAG 2.1 Level AA commitment
+- ✅ **Copyright Notice**: © 2025 Cronix Holdings (Pty) Ltd, South Africa
+- ✅ **Footer Credits**: "Made by Cronix" branding
+
+## 📊 The 10 Metrics
+
+Each metric is weighted equally (10%) in the final P-Score:
+
+1. **⚡ KARPOV** - Speed & Performance
+2. **♿ VORTEX** - Accessibility
+3. **📱 PULSE** - Social & SEO Optimization
+4. **🔒 HELIX** - Privacy & Security
+5. **📱 NEXUS** - Mobile Responsiveness
+6. **🌱 ECHO** - Green Hosting & Sustainability
+7. **🌐 NOVA** - Scalability & Infrastructure
+8. **✨ QUANTUM** - Best Practices & Code Quality
+9. **🚀 AETHER** - Modern Tech & Future-Readiness
+10. **📊 EDEN** - Efficiency & Page Weight
+
+## 🚀 Deployment
+
+### Prerequisites
+- Cloudflare account
+- Wrangler CLI: `npm install -g wrangler`
+- KV namespace created
+
+### Setup Steps
+
+#### 1. Create KV Namespace
+```bash
+wrangler kv:namespace create "PYTHIA_TOP50_KV"
 ```
-npm install -g vercel
-vercel dev
+
+Note the ID and update all wrangler.toml files.
+
+#### 2. Deploy Pages Site
+```bash
+# From project root
+wrangler pages deploy . --project-name=pythia
 ```
 
-But for production, just use GitHub → Vercel dashboard deployment.
-*/
+#### 3. Deploy Workers
+
+**Top 50 Cron Worker:**
+```bash
+cd workers
+wrangler deploy --config top50-wrangler.toml
+# Add cron trigger in Cloudflare dashboard: 0 8 * * * (8:01 AM UTC / 12:01 AM PT)
+```
+
+**Enterprise Daily Worker:**
+```bash
+wrangler deploy --config enterprise-wrangler.toml
+# Add cron trigger: 0 8 * * * (same time as Top 50)
+```
+
+**Visit Counter Worker:**
+```bash
+wrangler deploy --config visit-counter-wrangler.toml
+# Bind to route: /api/visits
+```
+
+#### 4. Configure DNS
+Point your domain (e.g., p-score.me) to your Cloudflare Pages deployment.
+
+#### 5. Test
+
+Visit your site and try:
+- Scanning a website
+- Triggering battles
+- Checking top 50 rankings
+- Toggling retro mode
+- Konami code (↑↑↓↓←→←→BA)
+
+## 🔧 Configuration
+
+### Environment Variables
+Set in Cloudflare Pages dashboard:
+- `PYTHIA_TOP50_KV`: Your KV namespace binding
+
+### Rate Limits
+Adjust in `scan.js`:
+```javascript
+const RATE_LIMIT = 25; // scans per hour per IP
+```
+
+### Cron Schedule
+Edit in Cloudflare dashboard Workers section:
+- Top 50: `0 8 * * *` (daily at 8:01 AM UTC)
+- Enterprise: `0 8 * * *` (daily at 8:01 AM UTC)
+
+## 📁 File Structure
+
+```
+pythia/
+├── index.html              # Main UI (all features included)
+├── functions/
+│   └── api/
+│       ├── scan.js         # Main scanning API (rate limited, legal)
+│       ├── top50.js        # Top 50 rankings API
+│       ├── top5.js         # Top 5 subset API
+│       └── enterprise-daily.js  # Enterprise winner API
+├── workers/
+│   ├── top50-scheduler.js  # Cron worker for top 50
+│   ├── enterprise-daily-scanner.js  # Cron worker for enterprise
+│   └── visit-counter.js    # Visit tracking
+└── *.toml files            # Wrangler configs
+```
+
+## 🎮 Easter Eggs
+
+### Konami Code - Summon Mode
+Type: `↑ ↑ ↓ ↓ ← → ← → B A`
+
+Activates a secret purple/magenta color scheme!
+
+### Consult Pythia
+Click the "🔮 Consult" button for witty AI-powered prophecies about websites.
+
+## ⚖️ Legal Compliance
+
+### API Usage
+- Respects Google PageSpeed API ToS
+- Rate limited to 25 queries/hour per IP
+- Proper User-Agent identification
+- Caching layer (Cloudflare KV)
+
+### Web Scraping
+- Respects robots.txt directives
+- Rotates user agents
+- Limits to 50 scans/hour globally
+- Batches requests (5 per batch)
+
+### Privacy
+- No PII collected
+- GDPR compliant (legitimate interest basis)
+- Public data only
+- Opt-out via robots.txt
+
+### Accessibility
+- WCAG 2.1 Level AA target
+- Keyboard navigation
+- Screen reader support
+- Color contrast tested
+
+## 📧 Contact
+
+- **General**: legal@p-score.me
+- **Disputes**: dispute@p-score.me
+- **Privacy**: privacy@p-score.me
+- **Accessibility**: accessibility@p-score.me
+
+## 📜 License
+
+© 2025 Cronix Holdings (Pty) Ltd, South Africa
+
+Pythia™ is a trademark of Cronix Holdings.
+
+---
+
+**Made by Cronix** 🔮
