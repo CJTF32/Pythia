@@ -6,5 +6,6 @@ compatibility_date = "2025-11-05"
 binding = "PYTHIA_TOP50_KV"
 id = "6561d92e53c2470296e0ec367a44fa51"
 
-[triggers]
-routes = ["p-score.me/api/visits"]
+[[routes]]
+pattern = "p-score.me/api/visits"
+custom_domain = true
