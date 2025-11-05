@@ -1,0 +1,7 @@
+name = "pythia-visit-counter"
+main = "visit-counter.js"
+compatibility_date = "2025-11-04"
+
+[[kv_namespaces]]
+binding = "PYTHIA_TOP50_KV"
+id = "6561d92e53c2470296e0ec367a44fa51"
