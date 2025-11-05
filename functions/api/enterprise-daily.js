@@ -1,5 +1,5 @@
 // functions/api/enterprise-daily.js
-// Updated Pythia API for Enterprise Daily best performer + last 2 days' winners (reads KV)
+// Cloudflare Function for daily random enterprise website showcase
 
 export async function onRequest(context) {
   const corsHeaders = {
@@ -21,12 +21,12 @@ export async function onRequest(context) {
   }
 
   try {
-    const KV = context.env.PYTHIA_TOP50_KV;
+    const KV = context.env.PYTHIA_TOP50_KV; // Reuse same KV namespace
     const today = new Date().toISOString().split('T')[0];
-    const cacheKey = `enterprise_${today}`;
+    const cacheKey = `enterprise_daily_${today}`;
     
-    // Try cached today's full response
-    let cached = await KV.get(cacheKey, 'json');
+    // Check if we have today's winner already cached
+    const cached = await KV.get(cacheKey, 'json');
     if (cached) {
       return new Response(JSON.stringify(cached), {
         status: 200,
@@ -34,61 +34,13 @@ export async function onRequest(context) {
       });
     }
     
-    // Fetch current winner
-    const latest = await KV.get('latest-enterprise', 'json');
-    if (!latest) {
-      return new Response(JSON.stringify({
-        error: true,
-        message: 'No enterprise daily data available yet. Daily scan runs at 12:01 AM PT.'
-      }), {
-        status: 503,
-        headers: corsHeaders
-      });
-    }
-    
-    const current = {
-      website: latest.bestUrl,
-      pscore: latest.pscore,
-      date: latest.scanDate
-    };
-    
-    // Fetch last 2 days' winners (calculate dates)
-    const previous = [];
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const dayBefore = new Date(yesterday);
-    dayBefore.setDate(dayBefore.getDate() - 1);
-    
-    const dates = [
-      yesterday.toISOString().split('T')[0],
-      dayBefore.toISOString().split('T')[0]
-    ];
-    
-    for (const date of dates) {
-      const dateKey = `enterprise-${date}`;
-      const data = await KV.get(dateKey, 'json');
-      if (data) {
-        previous.push({
-          website: data.bestUrl,
-          pscore: data.pscore,
-          date: data.scanDate
-        });
-      }
-    }
-    
-    const responseData = {
-      timestamp: Date.now(),
-      current,
-      previous  // Array of 0-2 winners
-    };
-    
-    // Cache full response for today
-    await KV.put(cacheKey, JSON.stringify(responseData), {
-      expirationTtl: 60 * 60 * 24  // 1 day
-    });
-    
-    return new Response(JSON.stringify(responseData), {
-      status: 200,
+    // If not cached, return message that scan is in progress or pending
+    return new Response(JSON.stringify({
+      error: true,
+      message: 'Daily enterprise scan runs at 12:01 AM PT. Check back tomorrow for today\'s top performer!',
+      nextScan: '12:01 AM PT (8:01 AM UTC)'
+    }), {
+      status: 503,
       headers: corsHeaders
     });
     
