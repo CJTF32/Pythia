@@ -220,6 +220,13 @@ Click the "🔮 Consult" button for witty AI-powered prophecies about websites.
 
 ## 📜 License
 
+## Compliance Notes
+- Google PageSpeed: Custom heuristics (no API calls); monitor for updates.
+- Scraping: Batched 5/site, robots.txt respected, ?ref=pythia added.
+- GDPR: Legitimate interest; opt-out via robots.txt; no PII.
+- Accessibility: WCAG 2.1 AA; WAVE validated.
+- Disputes: Email dispute@p-score.me.
+
 © 2025 Cronix Holdings (Pty) Ltd, South Africa
 
 Pythia™ is a trademark of Cronix Holdings.
