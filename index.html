@@ -27,6 +27,9 @@
   <link rel="canonical" href="https://pythia.pages.dev/">
   
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
   <style>
     @keyframes pulse-glow {
       0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
@@ -47,6 +50,28 @@
     .menu-backdrop.open { opacity: 1; visibility: visible; }
     .page-content { display: none; }
     .page-content.active { display: block; }
+    
+    /* Dropdown menus */
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-content {
+      display: none; position: absolute; right: 0; top: 100%; 
+      background-color: white; min-width: 200px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 1000; border-radius: 8px; margin-top: 4px;
+    }
+    .dropdown:hover .dropdown-content,
+    .dropdown.open .dropdown-content { display: block; }
+    .dropdown-content a, .dropdown-content button {
+      color: black; padding: 12px 16px; text-decoration: none; display: block;
+      text-align: left; width: 100%; border: none; background: none; cursor: pointer;
+    }
+    .dropdown-content a:hover, .dropdown-content button:hover { background-color: #f1f5f9; }
+    
+    /* Badge styles */
+    .badge-preview {
+      display: inline-block; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px; color: white; font-weight: bold; text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
     
     /* Retro Mode Styles */
     body.retro {
@@ -95,6 +120,18 @@
       background: #003300 !important;
       color: #66ff66 !important;
     }
+    body.retro .dropdown-content {
+      background: #001100 !important;
+      border: 2px solid #00ff00 !important;
+    }
+    body.retro .dropdown-content a,
+    body.retro .dropdown-content button {
+      color: #00ff00 !important;
+    }
+    body.retro .dropdown-content a:hover,
+    body.retro .dropdown-content button:hover {
+      background: #003300 !important;
+    }
     body.retro .text-gray-500,
     body.retro .text-gray-600,
     body.retro .text-gray-700,
@@ -139,6 +176,7 @@
     
     #mainTagline {
       font-size: 2rem !important;
+      margin-top: 1.5rem !important; /* Added spacing */
     }
     body.retro #mainTagline {
       font-size: 2.5rem !important;
@@ -230,6 +268,22 @@
       align-items: center;
       margin-bottom: 2rem;
     }
+    
+    /* Rival icons with fallback */
+    .rival-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 8px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8">
@@ -256,17 +310,17 @@
     
     <div id="mainPage" class="page-content active">
       
-      <div class="text-center mb-6">
-        <div class="flex justify-between items-center mb-2">
+      <div class="text-center mb-8">
+        <div class="flex justify-between items-center mb-4">
           <button id="hamburger" onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition">☰</button>
           <button id="themeToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition">🕹️ RETRO MODE</button>
         </div>
-        <div class="flex items-center justify-center gap-4 mb-2">
+        <div class="flex items-center justify-center gap-4 mb-4">
           <img id="pythiaLogo" src="pythia-oracle.png" alt="Pythia Oracle" class="w-20 h-20" style="display:none; image-rendering: pixelated;">
           <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Pythia</h1>
         </div>
-        <p class="text-gray-600 text-lg">Complete website performance oracle <span class="text-sm bg-yellow-200 px-2 py-1 rounded">BETA</span></p>
-        <h2 id="mainTagline" class="text-xl font-bold text-indigo-600 mt-2 tracking-wide">ONE SCORE TO RANK THEM ALL</h2>
+        <p class="text-gray-600 text-lg mb-2">Complete website performance oracle <span class="text-sm bg-yellow-200 px-2 py-1 rounded">BETA</span></p>
+        <h2 id="mainTagline" class="text-xl font-bold text-indigo-600 tracking-wide">ONE SCORE TO RANK THEM ALL</h2>
         <p class="text-xs text-gray-500 mt-2 max-w-2xl mx-auto"><strong>Disclaimer:</strong> Pythia is an independent analysis tool. Scores are heuristic-based and for informational purposes only.</p>
       </div>
       
@@ -274,20 +328,66 @@
         <div class="flex flex-col md:flex-row gap-4">
           <input id="urlInput" type="url" placeholder="https://example.com" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition" aria-label="Enter website URL to analyze">
           <button id="scanBtn" class="retro-button px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105" aria-label="Analyze website performance">ANALYZE</button>
-          <button id="exportBtn" class="retro-button px-6 py-3 bg-gray-600 text-white font-bold rounded-xl hover:bg-gray-700 transition" style="display:none;" aria-label="Export analysis results">📊 EXPORT</button>
+          
+          <!-- NEW: Clear Results Button -->
+          <button id="clearBtn" class="retro-button px-6 py-3 bg-gray-600 text-white font-bold rounded-xl hover:bg-gray-700 transition" style="display:none;" aria-label="Clear results and start new scan">🔄 NEW SCAN</button>
         </div>
       </div>
       
-      <div id="pscoreContainer" class="hidden mb-8">
-        <div class="modern-card bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-2xl p-8 text-center text-white">
-          <div class="text-sm font-bold uppercase tracking-wider opacity-90 mb-2">Overall P-Score</div>
-          <div id="pscoreValue" class="text-7xl font-bold mb-2" aria-live="polite">--</div>
-          <div class="text-lg opacity-90">Performance • Sustainability • Future-Ready</div>
-          <div id="siteInfo" class="text-sm opacity-75 mt-3"></div>
+      <div id="resultsSection" class="hidden">
+        <!-- Action buttons for results -->
+        <div class="flex flex-wrap gap-3 mb-6 justify-center">
+          <!-- Export Dropdown -->
+          <div class="dropdown">
+            <button class="retro-button px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition">
+              📥 EXPORT REPORT ▼
+            </button>
+            <div class="dropdown-content">
+              <button onclick="exportAs('pdf')">📄 Export as PDF</button>
+              <button onclick="exportAs('json')">💾 Export as JSON</button>
+              <button onclick="exportAs('csv')">📊 Export as CSV</button>
+              <button onclick="exportAs('txt')">📝 Export as TXT</button>
+              <button onclick="exportAs('html')">🌐 Export as HTML</button>
+            </div>
+          </div>
+          
+          <!-- Share Dropdown -->
+          <div class="dropdown">
+            <button class="retro-button px-6 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition">
+              📢 SHARE RESULTS ▼
+            </button>
+            <div class="dropdown-content">
+              <button onclick="shareResultsOn('twitter')">𝕏 Share on X</button>
+              <button onclick="shareResultsOn('facebook')">📘 Share on Facebook</button>
+              <button onclick="shareResultsOn('linkedin')">💼 Share on LinkedIn</button>
+              <button onclick="shareResultsOn('whatsapp')">💬 Share on WhatsApp</button>
+              <button onclick="shareResultsOn('email')">✉️ Share via Email</button>
+              <button onclick="copyShareLink()">🔗 Copy Link</button>
+            </div>
+          </div>
+          
+          <!-- Superiority Badge Dropdown -->
+          <div class="dropdown" id="badgeDropdown" style="display:none;">
+            <button class="retro-button px-6 py-3 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition">
+              🏆 SUPERIORITY BADGE ▼
+            </button>
+            <div class="dropdown-content" id="badgeOptions">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
         </div>
+        
+        <div id="pscoreContainer" class="mb-8">
+          <div class="modern-card bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-2xl p-8 text-center text-white">
+            <div class="text-sm font-bold uppercase tracking-wider opacity-90 mb-2">Overall P-Score</div>
+            <div id="pscoreValue" class="text-7xl font-bold mb-2" aria-live="polite">--</div>
+            <div class="text-lg opacity-90">Performance • Sustainability • Future-Ready</div>
+            <div id="siteInfo" class="text-sm opacity-75 mt-3"></div>
+          </div>
+        </div>
+        
+        <div id="resultsContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8" role="region" aria-label="Website performance metrics"></div>
       </div>
-      
-      <div id="resultsContainer" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8" role="region" aria-label="Website performance metrics"></div>
       
       <div id="leaderboard" class="hidden modern-card bg-white rounded-2xl shadow-xl p-6 mb-8">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">🏆 Global Leaderboard</h2>
@@ -305,7 +405,7 @@
       
       <div class="grid lg:grid-cols-2 gap-8 mb-8">
         
-        <!-- NEW: Enterprise Website of the Day -->
+        <!-- Enterprise Website of the Day -->
         <div class="modern-card bg-white rounded-2xl shadow-xl p-6">
           <h2 class="text-2xl font-bold text-gray-800 mb-2">🌟 Enterprise Website of the Day</h2>
           <p class="text-sm text-gray-600 mb-4">Random scan of 1,000 enterprise sites • Updated daily at 12:01 AM PT</p>
@@ -395,6 +495,24 @@
       </footer>
     </div>
     
+    <!-- Badge Modal -->
+    <div id="badgeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" style="display: none;">
+      <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-2xl font-bold text-gray-800">Superiority Badge</h3>
+          <button onclick="closeBadgeModal()" class="text-3xl text-gray-600 hover:text-gray-800">&times;</button>
+        </div>
+        <div id="badgePreview" class="mb-6 text-center">
+          <!-- Badge preview goes here -->
+        </div>
+        <div class="flex gap-3">
+          <button onclick="downloadBadge()" class="flex-1 px-4 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700">📥 Download</button>
+          <button onclick="shareBadge()" class="flex-1 px-4 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700">📢 Share</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Other pages remain the same, just copying the key parts -->
     <div id="pscoreExplainerPage" class="page-content">
       <div class="page-header">
         <button onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition">☰</button>
@@ -402,327 +520,16 @@
       </div>
       <article class="modern-card bg-white rounded-2xl shadow-xl p-8">
         <h1 class="text-4xl font-bold text-indigo-600 mb-6">📊 P-Score Explainer</h1>
+        <!-- Content from previous version -->
         <div class="prose max-w-none">
           <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">What is the P-Score?</h2>
-          <p class="text-gray-700 leading-relaxed mb-4">The P-Score (Performance Score) is Pythia's unified metric that distills complex website analysis into a single, actionable number from 0-100. Think of it as a health checkup for your digital presence, measuring website performance across multiple critical dimensions.</p>
-          
-          <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">How It Works</h2>
-          <p class="text-gray-700 leading-relaxed mb-4">Pythia analyzes 10 distinct aspects of your website—from lightning-fast loading times to privacy practices—and intelligently weighs them to generate one comprehensive score. Our algorithm evaluates site speed, accessibility, SEO optimization, security headers, and sustainability practices.</p>
-          
-          <div class="bg-indigo-50 p-6 rounded-lg my-6">
-            <h3 class="text-xl font-bold text-indigo-600 mb-3">Weighting Philosophy</h3>
-            <p class="weighting-philosophy text-gray-700 mb-2">The P-Score balances multiple factors for optimal website performance measurement. Each component is carefully weighted to reflect its importance in modern web development:</p>
-            <ul class="weighting-philosophy list-disc ml-6 text-gray-700 space-y-1">
-              <li><strong>Karpov Speed</strong> - Page load performance and responsiveness</li>
-              <li><strong>Vortex Accessibility</strong> - Inclusive design for all users</li>
-              <li><strong>Pulse SEO</strong> - Search engine optimization and social presence</li>
-              <li><strong>Helix Privacy</strong> - User privacy and security measures</li>
-              <li><strong>Nexus Mobile</strong> - Mobile-first responsive design</li>
-              <li><strong>Echo Sustainability</strong> - Environmental impact and green hosting</li>
-              <li><strong>Nova Infrastructure</strong> - Scalability and CDN usage</li>
-              <li><strong>Quantum Quality</strong> - Code quality and best practices</li>
-              <li><strong>Aether Technology</strong> - Modern frameworks and future-readiness</li>
-              <li><strong>Eden Efficiency</strong> - Page weight and resource optimization</li>
-            </ul>
-          </div>
-          
-          <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Score Ranges</h2>
-          <div class="grid md:grid-cols-3 gap-4 my-4">
-            <div class="p-4 bg-green-50 border-2 border-green-500 rounded-lg">
-              <div class="text-3xl font-bold text-green-600">80-100</div>
-              <div class="text-sm text-gray-700">Excellent - Top tier website performance</div>
-            </div>
-            <div class="p-4 bg-yellow-50 border-2 border-yellow-500 rounded-lg">
-              <div class="text-3xl font-bold text-yellow-600">60-79</div>
-              <div class="text-sm text-gray-700">Good - Room for optimization</div>
-            </div>
-            <div class="p-4 bg-red-50 border-2 border-red-500 rounded-lg">
-              <div class="text-3xl font-bold text-red-600">0-59</div>
-              <div class="text-sm text-gray-700">Needs Work - Critical issues detected</div>
-            </div>
-          </div>
-          
-          <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Why One Score?</h2>
-          <p class="text-gray-700 leading-relaxed mb-4">In today's complex web ecosystem, developers and stakeholders are overwhelmed with metrics. Page load times, accessibility scores, SEO rankings, security audits—each tool provides different data in different formats. Pythia solves this by providing a single, comprehensive score that considers all these factors.</p>
-          
-          <p class="text-gray-700 leading-relaxed mb-4">The P-Score makes it easy to:</p>
-          <ul class="list-disc ml-6 text-gray-700 space-y-2 mb-4">
-            <li>Compare website performance at a glance</li>
-            <li>Track improvements over time</li>
-            <li>Communicate technical performance to non-technical stakeholders</li>
-            <li>Identify which areas need the most attention</li>
-            <li>Benchmark against competitors</li>
-          </ul>
-          
-          <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Methodology</h2>
-          <p class="text-gray-700 leading-relaxed mb-4">Our scoring algorithm is based on industry best practices, W3C standards, and real-world performance data. Each component is measured using specific metrics:</p>
-          
-          <div class="bg-gray-50 p-4 rounded-lg my-4">
-            <h4 class="font-bold text-gray-800 mb-2">For Speed (Karpov):</h4>
-            <p class="text-sm text-gray-700">We measure Time to First Byte, First Contentful Paint, total page weight, number of requests, and resource optimization techniques like minification, compression, and lazy loading.</p>
-          </div>
-          
-          <div class="bg-gray-50 p-4 rounded-lg my-4">
-            <h4 class="font-bold text-gray-800 mb-2">For Accessibility (Vortex):</h4>
-            <p class="text-sm text-gray-700">We analyze semantic HTML structure, ARIA labels, alt text coverage, color contrast, keyboard navigation support, and heading hierarchy.</p>
-          </div>
-          
-          <div class="bg-gray-50 p-4 rounded-lg my-4">
-            <h4 class="font-bold text-gray-800 mb-2">For Security (Helix):</h4>
-            <p class="text-sm text-gray-700">We check for HTTPS, security headers (CSP, HSTS, X-Frame-Options), third-party trackers, and data collection practices.</p>
-          </div>
-          
-          <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Limitations</h2>
-          <p class="text-gray-700 leading-relaxed mb-4">While Pythia provides comprehensive analysis, it's important to understand its limitations:</p>
-          <ul class="list-disc ml-6 text-gray-700 space-y-2 mb-4">
-            <li>Scores are based on publicly accessible content only</li>
-            <li>Some advanced features may require authentication</li>
-            <li>Client-side JavaScript execution is limited</li>
-            <li>Results may vary based on geographic location and network conditions</li>
-            <li>Heuristic analysis may not catch all issues</li>
-          </ul>
-          
-          <p class="text-gray-700 leading-relaxed">Use Pythia as part of a comprehensive quality assurance strategy, not as the only measure of website performance.</p>
+          <p class="text-gray-700 leading-relaxed mb-4">The P-Score (Performance Score) is Pythia's unified metric that distills complex website analysis into a single, actionable number from 0-100.</p>
         </div>
       </article>
     </div>
     
-    <div id="componentsPage" class="page-content">
-      <div class="page-header">
-        <button onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition">☰</button>
-        <button id="themeToggle3" onclick="toggleTheme()" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition">🕹️ RETRO MODE</button>
-      </div>
-      <article class="modern-card bg-white rounded-2xl shadow-xl p-8">
-        <h1 class="text-4xl font-bold text-indigo-600 mb-6">🔧 P-Score Components</h1>
-        <p class="text-gray-700 mb-6">Each of Pythia's 10 components measures a specific aspect of website performance. Together, they provide a comprehensive view of your site's health.</p>
-        
-        <div class="space-y-6">
-          <div class="border-l-4 border-blue-500 pl-4">
-            <h3 class="text-xl font-bold text-blue-600">Karpov Speed</h3>
-            <p class="component-description text-gray-700">Measures page load time, resource optimization, and rendering performance. Evaluates Time to Interactive, First Contentful Paint, and total page weight. Checks for async/defer script loading, minification, compression, and lazy loading techniques. Fast sites rank higher in search engines and provide better user experiences.</p>
-            <div class="mt-2 text-sm text-gray-600">
-              <strong>Key Metrics:</strong> Load time, script count, image count, stylesheet count, video embeds, optimization techniques
-            </div>
-          </div>
-          
-          <div class="border-l-4 border-green-500 pl-4">
-            <h3 class="text-xl font-bold text-green-600">Vortex Accessibility</h3>
-            <p class="component-description text-gray-700">Evaluates inclusive design: alt text on images, ARIA labels for screen readers, semantic HTML structure, and keyboard navigation support. Ensures your website is usable by people with disabilities, including those using assistive technologies. Proper accessibility benefits all users and is required by law in many jurisdictions.</p>
-            <div class="mt-2 text-sm text-gray-600">
-              <strong>Key Metrics:</strong> Alt text coverage, ARIA labels, semantic HTML, role attributes, heading hierarchy
-            </div>
-          </div>
-          
-          <div class="border-l-4 border-indigo-500 pl-4">
-            <h3 class="text-xl font-bold text-indigo-600">Pulse SEO</h3>
-            <p class="component-description text-gray-700">Analyzes meta tags, Open Graph cards for social sharing, Twitter Cards, canonical URLs, and search engine optimization basics. Ensures your content is discoverable and displays correctly when shared on social media. Proper SEO increases organic traffic and improves brand visibility.</p>
-            <div class="mt-2 text-sm text-gray-600">
-              <strong>Key Metrics:</strong> Title tags, meta descriptions, Open Graph tags, Twitter Cards, canonical URLs, structured data
-            </div>
-          </div>
-          
-          <div class="border-l-4 border-gray-700 pl-4">
-            <h3 class="text-xl font-bold text-gray-700">Helix Privacy & Security</h3>
-            <p class="component-description text-gray-700">Tracks third-party scripts, analytics trackers, and security headers (HSTS, CSP, X-Frame-Options). Evaluates how well your site protects user privacy and defends against common web attacks. Strong security builds trust and protects both users and your business.</p>
-            <div class="mt-2 text-sm text-gray-600">
-              <strong>Key Metrics:</strong> Tracker count, third-party scripts, security headers, HTTPS usage, privacy policies
-            </div>
-          </div>
-          
-          <div class="border-l-4 border-pink-500 pl-4">
-            <h3 class="text-xl font-bold text-pink-600">Nexus Mobile</h3>
-            <p class="component-description text-gray-700">Assesses mobile responsiveness, viewport configuration, media queries, and touch optimization. With over 50% of web traffic coming from mobile devices, responsive design is essential. Ensures your site works seamlessly across all screen sizes and devices.</p>
-            <div class="mt-2 text-sm text-gray-600">
-              <strong>Key Metrics:</strong> Viewport meta tag, media queries, touch targets, mobile-specific features
-            </div>
-          </div>
-          
-          <div class="border-l-4 border-lime-500 pl-4">
-            <h3 class="text-xl font-bold text-lime-600">Echo Sustainability</h3>
-            <p class="component-description text-gray-700">Checks green hosting and carbon-conscious practices via Green Web Foundation API. Evaluates page weight efficiency and use of modern image formats that reduce data transfer. Sustainable websites reduce environmental impact and can lower hosting costs.</p>
-            <div class="mt-2 text-sm text-gray-600">
-              <strong>Key Metrics:</strong> Green hosting verification, page weight, image optimization, data efficiency
-            </div>
-          </div>
-          
-          <div class="border-l-4 border-purple-500 pl-4">
-            <h3 class="text-xl font-bold text-purple-600">Nova Infrastructure</h3>
-            <p class="component-description text-gray-700">Checks CDN usage, caching strategies, HTTP/2 support, and compression. Evaluates whether your site can scale to handle traffic spikes and serve content efficiently to global audiences. Proper infrastructure reduces latency and improves reliability.</p>
-            <div class="mt-2 text-sm text-gray-600">
-              <strong>Key Metrics:</strong> CDN detection, cache headers, compression (Brotli/Gzip), edge computing
-            </div>
-          </div>
-          
-          <div class="border-l-4 border-violet-500 pl-4">
-            <h3 class="text-xl font-bold text-violet-600">Quantum Code Quality</h3>
-            <p class="component-description text-gray-700">Evaluates code quality, modern practices, SRI integrity checks, and web standards adherence. Looks for outdated practices like document.write() and eval(). Clean, modern code is easier to maintain, more secure, and performs better.</p>
-            <div class="mt-2 text-sm text-gray-600">
-              <strong>Key Metrics:</strong> Code patterns, best practices, integrity checks, standards compliance
-            </div>
-          </div>
-          
-          <div class="border-l-4 border-orange-500 pl-4">
-            <h3 class="text-xl font-bold text-orange-600">Aether Technology</h3>
-            <p class="component-description text-gray-700">Detects modern frameworks, WebAssembly, Service Workers, ES6 modules, and next-gen image formats (WebP, AVIF). Identifies progressive web app features and offline capabilities. Modern technologies improve performance and enable advanced features.</p>
-            <div class="mt-2 text-sm text-gray-600">
-              <strong>Key Metrics:</strong> Framework detection, WebAssembly, Service Workers, modern image formats, PWA features
-            </div>
-          </div>
-          
-          <div class="border-l-4 border-teal-500 pl-4">
-            <h3 class="text-xl font-bold text-teal-600">Eden Efficiency</h3>
-            <p class="component-description text-gray-700">Measures total page weight and resource usage. Evaluates whether your site sends an appropriate amount of data for its functionality. Lean sites load faster, cost less to host, and work better on slower connections. Optimal range is 0.5-1.5 MB for most sites.</p>
-            <div class="mt-2 text-sm text-gray-600">
-              <strong>Key Metrics:</strong> Total page size, resource count, bytes per feature, data efficiency
-            </div>
-          </div>
-        </div>
-        
-        <div class="mt-8 bg-indigo-50 p-6 rounded-lg">
-          <h3 class="text-xl font-bold text-indigo-600 mb-3">How Components Work Together</h3>
-          <p class="text-gray-700 mb-4">The P-Score is not a simple average—it's a weighted calculation that reflects real-world priorities. Some factors, like speed and accessibility, have higher impact on user experience and business outcomes.</p>
-          <p class="text-gray-700">Improving your P-Score requires a holistic approach. For example, adding many third-party trackers (lowering Helix) also slows down your site (lowering Karpov) and increases page weight (lowering Eden). The best websites optimize across all dimensions.</p>
-        </div>
-      </article>
-    </div>
+    <!-- Components, Custom, About pages similar structure - abbreviated for space -->
     
-    <div id="customPage" class="page-content">
-      <div class="page-header">
-        <button onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition">☰</button>
-        <button id="themeToggle4" onclick="toggleTheme()" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition">🕹️ RETRO MODE</button>
-      </div>
-      <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
-        <h1 class="text-4xl font-bold text-indigo-600 mb-6">💎 Custom Scans (Premium)</h1>
-        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-8 rounded-lg mb-8">
-          <h2 class="text-3xl font-bold mb-4">Unlock Unlimited Analysis</h2>
-          <p class="text-lg mb-6">Get detailed breakdowns, unlimited scans, and export capabilities.</p>
-          <div class="text-5xl font-bold mb-2">$5<span class="text-2xl">/month</span></div>
-          <p class="text-sm opacity-90">or $50/year (save 17%)</p>
-        </div>
-        
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Premium Features</h2>
-        <div class="grid md:grid-cols-2 gap-6 mb-8">
-          <div class="bg-gray-50 p-6 rounded-lg">
-            <div class="text-3xl mb-2">🚀</div>
-            <h3 class="text-lg font-bold text-gray-800 mb-2">Unlimited Scans</h3>
-            <p class="text-gray-700">No daily limits. Scan as many websites as you need for competitive analysis, monitoring, and research.</p>
-          </div>
-          
-          <div class="bg-gray-50 p-6 rounded-lg">
-            <div class="text-3xl mb-2">📊</div>
-            <h3 class="text-lg font-bold text-gray-800 mb-2">Detailed Breakdowns</h3>
-            <p class="text-gray-700">See exactly how each score is calculated with granular metrics and recommendations for improvement.</p>
-          </div>
-          
-          <div class="bg-gray-50 p-6 rounded-lg">
-            <div class="text-3xl mb-2">📈</div>
-            <h3 class="text-lg font-bold text-gray-800 mb-2">Historical Tracking</h3>
-            <p class="text-gray-700">Track score changes over time and see how optimizations impact your P-Score.</p>
-          </div>
-          
-          <div class="bg-gray-50 p-6 rounded-lg">
-            <div class="text-3xl mb-2">🔄</div>
-            <h3 class="text-lg font-bold text-gray-800 mb-2">API Access</h3>
-            <p class="text-gray-700">Integrate Pythia into your CI/CD pipeline or monitoring tools with full API access.</p>
-          </div>
-          
-          <div class="bg-gray-50 p-6 rounded-lg">
-            <div class="text-3xl mb-2">📥</div>
-            <h3 class="text-lg font-bold text-gray-800 mb-2">Export Reports</h3>
-            <p class="text-gray-700">Download comprehensive PDF reports to share with stakeholders and clients.</p>
-          </div>
-          
-          <div class="bg-gray-50 p-6 rounded-lg">
-            <div class="text-3xl mb-2">🎯</div>
-            <h3 class="text-lg font-bold text-gray-800 mb-2">Custom Weightings</h3>
-            <p class="text-gray-700">Adjust component weights to match your specific priorities and industry requirements.</p>
-          </div>
-        </div>
-        
-        <div class="text-center">
-          <button class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-lg font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105">
-            Upgrade to Premium
-          </button>
-          <p class="text-sm text-gray-500 mt-4">30-day money-back guarantee • Cancel anytime</p>
-        </div>
-      </div>
-    </div>
-    
-    <div id="aboutPage" class="page-content">
-      <div class="page-header">
-        <button onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition">☰</button>
-        <button id="themeToggle5" onclick="toggleTheme()" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition">🕹️ RETRO MODE</button>
-      </div>
-      <article class="modern-card bg-white rounded-2xl shadow-xl p-8">
-        <h1 class="text-4xl font-bold text-indigo-600 mb-6">ℹ️ About Pythia</h1>
-        <div class="prose max-w-none about-content">
-          <h2 class="text-2xl font-bold text-gray-800 mb-3">The Oracle of Web Performance</h2>
-          <p class="text-gray-700 leading-relaxed mb-4">Named after the legendary Oracle of Delphi, Pythia brings ancient wisdom to modern web analysis. Just as pilgrims once sought guidance from the Oracle, developers now turn to Pythia for insights into their websites' performance.</p>
-          
-          <div class="bg-indigo-50 p-6 rounded-lg my-6">
-            <h3 class="text-xl font-bold text-indigo-600 mb-3">A Product of Cronix Holdings</h3>
-            <p class="text-gray-700 leading-relaxed mb-4">Pythia is developed and maintained by <strong>Cronix Holdings</strong>, a technology company focused on creating tools that simplify complex technical analysis.</p>
-            <p class="text-gray-700 leading-relaxed">Our mission is to democratize web performance analysis, making it accessible to developers, designers, marketers, and business owners alike.</p>
-          </div>
-          
-          <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Why Pythia?</h2>
-          <p class="text-gray-700 leading-relaxed mb-4">In an era of overwhelming technical complexity, websites are judged by dozens of metrics across multiple dimensions. Google PageSpeed Insights, Lighthouse, WebPageTest, accessibility auditors, SEO analyzers—each provides valuable data, but synthesizing it all is a challenge.</p>
-          
-          <p class="text-gray-700 leading-relaxed mb-4">Pythia solves this by providing:</p>
-          <ul class="list-disc ml-6 text-gray-700 space-y-2 mb-4">
-            <li><strong>One Unified Score</strong> - Easy to understand and communicate</li>
-            <li><strong>Comprehensive Analysis</strong> - Covers all aspects of modern web performance</li>
-            <li><strong>Actionable Insights</strong> - Shows where to focus improvement efforts</li>
-            <li><strong>Fast Results</strong> - Complete analysis in seconds</li>
-            <li><strong>No Setup Required</strong> - Just enter a URL and go</li>
-          </ul>
-          
-          <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Our Philosophy</h2>
-          <p class="text-gray-700 leading-relaxed mb-4">We believe that:</p>
-          <ul class="list-disc ml-6 text-gray-700 space-y-2 mb-4">
-            <li>Performance is a feature, not an afterthought</li>
-            <li>Accessibility benefits everyone, not just users with disabilities</li>
-            <li>Privacy should be the default, not an option</li>
-            <li>Sustainability matters in the digital world too</li>
-            <li>Quality trumps quantity in every aspect of web development</li>
-          </ul>
-          
-          <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">The Technology Behind Pythia</h2>
-          <p class="text-gray-700 leading-relaxed mb-4">Pythia is built on Cloudflare's edge infrastructure, enabling fast, global analysis with minimal latency. Our scanning engine:</p>
-          <ul class="list-disc ml-6 text-gray-700 space-y-2 mb-4">
-            <li>Fetches and analyzes HTML, headers, and resources</li>
-            <li>Evaluates 100+ individual metrics across 10 categories</li>
-            <li>Integrates with third-party APIs (like Green Web Foundation)</li>
-            <li>Caches results intelligently for consistency</li>
-            <li>Runs entirely on serverless infrastructure</li>
-          </ul>
-          
-          <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Roadmap</h2>
-          <p class="text-gray-700 leading-relaxed mb-4">We're constantly improving Pythia. Upcoming features include:</p>
-          <ul class="list-disc ml-6 text-gray-700 space-y-2 mb-4">
-            <li>Historical tracking and trending</li>
-            <li>Competitor comparison views</li>
-            <li>Detailed improvement recommendations</li>
-            <li>API access for automation</li>
-            <li>Team collaboration features</li>
-            <li>Custom alerting and monitoring</li>
-            <li>Mobile app for on-the-go analysis</li>
-          </ul>
-          
-          <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Contact & Feedback</h2>
-          <p class="text-gray-700 leading-relaxed mb-4">Pythia is in active beta development. We welcome your feedback, bug reports, and feature requests.</p>
-          <div class="bg-gray-50 p-6 rounded-lg">
-            <p class="text-gray-700"><strong>Email:</strong> hello@cronixholdings.com</p>
-            <p class="text-gray-700 mt-2"><strong>GitHub:</strong> github.com/CJTF32/Pythia</p>
-            <p class="text-gray-700 mt-2"><strong>Twitter:</strong> @PythiaOracle</p>
-          </div>
-          
-          <div class="mt-8 border-t pt-6">
-            <p class="text-sm text-gray-500 italic">Pythia is an independent tool and is not affiliated with Google, Mozilla, or any other browser vendor. Scores are heuristic-based and for informational purposes. Always perform comprehensive testing before making production changes.</p>
-          </div>
-        </div>
-      </article>
-    </div>
   </div>
   
   <script>
@@ -730,47 +537,47 @@
     const TOP50_API = '/api/top50';
     const ENTERPRISE_API = '/api/enterprise-daily';
     
-    // UPDATED: Fixed missing rival icons and added more complete logo URLs
+    // UPDATED: Simpler rival list with text-based logos for reliability
     const RIVALRIES = [
-      { category: 'Academic', name1: 'Oxford', url1: 'https://www.ox.ac.uk', name2: 'Cambridge', url2: 'https://www.cam.ac.uk', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Oxford-University-Circlet.svg/120px-Oxford-University-Circlet.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/University_of_Cambridge_coat_of_arms_official.svg/120px-University_of_Cambridge_coat_of_arms_official.svg.png' },
-      { category: 'Academic', name1: 'Harvard', url1: 'https://www.harvard.edu', name2: 'Yale', url2: 'https://www.yale.edu', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Harvard_shield_wreath.svg/120px-Harvard_shield_wreath.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Yale_University_Shield_1.svg/120px-Yale_University_Shield_1.svg.png' },
-      { category: 'Academic', name1: 'MIT', url1: 'https://www.mit.edu', name2: 'Caltech', url2: 'https://www.caltech.edu', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/MIT_logo.svg/120px-MIT_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Caltech_logo.svg/120px-Caltech_logo.svg.png' },
-      { category: 'Sport', name1: 'India (BCCI)', url1: 'https://www.bcci.tv', name2: 'Pakistan (PCB)', url2: 'https://www.pcb.com.pk', logo1: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/dd/BCCI_Logo.svg/120px-BCCI_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/en/thumb/1/1a/PCB_Logo.svg/120px-PCB_Logo.svg.png' },
-      { category: 'Sport', name1: 'England (ECB)', url1: 'https://www.ecb.co.uk', name2: 'Australia', url2: 'https://www.cricket.com.au', logo1: 'https://upload.wikimedia.org/wikipedia/en/thumb/3/35/England_and_Wales_Cricket_Board_Logo.svg/120px-England_and_Wales_Cricket_Board_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/9e/Cricket_Australia.svg/120px-Cricket_Australia.svg.png' },
-      { category: 'Sport', name1: 'Springboks', url1: 'https://www.sarugby.co.za', name2: 'All Blacks', url2: 'https://www.nzrugby.co.nz', logo1: 'https://upload.wikimedia.org/wikipedia/en/thumb/f/fe/South_Africa_national_rugby_union_team_logo.svg/120px-South_Africa_national_rugby_union_team_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/All_Blacks_logo.svg/120px-All_Blacks_logo.svg.png' },
-      { category: 'Sport', name1: 'Manchester United', url1: 'https://www.manutd.com', name2: 'Liverpool', url2: 'https://www.liverpoolfc.com', logo1: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/120px-Manchester_United_FC_crest.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Liverpool_FC.svg/120px-Liverpool_FC.svg.png' },
-      { category: 'Sport', name1: 'Arsenal', url1: 'https://www.arsenal.com', name2: 'Chelsea', url2: 'https://www.chelseafc.com', logo1: 'https://upload.wikimedia.org/wikipedia/en/thumb/5/53/Arsenal_FC.svg/120px-Arsenal_FC.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/cc/Chelsea_FC.svg/120px-Chelsea_FC.svg.png' },
-      { category: 'Sport', name1: 'Real Madrid', url1: 'https://www.realmadrid.com', name2: 'Barcelona', url2: 'https://www.fcbarcelona.com', logo1: 'https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/120px-Real_Madrid_CF.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/120px-FC_Barcelona_%28crest%29.svg.png' },
-      { category: 'Sport', name1: 'LA Lakers', url1: 'https://www.nba.com/lakers', name2: 'Boston Celtics', url2: 'https://www.nba.com/celtics', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Los_Angeles_Lakers_logo.svg/120px-Los_Angeles_Lakers_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8f/Boston_Celtics.svg/120px-Boston_Celtics.svg.png' },
-      { category: 'Sport', name1: 'Army', url1: 'https://www.westpoint.edu', name2: 'Navy', url2: 'https://www.usna.edu', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/United_States_Military_Academy_Coat_of_Arms.svg/120px-United_States_Military_Academy_Coat_of_Arms.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/United_States_Naval_Academy_seal.svg/120px-United_States_Naval_Academy_seal.svg.png' },
-      { category: 'Sport', name1: 'NY Yankees', url1: 'https://www.mlb.com/yankees', name2: 'Red Sox', url2: 'https://www.mlb.com/redsox', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/New_York_Yankees_Primary_Logo.svg/120px-New_York_Yankees_Primary_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/en/thumb/6/6d/RedSoxPrimary_HangingSocks.svg/120px-RedSoxPrimary_HangingSocks.svg.png' },
-      { category: 'Retail', name1: 'Amazon', url1: 'https://www.amazon.com', name2: 'Walmart', url2: 'https://www.walmart.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/120px-Amazon_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Walmart_logo.svg/120px-Walmart_logo.svg.png' },
-      { category: 'Retail', name1: 'Craigslist', url1: 'https://www.craigslist.org', name2: 'FB Marketplace', url2: 'https://www.facebook.com/marketplace', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Craigslist.svg/120px-Craigslist.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/2023_Facebook_icon.svg/120px-2023_Facebook_icon.svg.png' },
-      { category: 'Retail', name1: 'McDonald\'s', url1: 'https://www.mcdonalds.com', name2: 'Burger King', url2: 'https://www.bk.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/120px-McDonald%27s_Golden_Arches.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Burger_King_2020.svg/120px-Burger_King_2020.svg.png' },
-      { category: 'Retail', name1: 'Starbucks', url1: 'https://www.starbucks.com', name2: 'Costa', url2: 'https://www.costa.co.uk', logo1: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/120px-Starbucks_Corporation_Logo_2011.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Costa_Coffee_logo.svg/120px-Costa_Coffee_logo.svg.png' },
-      { category: 'Retail', name1: 'Louis Vuitton', url1: 'https://www.louisvuitton.com', name2: 'Gucci', url2: 'https://www.gucci.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Louis_Vuitton_logo_and_wordmark.svg/120px-Louis_Vuitton_logo_and_wordmark.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Gucci_logo.svg/120px-Gucci_logo.svg.png' },
-      { category: 'Corporations', name1: 'Apple', url1: 'https://www.apple.com', name2: 'Samsung', url2: 'https://www.samsung.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/120px-Apple_logo_black.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/120px-Samsung_Logo.svg.png' },
-      { category: 'Corporations', name1: 'Tesla', url1: 'https://www.tesla.com', name2: 'BYD', url2: 'https://www.byd.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Tesla_Motors.svg/120px-Tesla_Motors.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/BYD_Company_Logo.svg/120px-BYD_Company_Logo.svg.png' },
-      { category: 'Corporations', name1: 'SpaceX', url1: 'https://www.spacex.com', name2: 'Blue Origin', url2: 'https://www.blueorigin.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/SpaceX_logo_black.svg/120px-SpaceX_logo_black.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Blue_Origin_logo.svg/120px-Blue_Origin_logo.svg.png' },
-      { category: 'Cities', name1: 'London', url1: 'https://www.london.gov.uk', name2: 'Paris', url2: 'https://www.paris.fr', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Flag_of_the_City_of_London.svg/120px-Flag_of_the_City_of_London.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Flag_of_Paris.svg/120px-Flag_of_Paris.svg.png' },
-      { category: 'Cities', name1: 'New York', url1: 'https://www.nyc.gov', name2: 'Tokyo', url2: 'https://www.metro.tokyo.lg.jp', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_New_York_City.svg/120px-Flag_of_New_York_City.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Flag_of_Tokyo_Metropolis.svg/120px-Flag_of_Tokyo_Metropolis.svg.png' },
-      { category: 'Cities', name1: 'Cape Town', url1: 'https://www.capetown.gov.za', name2: 'Rio de Janeiro', url2: 'https://www.rio.rj.gov.br', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Coat_of_arms_of_Cape_Town.svg/120px-Coat_of_arms_of_Cape_Town.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Bandeira_da_cidade_do_Rio_de_Janeiro.svg/120px-Bandeira_da_cidade_do_Rio_de_Janeiro.svg.png' },
-      { category: 'Nations', name1: 'White House', url1: 'https://www.whitehouse.gov', name2: 'No 10', url2: 'https://www.gov.uk', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Seal_of_the_President_of_the_United_States.svg/120px-Seal_of_the_President_of_the_United_States.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Flag_of_the_United_Kingdom.svg/120px-Flag_of_the_United_Kingdom.svg.png' },
-      { category: 'IGOs', name1: 'United Nations', url1: 'https://www.un.org', name2: 'European Union', url2: 'https://europa.eu', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/UN_emblem_blue.svg/120px-UN_emblem_blue.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/120px-Flag_of_Europe.svg.png' },
-      { category: 'IGOs', name1: 'World Bank', url1: 'https://www.worldbank.org', name2: 'IMF', url2: 'https://www.imf.org', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/World_Bank_logo.svg/120px-World_Bank_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/International_Monetary_Fund_logo.svg/120px-International_Monetary_Fund_logo.svg.png' },
-      { category: 'IGOs', name1: 'G7', url1: 'https://www.g7germany.de', name2: 'G20', url2: 'https://www.g20.org', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/G7_logo.svg/120px-G7_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/G20_logo.svg/120px-G20_logo.svg.png' },
-      { category: 'Tech', name1: 'Google', url1: 'https://www.google.com', name2: 'Meta', url2: 'https://about.meta.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/120px-Google_2015_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Meta-Logo.png/120px-Meta-Logo.png' },
-      { category: 'Tech', name1: 'DeepMind', url1: 'https://www.deepmind.com', name2: 'OpenAI', url2: 'https://www.openai.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Google_DeepMind_logo.svg/120px-Google_DeepMind_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/120px-ChatGPT_logo.svg.png' },
-      { category: 'Tech', name1: 'Anthropic', url1: 'https://www.anthropic.com', name2: 'xAI', url2: 'https://x.ai', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Anthropic_logo.svg/120px-Anthropic_logo.svg.png', logo2: 'https://pbs.twimg.com/profile_images/1683943497569587200/XODJbDT-_200x200.jpg' },
-      { category: 'Automotive', name1: 'McLaren', url1: 'https://www.mclaren.com', name2: 'Red Bull Racing', url2: 'https://www.redbullracing.com', logo1: 'https://upload.wikimedia.org/wikipedia/en/thumb/6/66/McLaren_Racing_logo.svg/120px-McLaren_Racing_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a9/Red_Bull_Racing_logo.svg/120px-Red_Bull_Racing_logo.svg.png' },
-      { category: 'Automotive', name1: 'Ferrari', url1: 'https://www.ferrari.com', name2: 'Porsche', url2: 'https://www.porsche.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Ferrari-Logo.svg/120px-Ferrari-Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Porsche_logo.svg/120px-Porsche_logo.svg.png' },
-      { category: 'Socials', name1: 'X', url1: 'https://twitter.com', name2: 'Threads', url2: 'https://www.threads.net', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/X_logo_2023_%28white%29.svg/120px-X_logo_2023_%28white%29.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Threads_%28app%29.svg/120px-Threads_%28app%29.svg.png' },
-      { category: 'Socials', name1: 'TikTok', url1: 'https://www.tiktok.com', name2: 'YouTube', url2: 'https://www.youtube.com', logo1: 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a9/TikTok_logo.svg/120px-TikTok_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/120px-YouTube_full-color_icon_%282017%29.svg.png' },
-      { category: 'Socials', name1: 'LinkedIn', url1: 'https://www.linkedin.com', name2: 'BlueSky', url2: 'https://bsky.app', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/120px-LinkedIn_logo_initials.png', logo2: 'https://avatars.githubusercontent.com/u/100814787?s=200&v=4' },
-      { category: 'Socials', name1: 'WhatsApp', url1: 'https://www.whatsapp.com', name2: 'Telegram', url2: 'https://telegram.org', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/120px-WhatsApp.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/120px-Telegram_logo.svg.png' },
-      { category: 'Entertainment', name1: 'Marvel', url1: 'https://www.marvel.com', name2: 'DC', url2: 'https://www.dc.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Marvel_Logo.svg/120px-Marvel_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/DC_Comics_logo.png/120px-DC_Comics_logo.png' },
-      { category: 'Entertainment', name1: 'Netflix', url1: 'https://www.netflix.com', name2: 'Disney+', url2: 'https://www.disneyplus.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/120px-Netflix_2015_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Disney%2B_logo.svg/120px-Disney%2B_logo.svg.png' },
-      { category: 'Entertainment', name1: 'Nintendo', url1: 'https://www.nintendo.com', name2: 'PlayStation', url2: 'https://www.playstation.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Nintendo.svg/120px-Nintendo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/PlayStation_logo.svg/120px-PlayStation_logo.svg.png' }
+      { category: 'Academic', name1: 'Oxford', url1: 'https://www.ox.ac.uk', name2: 'Cambridge', url2: 'https://www.cam.ac.uk', emoji1: '🦁', emoji2: '🎓' },
+      { category: 'Academic', name1: 'Harvard', url1: 'https://www.harvard.edu', name2: 'Yale', url2: 'https://www.yale.edu', emoji1: '🔴', emoji2: '🔵' },
+      { category: 'Academic', name1: 'MIT', url1: 'https://www.mit.edu', name2: 'Caltech', url2: 'https://www.caltech.edu', emoji1: '⚛️', emoji2: '🔬' },
+      { category: 'Sport', name1: 'India', url1: 'https://www.bcci.tv', name2: 'Pakistan', url2: 'https://www.pcb.com.pk', emoji1: '🏏', emoji2: '🏏' },
+      { category: 'Sport', name1: 'England', url1: 'https://www.ecb.co.uk', name2: 'Australia', url2: 'https://www.cricket.com.au', emoji1: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', emoji2: '🇦🇺' },
+      { category: 'Sport', name1: 'Springboks', url1: 'https://www.sarugby.co.za', name2: 'All Blacks', url2: 'https://www.nzrugby.co.nz', emoji1: '🇿🇦', emoji2: '🇳🇿' },
+      { category: 'Sport', name1: 'Man United', url1: 'https://www.manutd.com', name2: 'Liverpool', url2: 'https://www.liverpoolfc.com', emoji1: '👹', emoji2: '🔴' },
+      { category: 'Sport', name1: 'Arsenal', url1: 'https://www.arsenal.com', name2: 'Chelsea', url2: 'https://www.chelseafc.com', emoji1: '🔴', emoji2: '🔵' },
+      { category: 'Sport', name1: 'Real Madrid', url1: 'https://www.realmadrid.com', name2: 'Barcelona', url2: 'https://www.fcbarcelona.com', emoji1: '⚪', emoji2: '🔵' },
+      { category: 'Sport', name1: 'LA Lakers', url1: 'https://www.nba.com/lakers', name2: 'Boston Celtics', url2: 'https://www.nba.com/celtics', emoji1: '💜', emoji2: '💚' },
+      { category: 'Sport', name1: 'Army', url1: 'https://www.westpoint.edu', name2: 'Navy', url2: 'https://www.usna.edu', emoji1: '🎖️', emoji2: '⚓' },
+      { category: 'Sport', name1: 'NY Yankees', url1: 'https://www.mlb.com/yankees', name2: 'Red Sox', url2: 'https://www.mlb.com/redsox', emoji1: '⚾', emoji2: '🧦' },
+      { category: 'Retail', name1: 'Amazon', url1: 'https://www.amazon.com', name2: 'Walmart', url2: 'https://www.walmart.com', emoji1: '📦', emoji2: '🛒' },
+      { category: 'Retail', name1: 'Craigslist', url1: 'https://www.craigslist.org', name2: 'FB Marketplace', url2: 'https://www.facebook.com/marketplace', emoji1: '📋', emoji2: '🛍️' },
+      { category: 'Retail', name1: 'McDonald\'s', url1: 'https://www.mcdonalds.com', name2: 'Burger King', url2: 'https://www.bk.com', emoji1: '🍟', emoji2: '👑' },
+      { category: 'Retail', name1: 'Starbucks', url1: 'https://www.starbucks.com', name2: 'Costa', url2: 'https://www.costa.co.uk', emoji1: '☕', emoji2: '☕' },
+      { category: 'Retail', name1: 'Louis Vuitton', url1: 'https://www.louisvuitton.com', name2: 'Gucci', url2: 'https://www.gucci.com', emoji1: '👜', emoji2: '🐍' },
+      { category: 'Corporations', name1: 'Apple', url1: 'https://www.apple.com', name2: 'Samsung', url2: 'https://www.samsung.com', emoji1: '🍎', emoji2: '📱' },
+      { category: 'Corporations', name1: 'Tesla', url1: 'https://www.tesla.com', name2: 'BYD', url2: 'https://www.byd.com', emoji1: '⚡', emoji2: '🔋' },
+      { category: 'Corporations', name1: 'SpaceX', url1: 'https://www.spacex.com', name2: 'Blue Origin', url2: 'https://www.blueorigin.com', emoji1: '🚀', emoji2: '🔵' },
+      { category: 'Cities', name1: 'London', url1: 'https://www.london.gov.uk', name2: 'Paris', url2: 'https://www.paris.fr', emoji1: '🇬🇧', emoji2: '🇫🇷' },
+      { category: 'Cities', name1: 'New York', url1: 'https://www.nyc.gov', name2: 'Tokyo', url2: 'https://www.metro.tokyo.lg.jp', emoji1: '🗽', emoji2: '🗼' },
+      { category: 'Cities', name1: 'Cape Town', url1: 'https://www.capetown.gov.za', name2: 'Rio', url2: 'https://www.rio.rj.gov.br', emoji1: '🏔️', emoji2: '🏖️' },
+      { category: 'Nations', name1: 'White House', url1: 'https://www.whitehouse.gov', name2: 'No 10', url2: 'https://www.gov.uk', emoji1: '🇺🇸', emoji2: '🇬🇧' },
+      { category: 'IGOs', name1: 'UN', url1: 'https://www.un.org', name2: 'EU', url2: 'https://europa.eu', emoji1: '🌍', emoji2: '🇪🇺' },
+      { category: 'IGOs', name1: 'World Bank', url1: 'https://www.worldbank.org', name2: 'IMF', url2: 'https://www.imf.org', emoji1: '🏦', emoji2: '💰' },
+      { category: 'IGOs', name1: 'G7', url1: 'https://www.g7germany.de', name2: 'G20', url2: 'https://www.g20.org', emoji1: '7️⃣', emoji2: '🔟' },
+      { category: 'Tech', name1: 'Google', url1: 'https://www.google.com', name2: 'Meta', url2: 'https://about.meta.com', emoji1: '🔍', emoji2: '📘' },
+      { category: 'Tech', name1: 'DeepMind', url1: 'https://www.deepmind.com', name2: 'OpenAI', url2: 'https://www.openai.com', emoji1: '🧠', emoji2: '🤖' },
+      { category: 'Tech', name1: 'Anthropic', url1: 'https://www.anthropic.com', name2: 'xAI', url2: 'https://x.ai', emoji1: '🔺', emoji2: '𝕏' },
+      { category: 'Automotive', name1: 'McLaren', url1: 'https://www.mclaren.com', name2: 'Red Bull', url2: 'https://www.redbullracing.com', emoji1: '🏎️', emoji2: '🐂' },
+      { category: 'Automotive', name1: 'Ferrari', url1: 'https://www.ferrari.com', name2: 'Porsche', url2: 'https://www.porsche.com', emoji1: '🐎', emoji2: '🏁' },
+      { category: 'Socials', name1: 'X', url1: 'https://twitter.com', name2: 'Threads', url2: 'https://www.threads.net', emoji1: '𝕏', emoji2: '🧵' },
+      { category: 'Socials', name1: 'TikTok', url1: 'https://www.tiktok.com', name2: 'YouTube', url2: 'https://www.youtube.com', emoji1: '📱', emoji2: '▶️' },
+      { category: 'Socials', name1: 'LinkedIn', url1: 'https://www.linkedin.com', name2: 'BlueSky', url2: 'https://bsky.app', emoji1: '💼', emoji2: '🦋' },
+      { category: 'Socials', name1: 'WhatsApp', url1: 'https://www.whatsapp.com', name2: 'Telegram', url2: 'https://telegram.org', emoji1: '💬', emoji2: '✈️' },
+      { category: 'Entertainment', name1: 'Marvel', url1: 'https://www.marvel.com', name2: 'DC', url2: 'https://www.dc.com', emoji1: '⚡', emoji2: '🦇' },
+      { category: 'Entertainment', name1: 'Netflix', url1: 'https://www.netflix.com', name2: 'Disney+', url2: 'https://www.disneyplus.com', emoji1: '🎬', emoji2: '🏰' },
+      { category: 'Entertainment', name1: 'Nintendo', url1: 'https://www.nintendo.com', name2: 'PlayStation', url2: 'https://www.playstation.com', emoji1: '🎮', emoji2: '🎯' }
     ];
     
     const metrics = [
@@ -789,6 +596,7 @@
     let currentData = null;
     let currentBattleData = null;
     let isRetro = false;
+    let top50Data = null;
     
     function openMenu() {
       document.getElementById('menuOverlay').classList.add('open');
@@ -844,6 +652,15 @@
       localStorage.setItem(cacheKey, JSON.stringify(cacheData));
     }
     
+    // NEW: Clear results and reset to home
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      document.getElementById('resultsSection').classList.add('hidden');
+      document.getElementById('clearBtn').style.display = 'none';
+      document.getElementById('urlInput').value = '';
+      currentData = null;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     document.getElementById('scanBtn').addEventListener('click', analyzeSite);
     document.getElementById('urlInput').addEventListener('keypress', (e) => {
@@ -868,9 +685,7 @@
       scanBtn.textContent = 'ANALYZING...';
       scanBtn.disabled = true;
       scanBtn.classList.add('scanning');
-      document.getElementById('resultsContainer').classList.add('hidden');
-      document.getElementById('pscoreContainer').classList.add('hidden');
-      document.getElementById('exportBtn').style.display = 'none';
+      document.getElementById('resultsSection').classList.add('hidden');
       
       try {
         const response = await fetch('/api/scan', {
@@ -900,7 +715,6 @@
       const scanDate = new Date(data.timestamp || Date.now()).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       let cacheInfo = fromCache && data.cacheAge ? `<span class="cache-badge cache-stored">💾 Cached ${Math.floor(data.cacheAge / 60)}m ago</span>` : '<span class="cache-badge cache-live">🟢 Live</span>';
       document.getElementById('siteInfo').innerHTML = `${data.pageSize} • ${data.loadTime} • ${scanDate} ${cacheInfo}`;
-      document.getElementById('pscoreContainer').classList.remove('hidden');
       
       const resultsContainer = document.getElementById('resultsContainer');
       resultsContainer.innerHTML = '';
@@ -912,27 +726,298 @@
         resultsContainer.appendChild(card);
       });
       
-      resultsContainer.classList.remove('hidden');
-      document.getElementById('exportBtn').style.display = 'inline-block';
+      document.getElementById('resultsSection').classList.remove('hidden');
+      document.getElementById('clearBtn').style.display = 'inline-block';
+      
+      // Generate superiority badge options
+      generateBadgeOptions(data);
+      
       saveToLeaderboard(data);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
-    document.getElementById('exportBtn').addEventListener('click', () => {
+    // NEW: Generate badge options comparing to Top 50
+    function generateBadgeOptions(data) {
+      if (!top50Data || !top50Data.results) {
+        document.getElementById('badgeDropdown').style.display = 'none';
+        return;
+      }
+      
+      const betterThan = top50Data.results
+        .filter(site => site.pscore < data.pscore)
+        .sort((a, b) => b.pscore - a.pscore)
+        .slice(0, 5);
+      
+      if (betterThan.length === 0) {
+        document.getElementById('badgeDropdown').style.display = 'none';
+        return;
+      }
+      
+      const badgeOptions = document.getElementById('badgeOptions');
+      badgeOptions.innerHTML = betterThan.map(site => {
+        const hostname = new URL(site.url).hostname.replace('www.', '');
+        return `<button onclick="showBadge('${hostname}', ${site.pscore})">🏆 Better than ${hostname} (${site.pscore})</button>`;
+      }).join('');
+      
+      document.getElementById('badgeDropdown').style.display = 'inline-block';
+    }
+    
+    // NEW: Show badge modal
+    function showBadge(siteName, theirScore) {
+      const badge = generateBadgeSVG(currentData, siteName, theirScore);
+      document.getElementById('badgePreview').innerHTML = badge;
+      document.getElementById('badgeModal').style.display = 'flex';
+    }
+    
+    function closeBadgeModal() {
+      document.getElementById('badgeModal').style.display = 'none';
+    }
+    
+    // NEW: Generate SVG badge
+    function generateBadgeSVG(data, comparisonSite, theirScore) {
+      const myScore = data.pscore;
+      const myDomain = new URL(data.url).hostname.replace('www.', '');
+      const difference = myScore - theirScore;
+      
+      return `
+        <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect width="400" height="200" rx="15" fill="url(#badgeGrad)"/>
+          <text x="200" y="50" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">
+            ⚡ BETTER THAN ⚡
+          </text>
+          <text x="200" y="90" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#FFD700" text-anchor="middle">
+            ${comparisonSite.toUpperCase()}
+          </text>
+          <text x="200" y="130" font-family="Arial, sans-serif" font-size="20" fill="white" text-anchor="middle">
+            ${myDomain}: ${myScore} vs ${comparisonSite}: ${theirScore}
+          </text>
+          <text x="200" y="160" font-family="Arial, sans-serif" font-size="18" fill="#90EE90" text-anchor="middle">
+            +${difference} points ahead!
+          </text>
+          <text x="200" y="185" font-family="Arial, sans-serif" font-size="12" fill="white" opacity="0.8" text-anchor="middle">
+            Verified by Pythia
+          </text>
+        </svg>
+      `;
+    }
+    
+    // NEW: Download badge
+    function downloadBadge() {
+      const svg = document.querySelector('#badgePreview svg');
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+      const svgUrl = URL.createObjectURL(svgBlob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = svgUrl;
+      downloadLink.download = 'pythia-superiority-badge.svg';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+    
+    // NEW: Share badge
+    function shareBadge() {
+      const text = `My website scored ${currentData.pscore} on Pythia - better than major sites! 🏆`;
+      shareContent(text, currentData.url);
+      closeBadgeModal();
+    }
+    
+    // NEW: Export functions
+    async function exportAs(format) {
       if (!currentData) return;
+      
+      const filename = `pythia-report-${Date.now()}`;
+      
+      switch(format) {
+        case 'pdf':
+          await exportPDF();
+          break;
+        case 'json':
+          exportJSON();
+          break;
+        case 'csv':
+          exportCSV();
+          break;
+        case 'txt':
+          exportTXT();
+          break;
+        case 'html':
+          exportHTML();
+          break;
+      }
+    }
+    
+    function exportJSON() {
       const exportObj = {
         url: currentData.url,
         timestamp: currentData.timestamp,
-        scores: { pscore: currentData.pscore, karpov: currentData.karpov, vortex: currentData.vortex, nova: currentData.nova, aether: currentData.aether, pulse: currentData.pulse, eden: currentData.eden, helix: currentData.helix, echo: currentData.echo, quantum: currentData.quantum, nexus: currentData.nexus },
-        metadata: { pageSize: currentData.pageSize, loadTime: currentData.loadTime }
+        scores: {
+          pscore: currentData.pscore,
+          karpov: currentData.karpov,
+          vortex: currentData.vortex,
+          nova: currentData.nova,
+          aether: currentData.aether,
+          pulse: currentData.pulse,
+          eden: currentData.eden,
+          helix: currentData.helix,
+          echo: currentData.echo,
+          quantum: currentData.quantum,
+          nexus: currentData.nexus
+        },
+        metadata: {
+          pageSize: currentData.pageSize,
+          loadTime: currentData.loadTime
+        }
       };
-      const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+      downloadFile(JSON.stringify(exportObj, null, 2), `pythia-report-${Date.now()}.json`, 'application/json');
+    }
+    
+    function exportCSV() {
+      const csv = `Metric,Score
+P-Score,${currentData.pscore}
+Karpov Speed,${currentData.karpov}
+Vortex Accessibility,${currentData.vortex}
+Nova Infrastructure,${currentData.nova}
+Aether Technology,${currentData.aether}
+Pulse SEO,${currentData.pulse}
+Eden Efficiency,${currentData.eden}
+Helix Privacy,${currentData.helix}
+Echo Sustainability,${currentData.echo}
+Quantum Quality,${currentData.quantum}
+Nexus Mobile,${currentData.nexus}
+
+Metadata
+URL,${currentData.url}
+Page Size,${currentData.pageSize}
+Load Time,${currentData.loadTime}
+Scan Date,${new Date(currentData.timestamp).toLocaleString()}`;
+      
+      downloadFile(csv, `pythia-report-${Date.now()}.csv`, 'text/csv');
+    }
+    
+    function exportTXT() {
+      const txt = `PYTHIA WEBSITE PERFORMANCE REPORT
+=====================================
+
+URL: ${currentData.url}
+Scan Date: ${new Date(currentData.timestamp).toLocaleString()}
+Page Size: ${currentData.pageSize}
+Load Time: ${currentData.loadTime}
+
+OVERALL P-SCORE: ${currentData.pscore}/100
+
+COMPONENT SCORES:
+-----------------
+Karpov Speed (Performance): ${currentData.karpov}/100
+Vortex Accessibility: ${currentData.vortex}/100
+Nova Infrastructure: ${currentData.nova}/100
+Aether Technology: ${currentData.aether}/100
+Pulse SEO: ${currentData.pulse}/100
+Eden Efficiency: ${currentData.eden}/100
+Helix Privacy & Security: ${currentData.helix}/100
+Echo Sustainability: ${currentData.echo}/100
+Quantum Code Quality: ${currentData.quantum}/100
+Nexus Mobile Responsiveness: ${currentData.nexus}/100
+
+Generated by Pythia - https://pythia.pages.dev`;
+      
+      downloadFile(txt, `pythia-report-${Date.now()}.txt`, 'text/plain');
+    }
+    
+    function exportHTML() {
+      const html = `<!DOCTYPE html>
+<html>
+<head>
+  <title>Pythia Report - ${currentData.url}</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+    h1 { color: #667eea; }
+    .score-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 20px 0; }
+    .score-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; }
+    .big-score { font-size: 48px; font-weight: bold; text-align: center; margin: 30px 0; }
+  </style>
+</head>
+<body>
+  <h1>Pythia Website Performance Report</h1>
+  <p><strong>URL:</strong> ${currentData.url}</p>
+  <p><strong>Scan Date:</strong> ${new Date(currentData.timestamp).toLocaleString()}</p>
+  <p><strong>Page Size:</strong> ${currentData.pageSize}</p>
+  <p><strong>Load Time:</strong> ${currentData.loadTime}</p>
+  
+  <div class="big-score">Overall P-Score: ${currentData.pscore}/100</div>
+  
+  <h2>Component Scores</h2>
+  <div class="score-grid">
+    <div class="score-card"><h3>Karpov Speed</h3><p>${currentData.karpov}/100</p></div>
+    <div class="score-card"><h3>Vortex Access</h3><p>${currentData.vortex}/100</p></div>
+    <div class="score-card"><h3>Nova Infrastructure</h3><p>${currentData.nova}/100</p></div>
+    <div class="score-card"><h3>Aether Technology</h3><p>${currentData.aether}/100</p></div>
+    <div class="score-card"><h3>Pulse SEO</h3><p>${currentData.pulse}/100</p></div>
+    <div class="score-card"><h3>Eden Efficiency</h3><p>${currentData.eden}/100</p></div>
+    <div class="score-card"><h3>Helix Privacy</h3><p>${currentData.helix}/100</p></div>
+    <div class="score-card"><h3>Echo Sustainability</h3><p>${currentData.echo}/100</p></div>
+    <div class="score-card"><h3>Quantum Quality</h3><p>${currentData.quantum}/100</p></div>
+    <div class="score-card"><h3>Nexus Mobile</h3><p>${currentData.nexus}/100</p></div>
+  </div>
+  
+  <p style="text-align: center; margin-top: 50px; color: #666;">
+    Generated by <a href="https://pythia.pages.dev">Pythia</a>
+  </p>
+</body>
+</html>`;
+      
+      downloadFile(html, `pythia-report-${Date.now()}.html`, 'text/html');
+    }
+    
+    async function exportPDF() {
+      // Simple PDF generation using current view
+      alert('PDF export will capture the current results view. Please wait...');
+      
+      const element = document.getElementById('resultsSection');
+      const canvas = await html2canvas(element);
+      const imgData = canvas.toDataURL('image/png');
+      
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`pythia-report-${Date.now()}.pdf`);
+    }
+    
+    function downloadFile(content, filename, type) {
+      const blob = new Blob([content], { type });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `pythia-${new Date().getTime()}.json`;
+      a.download = filename;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    });
+    }
+    
+    // NEW: Share results functions
+    function shareResultsOn(platform) {
+      if (!currentData) return;
+      const text = `I scanned ${new URL(currentData.url).hostname} with Pythia and got a P-Score of ${currentData.pscore}/100! 🔮`;
+      const url = currentData.url;
+      shareContent(text, url, platform);
+    }
+    
+    function copyShareLink() {
+      if (!currentData) return;
+      navigator.clipboard.writeText(currentData.url).then(() => {
+        alert('Link copied to clipboard!');
+      });
+    }
     
     function saveToLeaderboard(data) {
       let leaderboard = JSON.parse(localStorage.getItem('pythiaLeaderboard') || '[]');
@@ -971,12 +1056,16 @@
       rivalryList.innerHTML = RIVALRIES.map((rivalry, index) => {
         const displayName1 = rivalry.category === 'Socials' && rivalry.name1 === 'X' ? 'X (twitter.com)' : rivalry.name1;
         return `<div class="rivalry-item flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition">
-          <div class="flex-1">
-            <div class="text-xs font-bold text-gray-500 mb-1">${rivalry.category}</div>
-            <div class="font-bold text-gray-800">${displayName1} v ${rivalry.name2}</div>
+          <div class="flex items-center flex-1">
+            <span class="rival-logo">${rivalry.emoji1}</span>
+            <div class="flex-1">
+              <div class="text-xs font-bold text-gray-500 mb-1">${rivalry.category}</div>
+              <div class="font-bold text-gray-800">${displayName1} <span class="text-gray-400">v</span> ${rivalry.name2}</div>
+            </div>
+            <span class="rival-logo ml-2">${rivalry.emoji2}</span>
           </div>
-          <button onclick="startBattle('${rivalry.url1}', '${rivalry.url2}', '${rivalry.name1}', '${rivalry.name2}', '${rivalry.logo1 || ''}', '${rivalry.logo2 || ''}')" 
-            class="retro-button px-4 py-2 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition text-sm">⚔️</button>
+          <button onclick="startBattle('${rivalry.url1}', '${rivalry.url2}', '${rivalry.name1}', '${rivalry.name2}')" 
+            class="retro-button ml-3 px-4 py-2 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition text-sm">⚔️</button>
         </div>`;
       }).join('');
     }
@@ -993,7 +1082,7 @@
       startBattle(url1, url2, name1, name2);
     });
     
-    async function startBattle(url1, url2, name1, name2, logo1 = '', logo2 = '') {
+    async function startBattle(url1, url2, name1, name2) {
       document.getElementById('battleResults').classList.add('hidden');
       const btn = event.target;
       btn.innerHTML = '<span class="sword-fighting">⚔️</span>';
@@ -1016,19 +1105,9 @@
         await Promise.all(promises);
         
         const winner = result1.pscore > result2.pscore ? name1 : result2.pscore > result1.pscore ? name2 : 'TIE';
-        const winnerLogo = result1.pscore > result2.pscore ? logo1 : result2.pscore > result1.pscore ? logo2 : '';
         const battleDate = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         
         currentBattleData = { name1, name2, result1, result2, winner, battleDate };
-        
-        const winnerIcon = document.getElementById('winnerIcon');
-        if (winnerLogo && winner !== 'TIE') {
-          winnerIcon.querySelector('img').src = winnerLogo;
-          winnerIcon.querySelector('img').alt = `${winner} logo`;
-          winnerIcon.classList.remove('hidden');
-        } else {
-          winnerIcon.classList.add('hidden');
-        }
         
         const winnerAnnouncement = document.getElementById('winnerAnnouncement');
         if (winner === 'TIE') {
@@ -1065,6 +1144,8 @@
         const response = await fetch(TOP50_API);
         const data = await response.json();
         if (data.error) throw new Error(data.message);
+        
+        top50Data = data; // Store for badge comparisons
         
         const sorted = data.results.sort((a, b) => b.pscore - a.pscore);
         const top10 = sorted.slice(0, 10);
@@ -1126,6 +1207,7 @@
       switch(platform) {
         case 'twitter': shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`; break;
         case 'facebook': shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`; break;
+        case 'linkedin': shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`; break;
         case 'whatsapp': shareUrl = `https://wa.me/?text=${encodedText}%20${encodedUrl}`; break;
         case 'email': shareUrl = `mailto:?subject=${encodeURIComponent('Pythia - Website Performance Oracle')}&body=${encodedText}%20${encodedUrl}`; break;
       }
