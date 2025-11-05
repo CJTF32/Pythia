@@ -109,3 +109,13 @@ export default {
     return new Response('Top 50 scanner - use scheduled trigger', { status: 200 });
   }
 };
+// Manual trigger via HTTP GET (for testing)
+export async function fetch(request, env, ctx) {
+  if (request.method === 'GET') {
+    // Mock scheduled event
+    const event = { cron: '1 8 * * *' };
+    await scheduled(event, env, ctx);
+    return new Response('Scan triggered manually! Check KV in 1-2 mins.', { status: 200 });
+  }
+  return new Response('Method not allowed', { status: 405 });
+}
