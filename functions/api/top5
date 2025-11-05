@@ -1,5 +1,5 @@
 // functions/api/top5.js
-// Updated Pythia API for Top 5 rankings (slices from top 50, with averages)
+// Updated Pythia™ API for Top 5 rankings (slices from top 50, with averages)
 
 export async function onRequest(context) {
   const corsHeaders = {
