@@ -1,1117 +1,713 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   
+
   <!-- SEO Optimization -->
-  <title>Pythia - Website Performance Oracle (BETA)</title>
+
+  <title>Pythia - Website Performance Analysis Tool | One Score to Rank Them All</title>
+
   <meta name="description" content="Pythia is the ultimate website performance oracle analyzing speed, accessibility, SEO, privacy, and sustainability. Get one unified P-Score for any website in seconds.">
+
   <meta name="keywords" content="website performance, one score, site speed test, SEO analyzer, accessibility checker, website security, performance testing, web optimization, P-Score">
+
   
+
   <!-- Open Graph / Facebook -->
+
   <meta property="og:type" content="website">
+
   <meta property="og:url" content="https://pythia.pages.dev/">
+
   <meta property="og:title" content="Pythia - Website Performance Oracle | One Score to Rank Them All">
+
   <meta property="og:description" content="Complete website performance analysis in one unified P-Score. Measure speed, accessibility, SEO, privacy, sustainability and more.">
+
   <meta property="og:image" content="https://pythia.pages.dev/pythia-oracle.png">
+
   
+
   <!-- Twitter -->
+
   <meta property="twitter:card" content="summary_large_image">
+
   <meta property="twitter:url" content="https://pythia.pages.dev/">
+
   <meta property="twitter:title" content="Pythia - Website Performance Analysis Tool">
+
   <meta property="twitter:description" content="One score to rank them all. Complete website performance oracle.">
+
   <meta property="twitter:image" content="https://pythia.pages.dev/pythia-oracle.png">
+
   
+
   <!-- Canonical -->
+
   <link rel="canonical" href="https://pythia.pages.dev/">
+
   
+
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
+
     @keyframes pulse-glow {
+
       0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+
       50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+
     }
+
     .scanning { animation: pulse-glow 2s infinite; }
+
     
+
     .menu-overlay {
+
       position: fixed; top: 0; left: -100%; width: 80%; max-width: 400px; height: 100vh;
+
       background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.3); transition: left 0.3s ease;
+
       z-index: 1000; overflow-y: auto;
+
     }
+
     .menu-overlay.open { left: 0; }
+
     .menu-backdrop {
+
       position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.5);
+
       opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 999;
+
     }
+
     .menu-backdrop.open { opacity: 1; visibility: visible; }
+
     .page-content { display: none; }
+
     .page-content.active { display: block; }
+
     
+
     /* Retro Mode Styles */
+
     body.retro {
+
       background: #000000 !important;
+
       font-family: 'Courier New', monospace !important;
+
       image-rendering: pixelated;
+
       color: #00ff00 !important;
+
       background-image: 
-        repeating-linear-gradient(0deg, #000000 0px, #003300 2px, #000000 4px),
-        repeating-linear-gradient(90deg, #000000 0px, #001a00 2px, #000000 4px) !important;
+
+        repeating-linear-gradient(0deg, transparent, transparent 2px, #001100 2px, #001100 4px),
+
+        repeating-linear-gradient(90deg, transparent, transparent 2px, #001100 2px, #001100 4px);
+
       background-size: 40px 40px;
+
     }
+
     body.retro * {
+
       font-family: 'Courier New', monospace !important;
+
       image-rendering: pixelated;
+
     }
+
     body.retro .modern-card {
+
       background: #0a0a0a !important;
+
       border: 4px solid #00ff00 !important;
+
       border-radius: 0 !important;
+
       box-shadow: 0 0 20px #00ff00 !important;
+
     }
+
     body.retro .retro-button {
+
       background: #003300 !important;
+
       border: 3px solid #00ff00 !important;
+
       border-radius: 0 !important;
+
       color: #00ff00 !important;
+
       font-weight: bold !important;
+
       padding: 8px 16px !important;
+
       text-shadow: 0 0 5px #00ff00;
+
     }
+
     body.retro .retro-button:hover {
+
       background: #005500 !important;
+
       box-shadow: 0 0 15px #00ff00;
+
     }
+
     body.retro #themeToggle,
+
     body.retro .page-content button,
+
     body.retro .menu-overlay button {
+
       background: #001a00 !important;
+
       color: #33ff33 !important;
+
       border: 2px solid #33ff33 !important;
+
       text-shadow: 0 0 3px #33ff33 !important;
+
     }
+
     body.retro #themeToggle:hover,
+
     body.retro .page-content button:hover {
+
       background: #003300 !important;
+
       color: #66ff66 !important;
+
     }
+
     body.retro .text-gray-500,
+
     body.retro .text-gray-600,
+
     body.retro .text-gray-700,
+
     body.retro .text-gray-800,
+
     body.retro p:not(.font-bold):not(h1):not(h2):not(h3) {
+
       color: #33ff33 !important;
+
       text-shadow: 0 0 2px #33ff33 !important;
+
     }
+
     body.retro .score-card {
+
       border: 3px solid #00ff00 !important;
+
       border-radius: 0 !important;
+
       box-shadow: 0 0 10px currentColor !important;
+
       background: #001a00 !important;
+
     }
+
     body.retro h1, body.retro h2, body.retro h3 {
+
       color: #00ff00 !important;
+
       text-shadow: 2px 2px 0 #003300, 0 0 10px #00ff00 !important;
+
     }
+
     body.retro p, body.retro div, body.retro span, body.retro label {
+
       color: #00ff00 !important;
+
     }
+
     body.retro .bg-gray-50, body.retro .bg-green-50, body.retro .bg-red-50 {
+
       background: #001a00 !important;
+
       border: 1px solid #003300 !important;
+
     }
+
     body.retro .bg-white { background: #000000 !important; }
+
     body.retro input {
+
       background: #000000 !important;
+
       border: 2px solid #00ff00 !important;
+
       color: #00ff00 !important;
+
     }
+
     body.retro input::placeholder { color: #006600 !important; }
+
     body.retro .menu-overlay {
+
       background: #000000 !important;
+
       border-right: 4px solid #00ff00 !important;
+
     }
+
     
+
     body.retro #pythiaLogo {
+
       width: 160px !important;
+
       height: 160px !important;
+
     }
+
     
+
     #mainTagline {
+
       font-size: 2rem !important;
+
     }
+
     body.retro #mainTagline {
+
       font-size: 2.5rem !important;
+
     }
+
     
+
+    body.retro {
+
+      background: 
+
+        repeating-linear-gradient(0deg, #000000 0px, #003300 2px, #000000 4px),
+
+        repeating-linear-gradient(90deg, #000000 0px, #001a00 2px, #000000 4px) !important;
+
+    }
+
+    
+
     body.retro .rivalry-item:nth-child(odd) {
+
       background: #003300 !important;
+
       border: 2px solid #00ff00 !important;
+
     }
+
     body.retro .rivalry-item:nth-child(even) {
+
       background: #001a00 !important;
+
       border: 2px solid #006600 !important;
+
     }
+
     body.retro #scanResults .score-card,
+
     body.retro #contestant1Results,
+
     body.retro #contestant2Results,
+
     body.retro #winnerAnnouncement {
+
       color: #00ff66 !important;
+
       text-shadow: 0 0 8px #00ff66 !important;
+
     }
+
     body.retro #winnerAnnouncement {
+
       background: #003300 !important;
+
       border: 4px solid #00ff66 !important;
+
       color: #00ff66 !important;
+
       text-shadow: 0 0 10px #00ff66, 2px 2px 0 #001100 !important;
+
     }
+
     body.retro #themeToggle {
+
       color: #33ff33 !important;
+
       background: #002200 !important;
+
       text-shadow: 0 0 8px #33ff33, 1px 1px 2px #000 !important;
+
       font-weight: 900 !important;
+
       border: 3px solid #33ff33 !important;
+
     }
+
     body.retro .back-button,
+
     body.retro .about-content,
+
     body.retro .weighting-philosophy,
+
     body.retro .component-description {
+
       color: #33ff33 !important;
+
       text-shadow: 0 0 5px #33ff33, 1px 1px 0 #000 !important;
+
     }
+
     
+
     @keyframes sword-fight {
+
       0%, 100% { transform: rotate(-20deg) translateX(-5px); }
+
       25% { transform: rotate(20deg) translateX(5px); }
+
       50% { transform: rotate(-20deg) translateX(-5px); }
+
       75% { transform: rotate(20deg) translateX(5px); }
+
     }
+
     .sword-fighting {
+
       animation: sword-fight 0.6s infinite;
+
       display: inline-block;
+
     }
+
     
+
     .tooltip { position: relative; display: inline-block; }
+
     .tooltip .tooltiptext {
+
       visibility: hidden; width: 280px; background-color: #1f2937; color: #fff;
+
       text-align: left; border-radius: 8px; padding: 12px; position: absolute; z-index: 1000;
+
       bottom: 125%; left: 50%; margin-left: -140px; opacity: 0; transition: opacity 0.3s;
+
       font-size: 13px; line-height: 1.4; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+
     }
+
     .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+
     
+
     .leaderboard-entry { transition: all 0.2s; }
+
     .leaderboard-entry:hover {
+
       transform: translateX(4px);
+
       background: rgba(99, 102, 241, 0.1);
+
     }
+
     
+
     .cache-badge {
+
       display: inline-block; padding: 2px 8px; border-radius: 12px;
+
       font-size: 10px; font-weight: bold; margin-left: 8px;
+
     }
+
     .cache-live { background: #10b981; color: white; }
+
     .cache-stored { background: #6366f1; color: white; }
+
     
+
     .winner-icon {
+
       width: 80px; height: 80px; object-fit: contain; margin: 0 auto 1rem;
+
       border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
     }
+
     
+
     .page-header {
+
       display: flex;
+
       justify-content: space-between;
+
       align-items: center;
+
       margin-bottom: 2rem;
+
     }
+
   </style>
+
 </head>
+
 <body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8">
+
   
+
   <div id="menuBackdrop" class="menu-backdrop" onclick="closeMenu()"></div>
+
   
+
   <div id="menuOverlay" class="menu-overlay">
+
     <div class="p-6">
+
       <div class="flex justify-between items-center mb-6">
+
         <h2 class="text-2xl font-bold text-indigo-600">Menu</h2>
+
         <button onclick="closeMenu()" class="text-3xl text-gray-600 hover:text-gray-800">&times;</button>
+
       </div>
+
       <nav class="space-y-2">
+
         <button onclick="showPage('main')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700">🏠 Home</button>
+
         <button onclick="showPage('pscore-explainer')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700">📊 P-Score Explainer</button>
+
         <button onclick="showPage('components')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700">🔧 P-Score Components</button>
+
         <button onclick="showPage('custom')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-indigo-600">💎 Custom Scans (Premium)</button>
+
         <button onclick="showPage('about')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700">ℹ️ About</button>
+
       </nav>
+
     </div>
+
   </div>
+
   
+
   <div class="max-w-7xl mx-auto">
+
     
+
     <div id="mainPage" class="page-content active">
+
       
+
       <div class="text-center mb-6">
+
         <div class="flex justify-between items-center mb-2">
+
           <button id="hamburger" onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition">☰</button>
+
           <button id="themeToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition">🕹️ RETRO MODE</button>
+
         </div>
+
         <div class="flex items-center justify-center gap-4 mb-2">
+
           <img id="pythiaLogo" src="pythia-oracle.png" alt="Pythia Oracle" class="w-20 h-20" style="display:none; image-rendering: pixelated;">
+
           <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Pythia</h1>
+
         </div>
+
         <p class="text-gray-600 text-lg">Complete website performance oracle <span class="text-sm bg-yellow-200 px-2 py-1 rounded">BETA</span></p>
+
         <h2 id="mainTagline" class="text-xl font-bold text-indigo-600 mt-2 tracking-wide">ONE SCORE TO RANK THEM ALL</h2>
+
         <p class="text-xs text-gray-500 mt-2 max-w-2xl mx-auto"><strong>Disclaimer:</strong> Pythia is an independent analysis tool. Scores are heuristic-based and for informational purposes only.</p>
+
       </div>
+
       
+
       <div class="modern-card bg-white rounded-2xl shadow-xl p-6 mb-8">
+
         <div class="flex flex-col md:flex-row gap-4">
+
           <input id="urlInput" type="url" placeholder="https://example.com" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition" aria-label="Enter website URL to analyze">
+
           <button id="scanBtn" class="retro-button px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105" aria-label="Analyze website performance">ANALYZE</button>
+
           <button id="exportBtn" class="retro-button px-6 py-3 bg-gray-600 text-white font-bold rounded-xl hover:bg-gray-700 transition" style="display:none;" aria-label="Export analysis results">📊 EXPORT</button>
+
         </div>
+
       </div>
+
       
+
       <div id="pscoreContainer" class="hidden mb-8">
+
         <div class="modern-card bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-2xl p-8 text-center text-white">
+
           <div class="text-sm font-bold uppercase tracking-wider opacity-90 mb-2">Overall P-Score</div>
+
           <div id="pscoreValue" class="text-7xl font-bold mb-2" aria-live="polite">--</div>
+
           <div class="text-lg opacity-90">Performance • Sustainability • Future-Ready</div>
+
           <div id="siteInfo" class="text-sm opacity-75 mt-3"></div>
+
         </div>
+
       </div>
+
       
+
       <div id="resultsContainer" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8" role="region" aria-label="Website performance metrics"></div>
+
       
+
       <div id="leaderboard" class="hidden modern-card bg-white rounded-2xl shadow-xl p-6 mb-8">
+
         <h2 class="text-2xl font-bold text-gray-800 mb-4">🏆 Global Leaderboard</h2>
+
         <div class="grid md:grid-cols-2 gap-6">
+
           <div>
+
             <h3 class="text-lg font-bold text-green-600 mb-3">Top 10 Sites (User Scanned)</h3>
+
             <div id="topSites" class="space-y-2"></div>
+
           </div>
+
           <div>
+
             <h3 class="text-lg font-bold text-red-600 mb-3">Bottom 10 Sites (User Scanned)</h3>
+
             <div id="bottomSites" class="space-y-2"></div>
+
           </div>
+
         </div>
+
       </div>
+
       
+
       <div class="grid lg:grid-cols-2 gap-8 mb-8">
+
         
+
         <!-- NEW: Enterprise Website of the Day -->
+
         <div class="modern-card bg-white rounded-2xl shadow-xl p-6">
+
           <h2 class="text-2xl font-bold text-gray-800 mb-2">🌟 Enterprise Website of the Day</h2>
+
           <p class="text-sm text-gray-600 mb-4">Random scan of 1,000 enterprise sites • Updated daily at 12:01 AM PT</p>
+
           <div id="enterpriseDailyResults" class="hidden">
+
             <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-lg border-2 border-yellow-400">
+
               <div class="text-center">
+
                 <div class="text-sm font-bold text-gray-500 mb-2">🏆 TODAY'S TOP PERFORMER</div>
+
                 <div id="enterpriseWinner" class="text-2xl font-bold text-indigo-600 mb-2"></div>
+
                 <div class="grid grid-cols-2 gap-2 text-sm">
+
                   <div class="bg-white p-2 rounded">
+
                     <div class="text-gray-500">P-Score</div>
+
                     <div id="enterprisePscore" class="text-2xl font-bold text-green-600"></div>
+
                   </div>
+
                   <div class="bg-white p-2 rounded">
+
                     <div class="text-gray-500">Load Time</div>
+
                     <div id="enterpriseLoadTime" class="text-lg font-bold"></div>
+
                   </div>
+
                 </div>
+
                 <div id="enterpriseTotalScanned" class="text-xs text-gray-500 mt-3"></div>
+
                 <a id="enterpriseLink" href="#" target="_blank" class="mt-3 inline-block px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">Visit Website →</a>
+
               </div>
+
             </div>
+
           </div>
+
           <div id="enterpriseDailyLoading" class="text-center py-8">
+
             <div class="text-4xl mb-2">🌟</div>
+
             <div class="font-bold text-gray-700">Loading today's winner...</div>
+
             <div class="text-sm text-gray-500 mt-2">Scans 1,000 random enterprise sites daily</div>
+
           </div>
+
         </div>
+
         
+
         <div class="modern-card bg-white rounded-2xl shadow-xl p-6">
+
           <h2 class="text-2xl font-bold text-gray-800 mb-2">⚔️ Rivalry Battle Arena</h2>
+
           <p class="text-sm text-gray-600 mb-4">Pit legendary rivals against each other</p>
-          <div id="rivalryBattleResults" class="hidden">
-            <div id="winnerAnnouncement" class="text-center p-4 mb-4 rounded-lg"></div>
-            <div class="grid grid-cols-2 gap-4">
-              <div id="contestant1Results" class="p-3 rounded-lg border-2 border-indigo-300"></div>
-              <div id="contestant2Results" class="p-3 rounded-lg border-2 border-purple-300"></div>
-            </div>
-          </div>
-          <div id="rivalryBattleLoading" class="hidden text-center py-8">
-            <div class="text-4xl mb-2 sword-fighting">⚔️</div>
-            <div class="font-bold text-gray-700">Executing battle protocols...</div>
-            <div class="text-sm text-gray-500 mt-2">Running two simultaneous scans (can take 10-20 seconds)</div>
-          </div>
+
           <div class="mb-6">
+
             <h3 class="text-lg font-bold text-indigo-600 mb-3">Epic Rivalries</h3>
+
             <div id="rivalryList" class="max-h-96 overflow-y-auto space-y-2 border rounded-lg p-3"></div>
+
           </div>
+
           <div class="border-t pt-6">
+
             <h3 class="text-lg font-bold text-purple-600 mb-3">Custom Battle</h3>
+
             <div class="grid gap-4 mb-4">
+
               <input id="customUrl1" type="url" placeholder="https://example1.com" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500" aria-label="First competitor URL">
+
               <input id="customUrl2" type="url" placeholder="https://example2.com" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500" aria-label="Second competitor URL">
+
             </div>
+
             <button id="customBattleBtn" class="retro-button w-full py-3 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition">⚔️ START CUSTOM BATTLE</button>
+
           </div>
+
         </div>
+
       </div>
+
       
-    </div>
-    
-    <!-- P-Score Explainer Page -->
-    <div id="pscore-explainerPage" class="page-content">
-      <div class="page-header">
-        <button onclick="showPage('main')" class="back-button text-lg font-bold text-gray-600 hover:text-indigo-600">← Back to Home</button>
-        <button onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition">☰</button>
-      </div>
-      <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
-        <h2 class="text-4xl font-bold text-indigo-600 mb-6">The Pythia P-Score Philosophy</h2>
-        <div class="weighting-philosophy space-y-6 text-gray-700 text-lg">
-          <p>The **P-Score (Pythia Score)** is a unified metric representing a website's overall quality across ten fundamental vectors of modern web development. Unlike single-focus scores (like just PageSpeed), the P-Score provides a holistic evaluation of a site's value to its users, the business, and the planet.</p>
-          <p class="font-bold">The P-Score is calculated as the simple average of 10 primary components, each contributing exactly 10% to the final result.</p>
-          <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-center mt-8">
-            <div class="p-4 bg-indigo-50 rounded-lg shadow font-semibold">10% KARPOV</div>
-            <div class="p-4 bg-purple-50 rounded-lg shadow font-semibold">10% VORTEX</div>
-            <div class="p-4 bg-pink-50 rounded-lg shadow font-semibold">10% NOVA</div>
-            <div class="p-4 bg-red-50 rounded-lg shadow font-semibold">10% AETHER</div>
-            <div class="p-4 bg-yellow-50 rounded-lg shadow font-semibold">10% PULSE</div>
-            <div class="p-4 bg-green-50 rounded-lg shadow font-semibold">10% EDEN</div>
-            <div class="p-4 bg-teal-50 rounded-lg shadow font-semibold">10% HELIX</div>
-            <div class="p-4 bg-blue-50 rounded-lg shadow font-semibold">10% ECHO</div>
-            <div class="p-4 bg-gray-50 rounded-lg shadow font-semibold">10% QUANTUM</div>
-            <div class="p-4 bg-indigo-50 rounded-lg shadow font-semibold">10% NEXUS</div>
-          </div>
-          <p>This equal weighting emphasizes that security (HELIX) is just as critical as speed (KARPOV), and sustainability (ECHO) is as important as technical excellence (QUANTUM).</p>
-        </div>
-      </div>
-    </div>
-    
-    <!-- P-Score Components Page -->
-    <div id="componentsPage" class="page-content">
-      <div class="page-header">
-        <button onclick="showPage('main')" class="back-button text-lg font-bold text-gray-600 hover:text-indigo-600">← Back to Home</button>
-        <button onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition">☰</button>
-      </div>
-      <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
-        <h2 class="text-4xl font-bold text-indigo-600 mb-6">P-Score Component Breakdown</h2>
-        <div id="componentDescriptions" class="space-y-6">
-          <div class="component-description p-4 border rounded-lg bg-gray-50">
-            <h3 class="text-2xl font-bold text-indigo-700">KARPOV (Speed & Performance)</h3>
-            <p class="text-gray-600 mt-2">Measures traditional speed metrics: network load time, script and resource count (images, CSS, video), and the use of optimization techniques like <code>async</code>, <code>defer</code>, and minification. **Goal:** Fast, lightweight delivery.</p>
-          </div>
-          <div class="component-description p-4 border rounded-lg bg-gray-50">
-            <h3 class="text-2xl font-bold text-purple-700">VORTEX (Accessibility)</h3>
-            <p class="text-gray-600 mt-2">Evaluates inclusive design practices by checking for proper use of <code>alt</code> attributes on images, ARIA roles/labels, correct heading structure (H1, H2 hierarchy), and form labels. **Goal:** Usable by everyone, including screen reader users.</p>
-          </div>
-          <div class="component-description p-4 border rounded-lg bg-gray-50">
-            <h3 class="text-2xl font-bold text-pink-700">NOVA (Scalability & Infrastructure)</h3>
-            <p class="text-gray-600 mt-2">Assesses infrastructure maturity by checking HTTP response headers for CDN usage (Cloudflare, Akamai, etc.), effective cache control (<code>max-age</code>, `public`), and server-side compression (Brotli/Gzip). **Goal:** Global reach and efficient resource handling.</p>
-          </div>
-          <div class="component-description p-4 border rounded-lg bg-gray-50">
-            <h3 class="text-2xl font-bold text-red-700">AETHER (Modern Tech & Future-Readiness)</h3>
-            <p class="text-gray-600 mt-2">Analyzes adoption of cutting-edge web standards: WebAssembly (`.wasm`), Service Workers (PWA readiness), ES Modules, and modern image formats (WebP, AVIF). **Goal:** Leveraging the latest browser capabilities.</p>
-          </div>
-          <div class="component-description p-4 border rounded-lg bg-gray-50">
-            <h3 class="text-2xl font-bold text-yellow-700">PULSE (Social & SEO Optimization)</h3>
-            <p class="text-gray-600 mt-2">Checks for foundational SEO health and social sharing preparedness: descriptive `<title>` and `meta description`, canonical URLs, single H1 usage, and comprehensive Open Graph/Twitter Card tags. **Goal:** Visibility and shareability.</p>
-          </div>
-          <div class="component-description p-4 border rounded-lg bg-gray-50">
-            <h3 class="text-2xl font-bold text-green-700">EDEN (Efficiency & Page Weight)</h3>
-            <p class="text-gray-600 mt-2">Focuses solely on the total transferred page size. Penalizes excessively large pages and rewards moderate page sizes (between 0.5MB and 1.5MB). **Goal:** Minimal bandwidth consumption and fast initial load.</p>
-          </div>
-          <div class="component-description p-4 border rounded-lg bg-gray-50">
-            <h3 class="text-2xl font-bold text-teal-700">HELIX (Privacy & Security)</h3>
-            <p class="text-gray-600 mt-2">Evaluates site resilience against attacks and user privacy risk. Checks for strong security headers (CSP, HSTS, X-Frame-Options) and penalizes the inclusion of third-party trackers and excessive third-party scripts. **Goal:** Trust and data protection.</p>
-          </div>
-          <div class="component-description p-4 border rounded-lg bg-gray-50">
-            <h3 class="text-2xl font-bold text-blue-700">ECHO (Green Hosting & Sustainability)</h3>
-            <p class="text-gray-600 mt-2">Gauges the environmental impact by checking site size and leveraging the Green Web Foundation API to determine if the host uses renewable energy. **Goal:** Low carbon footprint.</p>
-          </div>
-          <div class="component-description p-4 border rounded-lg bg-gray-50">
-            <h3 class="text-2xl font-bold text-gray-700">QUANTUM (Best Practices & Code Quality)</h3>
-            <p class="text-gray-600 mt-2">Assesses the developer's adherence to best practices, looking for secure coding habits (using Subresource Integrity, avoiding `eval()`), proper HTML structure (DOCTYPE), and minimizing inline code. **Goal:** Maintainable, high-quality codebase.</p>
-          </div>
-          <div class="component-description p-4 border rounded-lg bg-gray-50">
-            <h3 class="text-2xl font-bold text-indigo-700">NEXUS (Mobile Responsiveness)</h3>
-            <p class="text-gray-600 mt-2">Checks for the necessary metadata (`viewport` tag) and technical indicators (media queries, PWA meta tags) to confirm the site is designed to adapt gracefully across various screen sizes and devices. **Goal:** Optimal experience on mobile devices.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- About Page (Simple Placeholder) -->
-    <div id="aboutPage" class="page-content">
-      <div class="page-header">
-        <button onclick="showPage('main')" class="back-button text-lg font-bold text-gray-600 hover:text-indigo-600">← Back to Home</button>
-        <button onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition">☰</button>
-      </div>
-      <div class="modern-card bg-white rounded-2xl shadow-xl p-8 about-content text-gray-700">
-        <h2 class="text-4xl font-bold text-indigo-600 mb-6">About Pythia</h2>
-        <p class="text-lg mb-4">Pythia is a comprehensive web auditing tool designed by Cronix Holdings (Pty) Ltd. to bring clarity and depth to website performance analysis. Our mission is to provide web professionals and businesses with a single, holistic metric—the P-Score—to measure quality across all modern web development domains.</p>
-        <p class="text-lg mb-4">The application architecture relies on a Cloudflare Worker for fast, parallelized web fetching and an anonymous Firebase Firestore database for persistent storage of scan results, leaderboard data, and the daily enterprise winner.</p>
-        <p class="text-lg">For technical inquiries or business opportunities, please contact Cronix Holdings.</p>
-      </div>
-    </div>
-    
-    <!-- Custom Scans Page (Placeholder) -->
-    <div id="customPage" class="page-content">
-      <div class="page-header">
-        <button onclick="showPage('main')" class="back-button text-lg font-bold text-gray-600 hover:text-indigo-600">← Back to Home</button>
-        <button onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition">☰</button>
-      </div>
-      <div class="modern-card bg-white rounded-2xl shadow-xl p-8 text-gray-700">
-        <h2 class="text-4xl font-bold text-indigo-600 mb-6">💎 Custom Scans & Premium Features</h2>
-        <p class="text-lg mb-4">This section is reserved for future premium features, including:</p>
-        <ul class="list-disc list-inside space-y-2 ml-4 mb-6">
-          <li>Deep-dive analysis reports (e.g., full security header review).</li>
-          <li>Historical P-Score tracking for competitor monitoring.</li>
-          <li>Custom score weighting (adjusting the 10% components).</li>
-          <li>API access for automated testing and continuous integration.</li>
-        </ul>
-        <p class="text-lg font-bold">Currently, all core features (including the Leaderboard and Rivalry Battle) are available in BETA.</p>
-      </div>
-    </div>
-    
-    <!-- Global Message Box -->
-    <div id="messageBox" class="fixed bottom-4 right-4 z-50 transition-transform duration-300 transform translate-x-full">
-      <div class="max-w-xs bg-red-600 text-white p-4 rounded-lg shadow-2xl font-bold" id="messageText"></div>
-    </div>
-    
-  </div>
-  
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, where, limit, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    
-    // --- GLOBAL CONFIG & INITIALIZATION ---
-    // These variables are provided by the canvas environment
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-pythia-app';
-    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-    let app;
-    let db;
-    let auth;
-    let userId = 'loading'; // Will be updated on auth state change
-    let isAuthReady = false;
-    
-    const API_ENDPOINT = '/api/scan';
-    const STORAGE_PREFIX = `/artifacts/${appId}/public/data`;
-    const RIVALRY_LIST = [
-        { name: "Google vs. Bing", url1: "https://www.google.com", url2: "https://www.bing.com" },
-        { name: "Tesla vs. Ford", url1: "https://www.tesla.com", url2: "https://www.ford.com" },
-        { name: "Amazon vs. Walmart", url1: "https://www.amazon.com", url2: "https://www.walmart.com" },
-        { name: "Apple vs. Samsung", url1: "https://www.apple.com", url2: "https://www.samsung.com" }
-    ];
-
-    // Score component data for dynamic rendering and tooltips
-    const COMPONENT_DATA = {
-        karpov: { icon: "⚡", color: "text-indigo-600", description: "Speed, Load Time, Resource Count, Minification." },
-        vortex: { icon: "♿", color: "text-purple-600", description: "Accessibility, ARIA usage, Alt tags, Heading hierarchy." },
-        nova: { icon: "☁️", color: "text-pink-600", description: "Scalability, CDN, Caching, Compression." },
-        aether: { icon: "🚀", color: "text-red-600", description: "Modern Tech, WebAssembly, Service Workers, ES Modules." },
-        pulse: { icon: "🔍", color: "text-yellow-600", description: "SEO, Social Tags (OG/Twitter), Canonical URL, Title/Meta Description." },
-        eden: { icon: "⚖️", color: "text-green-600", description: "Efficiency, Total Page Weight (minimal bandwidth)." },
-        helix: { icon: "🔒", color: "text-teal-600", description: "Security, Privacy, Security Headers (CSP/HSTS), Tracker Count." },
-        echo: { icon: "🌱", color: "text-blue-600", description: "Sustainability, Green Hosting, Image Optimization." },
-        quantum: { icon: "⚛️", color: "text-gray-600", description: "Best Practices, Code Quality, Doctype, Inline Script Count." },
-        nexus: { icon: "📱", color: "text-indigo-600", description: "Mobile Responsiveness, Viewport Meta, Media Queries." }
-    };
-    
-    // --- UTILITY FUNCTIONS ---
-    function showMessage(text, isError = true) {
-        const box = document.getElementById('messageBox');
-        const textElement = document.getElementById('messageText');
-        
-        textElement.textContent = text;
-        box.classList.remove('translate-x-full');
-        box.classList.remove('bg-red-600', 'bg-green-600');
-        box.classList.add(isError ? 'bg-red-600' : 'bg-green-600');
-        
-        // Hide after 5 seconds
-        setTimeout(() => {
-            box.classList.add('translate-x-full');
-        }, 5000);
-    }
-
-    function toggleTheme() {
-        document.body.classList.toggle('retro');
-        const isRetro = document.body.classList.contains('retro');
-        localStorage.setItem('pythiaTheme', isRetro ? 'retro' : 'modern');
-        document.getElementById('themeToggle').textContent = isRetro ? '✨ MODERN MODE' : '🕹️ RETRO MODE';
-    }
-
-    function showPage(pageId) {
-        document.querySelectorAll('.page-content').forEach(page => {
-            page.classList.remove('active');
-            page.classList.add('hidden');
-        });
-        document.getElementById(`${pageId}Page`).classList.remove('hidden');
-        document.getElementById(`${pageId}Page`).classList.add('active');
-        closeMenu();
-        // Hide results when switching away from main page
-        if (pageId !== 'main') {
-            document.getElementById('pscoreContainer').classList.add('hidden');
-            document.getElementById('resultsContainer').classList.add('hidden');
-            document.getElementById('exportBtn').style.display = 'none';
-        }
-    }
-
-    function openMenu() {
-        document.getElementById('menuOverlay').classList.add('open');
-        document.getElementById('menuBackdrop').classList.add('open');
-    }
-
-    function closeMenu() {
-        document.getElementById('menuOverlay').classList.remove('open');
-        document.getElementById('menuBackdrop').classList.remove('open');
-    }
-
-    function getScoreColor(score) {
-        if (score >= 90) return 'bg-green-600';
-        if (score >= 70) return 'bg-yellow-600';
-        if (score >= 50) return 'bg-orange-600';
-        return 'bg-red-600';
-    }
-
-    function getScoreLabel(score) {
-        if (score >= 90) return 'Oracle';
-        if (score >= 70) return 'Strong';
-        if (score >= 50) return 'Fair';
-        return 'Weak';
-    }
-
-    function formatUrlForDisplay(url) {
-        try {
-            const u = new URL(url);
-            return u.hostname.replace('www.', '');
-        } catch {
-            return url;
-        }
-    }
-
-    // --- FIREBASE AND DATA MANAGEMENT ---
-
-    async function initFirebase() {
-        if (Object.keys(firebaseConfig).length === 0) {
-            console.error("Firebase config is missing. Data persistence will not work.");
-            auth = { currentUser: { uid: crypto.randomUUID() } };
-            userId = auth.currentUser.uid;
-            isAuthReady = true;
-            return;
-        }
-
-        app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-        
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                userId = user.uid;
-                console.log("Firebase initialized. User ID:", userId);
-            } else {
-                 try {
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } catch (e) {
-                    console.error("Auth failed:", e);
-                    // Fallback to random ID if auth fails
-                    userId = crypto.randomUUID();
-                }
-            }
-            isAuthReady = true;
-            fetchLeaderboard();
-            fetchEnterpriseDaily();
-            fetchRivalries();
-        });
-    }
-
-    // Leaderboard/Scan Storage
-    function getLeaderboardCollectionRef() {
-        return collection(db, `${STORAGE_PREFIX}/leaderboard/sites`);
-    }
-
-    async function saveScanResult(result) {
-        if (!isAuthReady || !db) return;
-        try {
-            const siteName = formatUrlForDisplay(result.url);
-            const docRef = doc(getLeaderboardCollectionRef(), btoa(result.url));
-            
-            // Only update the score if the new scan is better or if the document doesn't exist
-            await setDoc(docRef, {
-                url: result.url,
-                pscore: result.pscore,
-                siteName: siteName,
-                lastScan: result.timestamp,
-                loadTime: result.loadTime,
-                pageSize: result.pageSize
-            }, { merge: true }); // Merge ensures other fields (if any) are preserved
-        } catch (e) {
-            console.error("Error saving scan result:", e);
-            showMessage("Failed to save scan result to leaderboard. Check console for details.", true);
-        }
-    }
-
-    // Leaderboard Fetching (Real-time updates)
-    function fetchLeaderboard() {
-        if (!isAuthReady || !db) return;
-        
-        const qTop = query(getLeaderboardCollectionRef(), orderBy("pscore", "desc"), limit(10));
-        const qBottom = query(getLeaderboardCollectionRef(), orderBy("pscore", "asc"), limit(10));
-
-        // Top Sites Listener
-        onSnapshot(qTop, (snapshot) => {
-            const topSitesElement = document.getElementById('topSites');
-            topSitesElement.innerHTML = '';
-            snapshot.forEach((doc, index) => {
-                const data = doc.data();
-                topSitesElement.innerHTML += createLeaderboardEntry(data, index + 1);
-            });
-            document.getElementById('leaderboard').classList.remove('hidden');
-        }, (error) => {
-            console.error("Error fetching top leaderboard:", error);
-        });
-
-        // Bottom Sites Listener
-        onSnapshot(qBottom, (snapshot) => {
-            const bottomSitesElement = document.getElementById('bottomSites');
-            bottomSitesElement.innerHTML = '';
-            snapshot.forEach((doc, index) => {
-                const data = doc.data();
-                bottomSitesElement.innerHTML += createLeaderboardEntry(data, index + 1, false);
-            });
-        }, (error) => {
-            console.error("Error fetching bottom leaderboard:", error);
-        });
-    }
-
-    function createLeaderboardEntry(data, rank, isTop = true) {
-        const color = isTop ? 'text-green-600' : 'text-red-600';
-        return `
-            <div class="leaderboard-entry flex justify-between items-center p-3 rounded-lg border bg-gray-50">
-                <div class="flex items-center">
-                    <span class="font-bold text-lg w-6 ${color}">${rank}.</span>
-                    <a href="${data.url}" target="_blank" class="truncate font-semibold text-gray-800 hover:text-indigo-600 ml-2">
-                        ${data.siteName}
-                    </a>
-                </div>
-                <span class="font-extrabold text-xl ${color}">${data.pscore}</span>
-            </div>
-        `;
-    }
-
-    // Enterprise Daily Logic
-    function getDailyDocRef() {
-        const today = new Date().toISOString().slice(0, 10);
-        return doc(db, `${STORAGE_PREFIX}/enterprise_daily`, today);
-    }
-
-    function fetchEnterpriseDaily() {
-        if (!isAuthReady || !db) return;
-        
-        const loadingEl = document.getElementById('enterpriseDailyLoading');
-        const resultsEl = document.getElementById('enterpriseDailyResults');
-        const docRef = getDailyDocRef();
-
-        onSnapshot(docRef, async (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                
-                document.getElementById('enterpriseWinner').textContent = formatUrlForDisplay(data.url);
-                document.getElementById('enterprisePscore').textContent = data.pscore;
-                document.getElementById('enterpriseLoadTime').textContent = data.loadTime;
-                document.getElementById('enterpriseTotalScanned').textContent = `Scanned ${data.totalScanned} sites. Winner found: ${new Date(data.timestamp).toLocaleTimeString()}`;
-                document.getElementById('enterpriseLink').href = data.url;
-                
-                loadingEl.classList.add('hidden');
-                resultsEl.classList.remove('hidden');
-            } else {
-                // If the document doesn't exist for today, run a mock scan (real scan would be a separate daily worker)
-                loadingEl.classList.remove('hidden');
-                resultsEl.classList.add('hidden');
-                await runMockDailyScan();
-            }
-        }, (error) => {
-             console.error("Error fetching enterprise daily:", error);
-             loadingEl.innerHTML = '<div class="text-red-500">Error loading daily data.</div>';
-        });
-    }
-
-    // Mock function to simulate a daily scan and populate Firestore
-    async function runMockDailyScan() {
-         if (!isAuthReady || !db) return;
-         // Simulate finding a high-performing site on the first try
-         const mockSites = [
-             { url: 'https://vercel.com', pscore: 95, loadTime: '0.45s', pageSize: '1.2MB' },
-             { url: 'https://stripe.com', pscore: 92, loadTime: '0.80s', pageSize: '1.5MB' },
-             { url: 'https://docs.github.com', pscore: 88, loadTime: '1.2s', pageSize: '2.5MB' }
-         ];
-         
-         const winner = mockSites[Math.floor(Math.random() * mockSites.length)];
-
-         const dailyData = {
-             url: winner.url,
-             pscore: winner.pscore,
-             loadTime: winner.loadTime,
-             pageSize: winner.pageSize,
-             totalScanned: 1000,
-             timestamp: new Date().toISOString()
-         };
-
-         try {
-             const docRef = getDailyDocRef();
-             await setDoc(docRef, dailyData);
-             // The onSnapshot listener will update the UI automatically
-         } catch (e) {
-             console.error("Error running mock daily scan:", e);
-         }
-    }
-    
-    // Rivalry Management
-    function getRivalryListRef() {
-        return doc(db, `${STORAGE_PREFIX}/config`, 'rivalries');
-    }
-
-    async function fetchRivalries() {
-        if (!isAuthReady || !db) {
-            renderRivalryList(RIVALRY_LIST); // Use default if no database
-            return;
-        }
-
-        const docRef = getRivalryListRef();
-
-        onSnapshot(docRef, (docSnap) => {
-            let list = RIVALRY_LIST;
-            if (docSnap.exists() && docSnap.data().list) {
-                list = docSnap.data().list;
-            }
-            renderRivalryList(list);
-        }, (error) => {
-            console.error("Error fetching rivalries. Using default list.", error);
-            renderRivalryList(RIVALRY_LIST);
-        });
-    }
-
-    function renderRivalryList(list) {
-        const listEl = document.getElementById('rivalryList');
-        listEl.innerHTML = list.map(rivalry => `
-            <div class="rivalry-item flex justify-between items-center p-3 rounded-lg cursor-pointer hover:bg-indigo-100 transition"
-                onclick="startRivalryBattle('${rivalry.url1}', '${rivalry.url2}', '${rivalry.name}')">
-                <span class="font-semibold text-gray-800">${rivalry.name}</span>
-                <span class="text-indigo-600 font-bold">BATTLE ⚔️</span>
-            </div>
-        `).join('');
-    }
-
-
-    // --- MAIN SCAN LOGIC ---
-    
-    async function fetchScanResult(url) {
-        // Simple exponential backoff implementation for API calls
-        for (let attempt = 0; attempt < 3; attempt++) {
-            try {
-                const response = await fetch(API_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url })
-                });
-
-                const data = await response.json();
-                
-                if (!response.ok || data.error) {
-                    throw new Error(data.message || 'API scan failed.');
-                }
-                
-                return data;
-            } catch (error) {
-                if (attempt === 2) throw error; // Re-throw on final attempt
-                await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000)); // Wait 1s, 2s
-            }
-        }
-    }
-
-    async function handleScan(url) {
-        const scanBtn = document.getElementById('scanBtn');
-        const input = document.getElementById('urlInput');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const pscoreContainer = document.getElementById('pscoreContainer');
-        
-        if (!url) {
-            showMessage("Please enter a valid URL.", true);
-            return;
-        }
-        
-        scanBtn.textContent = 'ANALYZING...';
-        scanBtn.classList.add('scanning');
-        scanBtn.disabled = true;
-        
-        resultsContainer.classList.add('hidden');
-        pscoreContainer.classList.add('hidden');
-        document.getElementById('exportBtn').style.display = 'none';
-
-        try {
-            const result = await fetchScanResult(url);
-            
-            // 1. Update Main UI
-            renderMainResults(result);
-            
-            // 2. Save result to Firestore (Leaderboard)
-            await saveScanResult(result);
-            
-            showMessage("Scan complete! Check the P-Score below.", false);
-
-        } catch (e) {
-            console.error("Scan error:", e);
-            renderError(e.message);
-        } finally {
-            scanBtn.textContent = 'ANALYZE';
-            scanBtn.classList.remove('scanning');
-            scanBtn.disabled = false;
-        }
-    }
-
-    function renderMainResults(result) {
-        // P-Score Container
-        document.getElementById('pscoreValue').textContent = result.pscore;
-        document.getElementById('siteInfo').innerHTML = `
-            Scanned: <a href="${result.url}" target="_blank" class="underline">${formatUrlForDisplay(result.url)}</a> | 
-            Load: ${result.loadTime} | 
-            Size: ${result.pageSize} | 
-            Analysis: ${result.analysisTime}ms
-        `;
-        document.getElementById('pscoreContainer').classList.remove('hidden');
-        
-        // Detailed Components Container
-        const resultsContainer = document.getElementById('resultsContainer');
-        resultsContainer.innerHTML = '';
-        const scores = { ...result }; // Copy scores
-        delete scores.pscore; 
-        
-        // Dynamically grab the 10 core scores
-        const componentKeys = ['karpov', 'vortex', 'nova', 'aether', 'pulse', 'eden', 'helix', 'echo', 'quantum', 'nexus'];
-        
-        componentKeys.forEach(key => {
-            const score = result[key];
-            const data = COMPONENT_DATA[key];
-            resultsContainer.innerHTML += `
-                <div class="score-card bg-white rounded-xl shadow-md p-4 text-center border-b-4 border-l-2 border-r-2 ${getScoreColor(score).replace('bg', 'border')}"
-                     data-key="${key}" data-score="${score}">
-                    <div class="flex items-center justify-center mb-2">
-                        <span class="text-3xl">${data.icon}</span>
-                        <span class="text-xl font-bold ml-2 ${data.color}">${key.toUpperCase()}</span>
-                    </div>
-                    <div class="text-4xl font-extrabold text-gray-800">${score}</div>
-                    <div class="text-sm text-gray-500 mt-1">${getScoreLabel(score)}</div>
-                    <div class="tooltip mt-1 text-sm font-semibold text-indigo-500 cursor-help">
-                        Details
-                        <span class="tooltiptext bg-indigo-700 text-white p-3 rounded-lg">
-                            ${data.description}
-                            <br><br>
-                            ${getBreakdownHtml(key, result.breakdown[key])}
-                        </span>
-                    </div>
-                </div>
-            `;
-        });
-        
-        resultsContainer.classList.remove('hidden');
-        document.getElementById('exportBtn').style.display = 'block';
-    }
-
-    function getBreakdownHtml(key, data) {
-        if (!data) return "Breakdown not available.";
-        let html = '<div class="text-sm font-bold mt-2">TECHNICAL BREAKDOWN:</div>';
-        
-        // Simplify and clean the breakdown display for tooltips
-        for (const [k, v] of Object.entries(data)) {
-            if (typeof v === 'boolean') {
-                html += `<div class="mt-1">${k}: <span class="${v ? 'text-green-300' : 'text-red-300'} font-semibold">${v ? 'YES' : 'NO'}</span></div>`;
-            } else if (typeof v === 'object' && v !== null) {
-                // Ignore nested objects for simplicity in the small tooltip
-                continue;
-            } else {
-                html += `<div class="mt-1">${k}: <span class="font-semibold">${v}</span></div>`;
-            }
-        }
-        return html;
-    }
-
-    function renderError(message) {
-        document.getElementById('pscoreContainer').classList.add('hidden');
-        document.getElementById('resultsContainer').classList.add('hidden');
-        showMessage(`Scan Failed: ${message}`, true);
-    }
-    
-    // --- RIVALRY BATTLE LOGIC ---
-
-    async function startRivalryBattle(url1, url2, name = 'Custom Battle') {
-        const battleBtn = document.getElementById('customBattleBtn');
-        const loadingEl = document.getElementById('rivalryBattleLoading');
-        const resultsEl = document.getElementById('rivalryBattleResults');
-        const winnerEl = document.getElementById('winnerAnnouncement');
-        const c1El = document.getElementById('contestant1Results');
-        const c2El = document.getElementById('contestant2Results');
-
-        // Reset UI
-        resultsEl.classList.add('hidden');
-        winnerEl.innerHTML = '';
-        c1El.innerHTML = '';
-        c2El.innerHTML = '';
-        battleBtn.disabled = true;
-        loadingEl.classList.remove('hidden');
-        
-        showMessage(`Starting ${name} between ${formatUrlForDisplay(url1)} and ${formatUrlForDisplay(url2)}...`, false);
-
-        try {
-            // Run scans in parallel for speed
-            const [result1, result2] = await Promise.all([
-                fetchScanResult(url1),
-                fetchScanResult(url2)
-            ]);
-
-            // 1. Render Contestant 1 (Blue/Indigo)
-            renderContestantResult(c1El, result1, 'indigo');
-            await saveScanResult(result1);
-
-            // 2. Render Contestant 2 (Purple/Violet)
-            renderContestantResult(c2El, result2, 'purple');
-            await saveScanResult(result2);
-
-            // 3. Announce Winner
-            let winnerMessage = '';
-            let winnerClass = '';
-            if (result1.pscore > result2.pscore) {
-                winnerMessage = `🏆 WINNER: ${formatUrlForDisplay(url1)} with ${result1.pscore}!`;
-                winnerClass = 'bg-green-700 text-white';
-            } else if (result2.pscore > result1.pscore) {
-                winnerMessage = `🏆 WINNER: ${formatUrlForDisplay(url2)} with ${result2.pscore}!`;
-                winnerClass = 'bg-purple-700 text-white';
-            } else {
-                winnerMessage = '🤝 TIE! Both sites scored the same P-Score.';
-                winnerClass = 'bg-yellow-500 text-gray-800';
-            }
-            winnerEl.innerHTML = `<span class="text-xl font-extrabold">${winnerMessage}</span>`;
-            winnerEl.className = `text-center p-4 mb-4 rounded-lg shadow-xl ${winnerClass}`;
-
-
-        } catch (e) {
-            winnerEl.className = 'text-center p-4 mb-4 rounded-lg bg-red-600 text-white';
-            winnerEl.innerHTML = `<span class="text-lg font-extrabold">BATTLE FAILURE: ${e.message}</span>`;
-        } finally {
-            loadingEl.classList.add('hidden');
-            resultsEl.classList.remove('hidden');
-            battleBtn.disabled = false;
-        }
-    }
-    
-    function renderContestantResult(element, result, color) {
-        element.innerHTML = `
-            <div class="text-center mb-3">
-                <a href="${result.url}" target="_blank" class="text-xl font-bold text-${color}-600 hover:underline">${formatUrlForDisplay(result.url)}</a>
-            </div>
-            <div class="text-center">
-                <div class="text-2xl font-extrabold mb-1">P-SCORE: <span class="text-${color}-600">${result.pscore}</span></div>
-                <div class="text-sm text-gray-600">Load Time: ${result.loadTime}</div>
-                <div class="text-sm text-gray-600">Size: ${result.pageSize}</div>
-            </div>
-            <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
-                ${Object.keys(COMPONENT_DATA).map(key => `
-                    <div class="flex justify-between items-center p-1 rounded ${getScoreColor(result[key]).replace('bg', 'bg-')}-100">
-                        <span class="font-semibold text-gray-800">${key.toUpperCase()}</span>
-                        <span class="font-bold text-lg text-${color}-600">${result[key]}</span>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-        element.style.borderColor = `var(--tw-color-${color}-400)`;
-    }
-
-    // --- EXPORT FUNCTIONALITY ---
-    function exportResults() {
-        // Find the last scan result that was rendered (assuming it's stored in a global variable or derived from UI)
-        // Since the app is a single page and the results are rendered, we can safely grab the necessary data from the UI or store it temporarily.
-        const pscoreValue = document.getElementById('pscoreValue').textContent;
-        const siteInfo = document.getElementById('siteInfo').textContent;
-        const url = document.getElementById('siteInfo').querySelector('a').href;
-        const detailedScores = Array.from(document.querySelectorAll('.score-card')).map(card => {
-            const key = card.getAttribute('data-key');
-            const score = card.getAttribute('data-score');
-            return `${key.toUpperCase()}: ${score}`;
-        }).join('\n');
-        
-        const reportText = `
---- PYTHIA P-SCORE ANALYSIS REPORT ---
-Website: ${url}
-Overall P-Score: ${pscoreValue}
-${siteInfo.replace(/\|/g, '\n')}
-
---- COMPONENT BREAKDOWN (10% Weighting Each) ---
-${detailedScores}
--------------------------------------
-Pythia - One Score to Rank Them All.
-        `.trim();
-        
-        // Create a downloadable text file
-        const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `pythia_report_${formatUrlForDisplay(url)}_${new Date().toISOString().slice(0, 10)}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-    
-    // --- EVENT LISTENERS AND INITIAL LOAD ---
-    document.addEventListener('DOMContentLoaded', () => {
-        // Apply theme from local storage
-        if (localStorage.getItem('pythiaTheme') === 'retro') {
-            toggleTheme(); // will set retro
-        } else {
-            document.getElementById('themeToggle').textContent = '🕹️ RETRO MODE'; // default modern
-        }
-        
-        // Initial Firebase and Auth setup
-        initFirebase();
-
-        // Main Analyze Button
-        document.getElementById('scanBtn').addEventListener('click', () => {
-            const url = document.getElementById('urlInput').value.trim();
-            handleScan(url);
-        });
-        
-        // Export Button
-        document.getElementById('exportBtn').addEventListener('click', exportResults);
-
-        // Custom Battle Button
-        document.getElementById('customBattleBtn').addEventListener('click', () => {
-            const url1 = document.getElementById('customUrl1').value.trim();
-            const url2 = document.getElementById('customUrl2').value.trim();
-            if (url1 && url2) {
-                startRivalryBattle(url1, url2);
-            } else {
-                showMessage("Please enter two URLs for the Custom Battle.", true);
-            }
-        });
-        
-        // Start the app on the main page
-        showPage('main');
-    });
-
-    // Global functions for HTML access
-    window.openMenu = openMenu;
-    window.closeMenu = closeMenu;
-    window.showPage = showPage;
-    window.toggleTheme = toggleTheme;
-    window.startRivalryBattle = startRivalryBattle;
-    
-  </script>
-</body>
-</html>
+      <div class="modern-card bg-white rou
