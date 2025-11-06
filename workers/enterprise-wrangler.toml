@@ -2,6 +2,6 @@ name = "enterprise-daily-scanner"
 main = "workers/enterprise-daily-scanner.js"
 compatibility_date = "2025-11-06"
 kv_namespaces = [
-  { binding = "PYTHIA_TOP50_KV", id = "[YOUR_KV_ID]" }
+  { binding = "PYTHIA_TOP50_KV", id = "6561d92e53c2470296e0ec367a44fa51" }
 ]
 triggers = { crons = ["0 8 * * *"] }
