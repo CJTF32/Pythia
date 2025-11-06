@@ -16,8 +16,16 @@ export async function onRequest(context) {
   }
 
   try {
-    const url = new URL(request.url);
-    const targetUrl = url.searchParams.get('url');
+    let targetUrl;
+    
+    // Support both GET (query param) and POST (JSON body)
+    if (request.method === 'POST') {
+      const body = await request.json();
+      targetUrl = body.url;
+    } else {
+      const url = new URL(request.url);
+      targetUrl = url.searchParams.get('url');
+    }
 
     if (!targetUrl) {
       return new Response(JSON.stringify({ error: 'URL parameter required' }), {
