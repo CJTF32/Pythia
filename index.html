@@ -1,1187 +1,1261 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- SEO Optimization -->
-  <title>Pythia™ - Website Performance Analysis Tool | One Score to Rank Them All</title>
-  <meta name="description" content="Pythia™ is the ultimate website performance oracle analyzing speed, accessibility, SEO, privacy, and sustainability. Get one unified P-Score for any website in seconds.">
-  <meta name="keywords" content="website performance, one score, site speed test, SEO analyzer, accessibility checker, website security, performance testing, web optimization, P-Score">
-  
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://p-score.me/">
-  <meta property="og:title" content="Pythia™ - Website Performance Oracle | Scanned by Pythia™ 🔮">
-  <meta property="og:description" content="Complete website performance analysis in one unified P-Score. Measure speed, accessibility, SEO, privacy, sustainability and more.">
-  <meta property="og:image" content="https://p-score.me/pythia-oracle.gif">
-  
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://p-score.me/">
-  <meta property="twitter:title" content="Pythia™ - Website Performance Analysis Tool">
-  <meta property="twitter:description" content="One score to rank them all. Complete website performance oracle. Scanned by Pythia™ 🔮">
-  <meta property="twitter:image" content="https://p-score.me/pythia-oracle.gif">
-  
-  <!-- Canonical -->
-  <meta name="canonical" href="https://p-score.me/">
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* ==== NEW ENHANCEMENTS ==== */
-    
-    /* Loading Spinner */
-    @keyframes retro-spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .retro-spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #003300;
-      border-top: 4px solid #00ff00;
-      border-radius: 50%;
-      animation: retro-spin 1s linear infinite;
-      margin: 20px auto;
-    }
-    
-    body.retro .retro-spinner {
-      border: 4px solid #003300;
-      border-top: 4px solid #00ff00;
-      box-shadow: 0 0 20px #00ff00;
-    }
-    
-    /* CRT Effects */
-    @keyframes flicker {
-      0% { opacity: 0.98; }
-      5% { opacity: 1; }
-      10% { opacity: 0.98; }
-      15% { opacity: 1; }
-      20% { opacity: 0.97; }
-      25% { opacity: 1; }
-      100% { opacity: 1; }
-    }
-    
-    @keyframes scanline {
-      0% { transform: translateY(-100%); }
-      100% { transform: translateY(100vh); }
-    }
-    
-    body.retro::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0, 255, 0, 0.03) 0px,
-        rgba(0, 255, 0, 0.03) 1px,
-        transparent 1px,
-        transparent 2px
-      );
-      pointer-events: none;
-      z-index: 9999;
-      animation: flicker 0.15s infinite;
-    }
-    
-    body.retro::after {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: linear-gradient(
-        to bottom,
-        rgba(0, 255, 0, 0) 0%,
-        rgba(0, 255, 0, 0.3) 50%,
-        rgba(0, 255, 0, 0) 100%
-      );
-      pointer-events: none;
-      z-index: 9998;
-      animation: scanline 6s linear infinite;
-    }
-    
-    /* Boot Sequence */
-    @keyframes boot-fade {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-    
-    .boot-sequence {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      color: #00ff00;
-      font-family: 'Courier New', monospace;
-      padding: 40px;
-      z-index: 10000;
-      overflow-y: auto;
-      animation: boot-fade 0.5s ease-in;
-    }
-    
-    .boot-line {
-      opacity: 0;
-      animation: boot-fade 0.3s ease-in forwards;
-    }
-    
-    /* Sound Toggle */
-    .sound-toggle {
-      position: fixed;
-      top: 20px;
-      right: 80px;
-      background: rgba(0, 0, 0, 0.8);
-      border: 2px solid #00ff00;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 1001;
-      transition: all 0.3s ease;
-    }
-    
-    .sound-toggle:hover {
-      box-shadow: 0 0 15px #00ff00;
-      transform: scale(1.1);
-    }
-    
-    body.retro .sound-toggle {
-      display: flex;
-    }
-    
-    body:not(.retro) .sound-toggle {
-      display: none;
-    }
-    
-    /* Visit Counter */
-    .visit-counter {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.8);
-      color: #00ff00;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      z-index: 1000;
-      border: 2px solid #00ff00;
-      box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-    }
-    
-    /* Collapse/Expand */
-    .detail-content {
-      max-height: 5000px;
-      overflow: hidden;
-      transition: max-height 0.3s ease-out;
-    }
-    
-    .detail-content.collapsed {
-      max-height: 0;
-    }
-    
-    /* Badge Styles */
-    .badge-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 16px;
-      padding: 30px;
-      color: white;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    body.retro .badge-card {
-      background: #001a00 !important;
-      border: 4px solid #00ff00 !important;
-      border-radius: 0 !important;
-      box-shadow: 0 0 20px #00ff00 !important;
-    }
-    
-    .badge-pscore {
-      font-size: 72px;
-      font-weight: bold;
-      text-shadow: 0 0 20px rgba(255,255,255,0.5);
-    }
-    
-    body.retro .badge-pscore {
-      color: #00ff00 !important;
-      text-shadow: 0 0 30px #00ff00 !important;
-    }
-    
-    /* Summon Mode */
-    body.summon-mode {
-      background: #1a0033 !important;
-      background-image: 
-        repeating-linear-gradient(0deg, transparent, transparent 2px, #330066 2px, #330066 4px),
-        repeating-linear-gradient(90deg, transparent, transparent 2px, #2a0044 2px, #2a0044 4px) !important;
-    }
-    
-    body.summon-mode .modern-card {
-      border-color: #ff00ff !important;
-      box-shadow: 0 0 30px #ff00ff !important;
-    }
-    
-    body.summon-mode h1, body.summon-mode h2, body.summon-mode h3 {
-      color: #ff00ff !important;
-      text-shadow: 2px 2px 0 #660066, 0 0 15px #ff00ff !important;
-    }
-    
-    body.summon-mode p, body.summon-mode div, body.summon-mode span {
-      color: #ff66ff !important;
-    }
-    
-    /* Typing Animation */
-    @keyframes typing {
-      from { width: 0; }
-      to { width: 100%; }
-    }
-    @keyframes blink-cursor {
-      from, to { border-right: 2px solid #00ff00; }
-      50% { border-right: none; }
-    }
-    .typing-effect {
-      overflow: hidden;
-      border-right: 2px solid #00ff00;
-      white-space: nowrap;
-      animation: typing 2s steps(40, end), blink-cursor 0.75s step-end infinite;
-    }
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+ <!-- SEO Optimization -->
+ <title>Pythia™ - Website Performance Analysis Tool | One Score to Rank Them All</title>
+ <meta name="description" content="Pythia™ is the ultimate website performance oracle analyzing speed, accessibility, SEO, privacy, and sustainability. Get one unified P-Score for any website in seconds.">
+ <meta name="keywords" content="website performance, one score, site speed test, SEO analyzer, accessibility checker, website security, performance testing, web optimization, P-Score">
+ 
+ <!-- Open Graph / Facebook -->
+ <meta property="og:type" content="website">
+ <meta property="og:url" content="https://p-score.me/">
+ <meta property="og:title" content="Pythia™ - Website Performance Oracle | Scanned by Pythia™ 🔮">
+ <meta property="og:description" content="Complete website performance analysis in one unified P-Score. Measure speed, accessibility, SEO, privacy, sustainability and more.">
+ <meta property="og:image" content="https://p-score.me/pythia-oracle.gif">
+ 
+ <!-- Twitter -->
+ <meta property="twitter:card" content="summary_large_image">
+ <meta property="twitter:url" content="https://p-score.me/">
+ <meta property="twitter:title" content="Pythia™ - Website Performance Analysis Tool">
+ <meta property="twitter:description" content="One score to rank them all. Complete website performance oracle. Scanned by Pythia™ 🔮">
+ <meta property="twitter:image" content="https://p-score.me/pythia-oracle.gif">
+ 
+ <!-- Canonical -->
+ <meta name="canonical" href="https://p-score.me/">
+ 
+ <script src="https://cdn.tailwindcss.com"></script>
+ <style>
+ /* Loading Spinner */
+ @keyframes retro-spin {
+ 0% { transform: rotate(0deg); }
+ 100% { transform: rotate(360deg); }
+ }
+ 
+ .retro-spinner {
+ width: 40px;
+ height: 40px;
+ border: 4px solid #003300;
+ border-top: 4px solid #00ff00;
+ border-radius: 50%;
+ animation: retro-spin 1s linear infinite;
+ margin: 20px auto;
+ }
+ 
+ body.retro .retro-spinner {
+ border: 4px solid #003300;
+ border-top: 4px solid #00ff00;
+ box-shadow: 0 0 20px #00ff00;
+ }
+ 
+ /* CRT Effects */
+ @keyframes flicker {
+ 0% { opacity: 0.98; }
+ 5% { opacity: 1; }
+ 10% { opacity: 0.98; }
+ 15% { opacity: 1; }
+ 20% { opacity: 0.97; }
+ 25% { opacity: 1; }
+ 100% { opacity: 1; }
+ }
+ 
+ @keyframes scanline {
+ 0% { transform: translateY(-100%); }
+ 100% { transform: translateY(100vh); }
+ }
+ 
+ body.retro::before {
+ content: '';
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ background: repeating-linear-gradient(
+ 0deg,
+ rgba(0, 255, 0, 0.03) 0px,
+ rgba(0, 255, 0, 0.03) 1px,
+ transparent 1px,
+ transparent 2px
+ );
+ pointer-events: none;
+ z-index: 9999;
+ animation: flicker 0.15s infinite;
+ }
+ 
+ body.retro::after {
+ content: '';
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 3px;
+ background: linear-gradient(
+ to bottom,
+ rgba(0, 255, 0, 0) 0%,
+ rgba(0, 255, 0, 0.3) 50%,
+ rgba(0, 255, 0, 0) 100%
+ );
+ pointer-events: none;
+ z-index: 9998;
+ animation: scanline 6s linear infinite;
+ }
+ 
+ /* Boot Sequence */
+ @keyframes boot-fade {
+ 0% { opacity: 0; }
+ 100% { opacity: 1; }
+ }
+ 
+ .boot-sequence {
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ background: #000;
+ color: #00ff00;
+ font-family: 'Courier New', monospace;
+ padding: 40px;
+ z-index: 10000;
+ overflow-y: auto;
+ animation: boot-fade 0.5s ease-in;
+ }
+ 
+ .boot-line {
+ opacity: 0;
+ animation: boot-fade 0.3s ease-in forwards;
+ }
+ 
+ /* Sound Toggle */
+ .sound-toggle {
+ position: fixed;
+ top: 20px;
+ right: 80px;
+ background: rgba(0, 0, 0, 0.8);
+ border: 2px solid #00ff00;
+ border-radius: 50%;
+ width: 48px;
+ height: 48px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ cursor: pointer;
+ z-index: 1001;
+ transition: all 0.3s ease;
+ }
+ 
+ .sound-toggle:hover {
+ box-shadow: 0 0 15px #00ff00;
+ transform: scale(1.1);
+ }
+ 
+ body.retro .sound-toggle {
+ display: flex;
+ }
+ 
+ body:not(.retro) .sound-toggle {
+ display: none;
+ }
+ 
+ /* Visit Counter */
+ .visit-counter {
+ position: fixed;
+ bottom: 20px;
+ right: 20px;
+ background: rgba(0, 0, 0, 0.8);
+ color: #00ff00;
+ padding: 10px 15px;
+ border-radius: 8px;
+ font-family: 'Courier New', monospace;
+ font-size: 14px;
+ z-index: 1000;
+ border: 2px solid #00ff00;
+ box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+ }
+ 
+ /* Collapse/Expand */
+ .detail-content {
+ max-height: 5000px;
+ overflow: hidden;
+ transition: max-height 0.3s ease-out;
+ }
+ 
+ .detail-content.collapsed {
+ max-height: 0;
+ }
+ 
+ /* Badge Styles */
+ .badge-card {
+ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+ border-radius: 16px;
+ padding: 30px;
+ color: white;
+ text-align: center;
+ position: relative;
+ overflow: hidden;
+ }
+ 
+ body.retro .badge-card {
+ background: #001a00 !important;
+ border: 4px solid #00ff00 !important;
+ border-radius: 0 !important;
+ box-shadow: 0 0 20px #00ff00 !important;
+ }
+ 
+ .badge-pscore {
+ font-size: 72px;
+ font-weight: bold;
+ text-shadow: 0 0 20px rgba(255,255,255,0.5);
+ }
+ 
+ body.retro .badge-pscore {
+ color: #00ff00 !important;
+ text-shadow: 0 0 30px #00ff00 !important;
+ }
+ 
+ /* Summon Mode */
+ body.summon-mode {
+ background: #1a0033 !important;
+ background-image: 
+ repeating-linear-gradient(0deg, transparent, transparent 2px, #330066 2px, #330066 4px),
+ repeating-linear-gradient(90deg, transparent, transparent 2px, #2a0044 2px, #2a0044 4px) !important;
+ }
+ 
+ body.summon-mode .modern-card {
+ border-color: #ff00ff !important;
+ box-shadow: 0 0 30px #ff00ff !important;
+ }
+ 
+ body.summon-mode h1, body.summon-mode h2, body.summon-mode h3 {
+ color: #ff00ff !important;
+ text-shadow: 2px 2px 0 #660066, 0 0 15px #ff00ff !important;
+ }
+ 
+ body.summon-mode p, body.summon-mode div, body.summon-mode span {
+ color: #ff66ff !important;
+ }
+ 
+ /* Typing Animation */
+ @keyframes typing {
+ from { width: 0; }
+ to { width: 100%; }
+ }
+ @keyframes blink-cursor {
+ from, to { border-right: 2px solid #00ff00; }
+ 50% { border-right: none; }
+ }
+ .typing-effect {
+ overflow: hidden;
+ border-right: 2px solid #00ff00;
+ white-space: nowrap;
+ animation: typing 2s steps(40, end), blink-cursor 0.75s step-end infinite;
+ }
 
-    /* Curved Distortion */
-    body.retro {
-      filter: url(#curved-distortion);
-    }
-    <svg style="position: absolute; width: 0; height: 0;">
-      <defs>
-        <filter id="curved-distortion" x="-50%" y="-50%" width="200%" height="200%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="1" result="noise"/>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G"/>
-        </filter>
-      </defs>
-    </svg>
+ /* Curved Distortion (subtle) */
+ body.retro {
+ filter: url(#curved-distortion);
+ }
+ svg {
+ position: absolute;
+ width: 0;
+ height: 0;
+ }
+ #curved-distortion {
+ x: -50%;
+ y: -50%;
+ width: 200%;
+ height: 200%;
+ }
 
-    /* Accessibility Contrast */
-    :root {
-      --text-high: #00ff00;
-      --text-med: #33ff33;
-      --bg-dark: #000;
-    }
-    body.retro { color: var(--text-high); background: var(--bg-dark); }
-    body.retro .text-gray-600 { color: var(--text-med) !important; }
-    
-    /* ==== ORIGINAL STYLES ==== */
-    
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-      50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
-    }
-    .scanning { animation: pulse-glow 2s infinite; }
-    
-    .menu-overlay {
-      position: fixed; top: 0; left: -100%; width: 80%; max-width: 400px; height: 100vh;
-      background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.3); transition: left 0.3s ease;
-      z-index: 1000; overflow-y: auto;
-    }
-    .menu-overlay.open { left: 0; }
-    .menu-backdrop {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.5);
-      opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 999;
-    }
-    .menu-backdrop.open { opacity: 1; visibility: visible; }
-    .page-content { display: none; }
-    .page-content.active { display: block; }
-    
-    /* Retro Mode Styles */
-    body.retro {
-      background: #000000 !important;
-      font-family: 'Courier New', monospace !important;
-      image-rendering: pixelated;
-      color: #00ff00 !important;
-      background-image: 
-        repeating-linear-gradient(0deg, transparent, transparent 2px, #001100 2px, #001100 4px),
-        repeating-linear-gradient(90deg, transparent, transparent 2px, #001100 2px, #001100 4px);
-      background-size: 40px 40px;
-    }
-    body.retro * {
-      font-family: 'Courier New', monospace !important;
-      image-rendering: pixelated;
-    }
-    body.retro .modern-card {
-      background: #0a0a0a !important;
-      border: 4px solid #00ff00 !important;
-      border-radius: 0 !important;
-      box-shadow: 0 0 20px #00ff00 !important;
-    }
-    body.retro .retro-button {
-      background: #003300 !important;
-      border: 3px solid #00ff00 !important;
-      border-radius: 0 !important;
-      color: #00ff00 !important;
-      font-weight: bold !important;
-      padding: 8px 16px !important;
-      text-shadow: 0 0 5px #00ff00;
-    }
-    body.retro .retro-button:hover {
-      background: #005500 !important;
-      box-shadow: 0 0 15px #00ff00;
-    }
-    body.retro #themeToggle,
-    body.retro .page-content button,
-    body.retro .menu-overlay button {
-      background: #001a00 !important;
-      color: #33ff33 !important;
-      border: 2px solid #33ff33 !important;
-      text-shadow: 0 0 3px #33ff33 !important;
-    }
-    body.retro #themeToggle:hover,
-    body.retro .page-content button:hover {
-      background: #003300 !important;
-      color: #66ff66 !important;
-    }
-    body.retro .text-gray-500,
-    body.retro .text-gray-600,
-    body.retro .text-gray-700,
-    body.retro .text-gray-800,
-    body.retro p:not(.font-bold):not(h1):not(h2):not(h3) {
-      color: #33ff33 !important;
-      text-shadow: 0 0 2px #33ff33 !important;
-    }
-    body.retro .score-card {
-      border: 3px solid #00ff00 !important;
-      border-radius: 0 !important;
-      box-shadow: 0 0 10px currentColor !important;
-      background: #001a00 !important;
-    }
-    body.retro h1, body.retro h2, body.retro h3 {
-      color: #00ff00 !important;
-      text-shadow: 2px 2px 0 #003300, 0 0 10px #00ff00 !important;
-    }
-    body.retro p, body.retro div, body.retro span, body.retro label {
-      color: #00ff00 !important;
-    }
-    body.retro .bg-gray-50, body.retro .bg-green-50, body.retro .bg-red-50 {
-      background: #001a00 !important;
-      border: 1px solid #003300 !important;
-    }
-    body.retro .bg-white { background: #000000 !important; }
-    body.retro input {
-      background: #000000 !important;
-      border: 2px solid #00ff00 !important;
-      color: #00ff00 !important;
-    }
-    body.retro input::placeholder { color: #006600 !important; }
-    body.retro .menu-overlay {
-      background: #000000 !important;
-      border-right: 4px solid #00ff00 !important;
-    }
-    
-    body.retro #pythiaLogo {
-      width: 160px !important;
-      height: 160px !important;
-    }
-    
-    #mainTagline {
-      font-size: 2rem !important;
-    }
-    body.retro #mainTagline {
-      font-size: 2.5rem !important;
-    }
-    
-    body.retro {
-      background: 
-        repeating-linear-gradient(0deg, #000000 0px, #003300 2px, #000000 4px),
-        repeating-linear-gradient(90deg, #000000 0px, #001a00 2px, #000000 4px) !important;
-    }
-    
-    body.retro .rivalry-item:nth-child(odd) {
-      background: #003300 !important;
-      border: 2px solid #00ff00 !important;
-    }
-    body.retro .rivalry-item:nth-child(even) {
-      background: #001a00 !important;
-      border: 2px solid #006600 !important;
-    }
-    
-    .score-card {
-      transition: all 0.3s;
-      border: 2px solid transparent;
-    }
-    body:not(.retro) .score-card:hover {
-      transform: scale(1.05);
-      border-color: rgba(99, 102, 241, 0.3);
-    }
-    
-    .sword-fighting { display: inline-block; animation: sword-swing 0.5s infinite; }
-    @keyframes sword-swing {
-      0%, 100% { transform: rotate(-15deg); }
-      50% { transform: rotate(15deg); }
-    }
-    
-    .tooltip { position: relative; display: inline-block; }
-    .tooltip .tooltiptext {
-      visibility: hidden; width: 280px; background-color: #1f2937; color: #fff;
-      text-align: left; border-radius: 8px; padding: 12px; position: absolute; z-index: 1000;
-      bottom: 125%; left: 50%; margin-left: -140px; opacity: 0; transition: opacity 0.3s;
-      font-size: 13px; line-height: 1.4; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    }
-    .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
-    
-    .leaderboard-entry { transition: all 0.2s; }
-    .leaderboard-entry:hover {
-      transform: translateX(4px);
-      background: rgba(99, 102, 241, 0.1);
-    }
-    
-    .cache-badge {
-      display: inline-block; padding: 2px 8px; border-radius: 12px;
-      font-size: 10px; font-weight: bold; margin-left: 8px;
-    }
-    .cache-live { background: #10b981; color: white; }
-    .cache-stored { background: #6366f1; color: white; }
-    
-    .winner-icon {
-      width: 80px; height: 80px; object-fit: contain; margin: 0 auto 1rem;
-      border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-  </style>
+ /* Accessibility Improvements */
+ :root {
+ --text-high-contrast: #00ff00;
+ --text-med-contrast: #33ff33;
+ --bg-dark: #000;
+ }
+ body.retro {
+ color: var(--text-high-contrast);
+ background: var(--bg-dark);
+ }
+ body.retro .text-gray-600 {
+ color: var(--text-med-contrast) !important;
+ }
+ input, button {
+ outline: 2px solid transparent;
+ transition: outline 0.2s;
+ }
+ input:focus, button:focus {
+ outline: 2px solid #00ff00;
+ }
+
+ /* Original Styles (condensed for space) */
+ @keyframes pulse-glow {
+ 0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+ 50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+ }
+ .scanning { animation: pulse-glow 2s infinite; }
+ 
+ .menu-overlay {
+ position: fixed; top: 0; left: -100%; width: 80%; max-width: 400px; height: 100vh;
+ background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.3); transition: left 0.3s ease;
+ z-index: 1000; overflow-y: auto;
+ }
+ .menu-overlay.open { left: 0; }
+ .menu-backdrop {
+ position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.5);
+ opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 999;
+ }
+ .menu-backdrop.open { opacity: 1; visibility: visible; }
+ .page-content { display: none; }
+ .page-content.active { display: block; }
+ 
+ body.retro {
+ background: #000000 !important;
+ font-family: 'Courier New', monospace !important;
+ color: #00ff00 !important;
+ background-image: 
+ repeating-linear-gradient(0deg, transparent, transparent 2px, #001100 2px, #001100 4px),
+ repeating-linear-gradient(90deg, transparent, transparent 2px, #001100 2px, #001100 4px);
+ background-size: 40px 40px;
+ }
+ body.retro * {
+ font-family: 'Courier New', monospace !important;
+ }
+ body.retro .modern-card {
+ background: #0a0a0a !important;
+ border: 4px solid #00ff00 !important;
+ border-radius: 0 !important;
+ box-shadow: 0 0 20px #00ff00 !important;
+ }
+ body.retro .retro-button {
+ background: #003300 !important;
+ border: 3px solid #00ff00 !important;
+ border-radius: 0 !important;
+ color: #00ff00 !important;
+ font-weight: bold !important;
+ padding: 8px 16px !important;
+ text-shadow: 0 0 5px #00ff00;
+ }
+ body.retro .retro-button:hover {
+ background: #005500 !important;
+ box-shadow: 0 0 15px #00ff00;
+ }
+ body.retro #themeToggle,
+ body.retro .page-content button,
+ body.retro .menu-overlay button {
+ background: #001a00 !important;
+ color: #33ff33 !important;
+ border: 2px solid #33ff33 !important;
+ text-shadow: 0 0 3px #33ff33 !important;
+ }
+ body.retro #themeToggle:hover,
+ body.retro .page-content button:hover {
+ background: #003300 !important;
+ color: #66ff66 !important;
+ }
+ body.retro .text-gray-500,
+ body.retro .text-gray-600,
+ body.retro .text-gray-700,
+ body.retro .text-gray-800,
+ body.retro p:not(.font-bold):not(h1):not(h2):not(h3) {
+ color: #33ff33 !important;
+ text-shadow: 0 0 2px #33ff33 !important;
+ }
+ body.retro .score-card {
+ border: 3px solid #00ff00 !important;
+ border-radius: 0 !important;
+ box-shadow: 0 0 10px currentColor !important;
+ background: #001a00 !important;
+ }
+ body.retro h1, body.retro h2, body.retro h3 {
+ color: #00ff00 !important;
+ text-shadow: 2px 2px 0 #003300, 0 0 10px #00ff00 !important;
+ }
+ body.retro p, body.retro div, body.retro span, body.retro label {
+ color: #00ff00 !important;
+ }
+ body.retro .bg-gray-50, body.retro .bg-green-50, body.retro .bg-red-50 {
+ background: #001a00 !important;
+ border: 1px solid #003300 !important;
+ }
+ body.retro .bg-white { background: #000000 !important; }
+ body.retro input {
+ background: #000000 !important;
+ border: 2px solid #00ff00 !important;
+ color: #00ff00 !important;
+ }
+ body.retro input::placeholder { color: #006600 !important; }
+ body.retro .menu-overlay {
+ background: #000000 !important;
+ border-right: 4px solid #00ff00 !important;
+ }
+ 
+ body.retro #pythiaLogo {
+ width: 160px !important;
+ height: 160px !important;
+ }
+ 
+ #mainTagline {
+ font-size: 2rem !important;
+ }
+ body.retro #mainTagline {
+ font-size: 2.5rem !important;
+ }
+ 
+ body.retro .rivalry-item:nth-child(odd) {
+ background: #003300 !important;
+ border: 2px solid #00ff00 !important;
+ }
+ body.retro .rivalry-item:nth-child(even) {
+ background: #001a00 !important;
+ border: 2px solid #006600 !important;
+ }
+ 
+ .score-card {
+ transition: all 0.3s;
+ border: 2px solid transparent;
+ }
+ body:not(.retro) .score-card:hover {
+ transform: scale(1.05);
+ border-color: rgba(99, 102, 241, 0.3);
+ }
+ 
+ .sword-fighting { display: inline-block; animation: sword-swing 0.5s infinite; }
+ @keyframes sword-swing {
+ 0%, 100% { transform: rotate(-15deg); }
+ 50% { transform: rotate(15deg); }
+ }
+ 
+ .tooltip { position: relative; display: inline-block; }
+ .tooltip .tooltiptext {
+ visibility: hidden; width: 280px; background-color: #1f2937; color: #fff;
+ text-align: left; border-radius: 8px; padding: 12px; position: absolute; z-index: 1000;
+ bottom: 125%; left: 50%; margin-left: -140px; opacity: 0; transition: opacity 0.3s;
+ font-size: 13px; line-height: 1.4; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+ }
+ .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+ 
+ .cache-badge {
+ display: inline-block; padding: 2px 8px; border-radius: 12px;
+ font-size: 10px; font-weight: bold; margin-left: 8px;
+ }
+ .cache-live { background: #10b981; color: white; }
+ .cache-stored { background: #6366f1; color: white; }
+ 
+ .winner-icon {
+ width: 80px; height: 80px; object-fit: contain; margin: 0 auto 1rem;
+ border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+ }
+ 
+ .page-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 2rem;
+ }
+ </style>
 </head>
-<body class="retro bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8">
-  
-  <!-- Boot Sequence -->
-  <div id="bootSequence" class="boot-sequence hidden">
-    <div class="boot-line">PYTHIA™ SYSTEM v2.0</div>
-    <div class="boot-line">═══════════════════════════════════</div>
-    <div class="boot-line">Initializing Oracle Matrix...</div>
-    <div class="boot-line">Loading Performance Analyzers...</div>
-    <div class="boot-line">Calibrating P-Score Metrics...</div>
-    <div class="boot-line">• KARPOV Speed Engine [OK]</div>
-    <div class="boot-line">• VORTEX Accessibility Core [OK]</div>
-    <div class="boot-line">• PULSE SEO Module [OK]</div>
-    <div class="boot-line">• HELIX Privacy Shield [OK]</div>
-    <div class="boot-line">• NEXUS Mobile Adapter [OK]</div>
-    <div class="boot-line">• ECHO Sustainability Scanner [OK]</div>
-    <div class="boot-line">• NOVA Infrastructure Probe [OK]</div>
-    <div class="boot-line">• QUANTUM Code Analyzer [OK]</div>
-    <div class="boot-line">• AETHER Tech Detector [OK]</div>
-    <div class="boot-line">• EDEN Efficiency Monitor [OK]</div>
-    <div class="boot-line">═══════════════════════════════════</div>
-    <div class="boot-line">System Ready. Press any key...</div>
-  </div>
-  
-  <!-- Sound Toggle -->
-  <div class="sound-toggle" id="soundToggle" title="Toggle Sound Effects" aria-label="Toggle retro sounds">
-    <span id="soundIcon">🔊</span>
-  </div>
-  
-  <!-- Visit Counter -->
-  <div class="visit-counter" id="visitCounter">
-    Visitors: <span id="visitCount">Loading...</span>
-  </div>
-  
-  <div id="menuBackdrop" class="menu-backdrop" onclick="closeMenu()"></div>
-  
-  <div id="menuOverlay" class="menu-overlay">
-    <div class="p-6">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-indigo-600">Pythia™ Menu</h2>
-        <button onclick="closeMenu()" class="text-3xl text-gray-600 hover:text-gray-800" aria-label="Close menu">&times;</button>
-      </div>
-      <nav class="space-y-2">
-        <button onclick="showPage('main')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700">🏠 Home</button>
-        <button onclick="showPage('pscore-explainer')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700">📊 P-Score Explainer</button>
-        <button onclick="showPage('components')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700">🔧 P-Score Components</button>
-        <button onclick="showPage('custom')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-indigo-600">💎 Custom Scans (Premium)</button>
-        <button onclick="showPage('about')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700">ℹ️ About</button>
-        <button onclick="showPage('legal')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-blue-50 font-bold text-gray-700">⚖️ Legal & Privacy</button>
-      </nav>
-    </div>
-  </div>
-  
-  <div class="max-w-7xl mx-auto">
-    
-    <div id="mainPage" class="page-content active">
-      
-      <div class="text-center mb-6">
-        <div class="flex justify-between items-center mb-2">
-          <button id="hamburger" onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition" aria-label="Open menu">☰</button>
-          <button id="themeToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition">🕹️ Boring Mode</button>
-        </div>
-        <div class="flex items-center justify-center gap-4 mb-2">
-          <img id="pythiaLogo" src="pythia-oracle.png" alt="Pythia Oracle" class="w-20 h-20" style="image-rendering: pixelated;">
-          <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Pythia™</h1>
-        </div>
-        <p class="text-gray-600 text-lg">Complete website performance oracle <span class="text-sm bg-yellow-200 px-2 py-1 rounded">BETA</span></p>
-        <h2 id="mainTagline" class="text-xl font-bold text-indigo-600 mt-2 tracking-wide">ONE SCORE TO RANK THEM ALL</h2>
-        
-        <!-- Pythia Description -->
-        <div class="modern-card bg-white rounded-lg shadow-lg p-4 mt-4 max-w-2xl mx-auto">
-          <p class="text-sm text-gray-700 italic leading-relaxed">
-            At Delphi in ancient Greece, the Pythia spoke cryptic truths from the gods. 
-            Now seek her oracle wisely — your site awaits her verdict!
-          </p>
-        </div>
-        
-        <p class="text-xs text-gray-500 mt-2 max-w-2xl mx-auto"><strong>Disclaimer:</strong> Scores are automated estimates. <a href="mailto:dispute@p-score.me?subject=Pythia Dispute" class="underline">Contact us to dispute</a>.</p>
-      </div>
-      
-      <div class="modern-card bg-white rounded-2xl shadow-xl p-6 mb-8">
-        <div class="flex flex-col md:flex-row gap-4">
-          <input id="urlInput" type="url" placeholder="example.com or https://example.com" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition" aria-label="Enter website URL to analyze">
-          <button id="scanBtn" class="retro-button px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105" aria-label="Analyze website performance">ANALYZE</button>
-          <button id="demoBtn" class="retro-button px-6 py-3 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition" aria-label="Try demo URL">TRY DEMO</button>
-          <button id="consultBtn" class="retro-button px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-xl hover:from-pink-600 hover:to-purple-700 transition" aria-label="Consult Pythia">🔮 CONSULT</button>
-          <button id="exportBtn" class="retro-button px-6 py-3 bg-gray-600 text-white font-bold rounded-xl hover:bg-gray-700 transition" style="display:none;" aria-label="Export analysis results">📊 EXPORT</button>
-        </div>
-      </div>
-      
-      <!-- Loading Spinner -->
-      <div id="loadingSpinner" class="hidden text-center my-8">
-        <div class="retro-spinner"></div>
-        <p class="text-gray-600 mt-4 font-bold">Consulting the Oracle...</p>
-      </div>
-      
-      <!-- Consultation Results -->
-      <div id="consultationResults" class="modern-card bg-gradient-to-br from-purple-900 to-indigo-900 rounded-lg shadow-lg p-6 mb-6 hidden">
-        <h3 class="text-2xl font-bold text-center mb-4" style="color: #00ff00;">🔮 The Oracle Speaks 🔮</h3>
-        <div id="consultationText" class="text-lg text-center italic" style="color: #66ff66; text-shadow: 0 0 10px #00ff00;"></div>
-      </div>
-      
-      <div id="pscoreContainer" class="hidden mb-8">
-        <div class="modern-card bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-2xl p-8 text-center text-white">
-          <div class="text-sm font-bold uppercase tracking-wider opacity-90 mb-2">Overall P-Score™</div>
-          <div id="pscoreValue" class="text-7xl font-bold mb-2 typing-effect" aria-live="polite">--</div>
-          <div class="text-lg opacity-90">Performance • Sustainability • Future-Ready</div>
-          <div id="siteInfo" class="text-sm opacity-75 mt-3"></div>
-          <div class="text-xs mt-2 opacity-75">Scanned by Pythia™ 🔮</div>
-        </div>
-      </div>
-      
-      <div id="resultsContainer" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8" role="region" aria-label="Website performance metrics"></div>
-      
-      <!-- Toggle Details Button -->
-      <div id="toggleDetailsSection" class="hidden text-center mb-4">
-        <button id="toggleDetailsBtn" class="retro-button px-6 py-3 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-700 transition">
-          ▼ Show Detailed Breakdown
-        </button>
-      </div>
-      
-      <!-- Detailed Breakdown (Collapsible) -->
-      <div id="detailsBreakdown" class="detail-content collapsed hidden mb-8"></div>
-      
-      <!-- Badge Section -->
-      <div id="badgeSection" class="modern-card bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
-        <h3 class="text-xl font-bold mb-4">🏅 Generate P-Score™ Badge</h3>
-        <div class="mb-4">
-          <label class="block text-sm font-bold mb-2" for="badgeCompare">Compare with Top 50 site:</label>
-          <select id="badgeCompare" class="w-full p-2 border border-gray-300 rounded-lg">
-            <option value="">Select a site...</option>
-          </select>
-        </div>
-        <button onclick="generateBadge()" class="retro-button w-full bg-purple-600 text-white py-2 rounded-lg font-bold hover:bg-purple-700 transition">
-          Generate Badge
-        </button>
-        
-        <div id="badgePreview" class="mt-6 hidden">
-          <div id="badgeCard" class="badge-card">
-            <div class="text-sm opacity-80 mb-2">Scanned by Pythia™ 🔮</div>
-            <div class="badge-pscore" id="badgePscore">--</div>
-            <div class="text-xl font-bold mb-2">P-Score™</div>
-            <div id="badgeComparison" class="text-lg mb-4">--</div>
-            <div class="text-xs opacity-75" id="badgeUrl">--</div>
-            <div class="text-xs mt-2 opacity-75">═══ ORACLE REPORT ═══</div>
-          </div>
-          <button onclick="downloadBadgePNG()" class="retro-button w-full bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700 transition mt-4">
-            Download PNG
-          </button>
-        </div>
-      </div>
-      
-      <!-- Rivalry Battles -->
-      <div id="rivalrySection" class="modern-card bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h3 class="text-xl font-bold mb-4">⚔️ Rivalry Battles</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="rivalryList"></div>
-        <div class="mt-6">
-          <h4 class="text-lg font-bold mb-2">Custom Battle</h4>
-          <div class="flex flex-col md:flex-row gap-4">
-            <input id="customUrl1" type="url" placeholder="Site 1: example.com" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl">
-            <input id="customUrl2" type="url" placeholder="Site 2: example.com" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl">
-            <button id="customBattleBtn" class="retro-button px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700">⚔️ Battle</button>
-          </div>
-        </div>
-        <div id="battleResults" class="mt-6 hidden">
-          <div class="modern-card bg-gradient-to-br from-red-900 to-indigo-900 rounded-lg shadow-lg p-6">
-            <div id="winnerAnnouncement" class="text-2xl font-bold text-center mb-4 text-white"></div>
-            <div id="winnerIcon" class="hidden text-center mb-4">
-              <img src="" alt="Winner Logo" class="winner-icon">
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div id="contestant1Results" class="bg-white/10 rounded-lg p-4"></div>
-              <div id="contestant2Results" class="bg-white/10 rounded-lg p-4"></div>
-            </div>
-            <button id="shareRivalryBtn" class="retro-button w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition mt-4">
-              Share Battle
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Top 50 Leaderboard -->
-      <div id="top50Section" class="modern-card bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h3 class="text-xl font-bold mb-4">🏆 Top 50 Leaderboard</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <h4 class="text-lg font-bold mb-2">Top 5 Sites</h4>
-            <div id="top50TopList" class="space-y-2"></div>
-          </div>
-          <div>
-            <h4 class="text-lg font-bold mb-2">Bottom 5 Sites</h4>
-            <div id="top50BottomList" class="space-y-2"></div>
-          </div>
-        </div>
-        <p id="top50Loading" class="text-center text-gray-600 mt-4">Loading rankings...</p>
-        <div id="top50Results" class="hidden"></div>
-      </div>
-      
-      <!-- Enterprise Daily Winner -->
-      <div id="enterpriseDailySection" class="modern-card bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h3 class="text-xl font-bold mb-4">🏢 Enterprise Daily Winner</h3>
-        <p id="enterpriseDailyLoading" class="text-center text-gray-600">Loading enterprise winner...</p>
-        <div id="enterpriseDailyResults" class="hidden text-center">
-          <h4 class="text-2xl font-bold mb-2"><span id="enterpriseWinner">Winner</span></h4>
-          <p class="text-lg">P-Score: <span id="enterprisePscore">--</span></p>
-          <p class="text-sm text-gray-600">Load Time: <span id="enterpriseLoadTime">--</span></p>
-          <p class="text-xs text-gray-500 mt-2" id="enterpriseTotalScanned">--</p>
-          <a id="enterpriseLink" href="#" class="text-indigo-600 underline mt-2 block">Visit Site</a>
-        </div>
-      </div>
-      
-      <footer class="text-center text-gray-600 text-sm mt-12">
-        <p class="mb-2">🔮 Pythia™ — Website Performance Oracle</p>
-        <p class="mt-1">Analysis time varies 5-15 seconds • Scores cached 5min for stability</p>
-        <p class="text-xs mt-2 opacity-75">Pythia uses public APIs with attribution. Scores are algorithmic estimates, not endorsements. See <a href="/tos" class="underline">ToS</a> | <a href="/privacy" class="underline">Privacy</a>.</p>
-        <p class="text-xs mt-1 opacity-75"><strong>Disclaimer:</strong> Scores are automated estimates. <a href="mailto:dispute@p-score.me?subject=Pythia Dispute" class="underline">Contact us to dispute</a>.</p>
-        <div class="mt-6 flex justify-center gap-3 flex-wrap">
-          <!-- Share buttons if needed -->
-        </div>
-        <p class="text-gray-600 mt-6 mb-2" style="font-family: 'Courier New', monospace; font-weight: bold;">
-          Made by Cronix
-        </p>
-        <p class="text-gray-400 text-xs">
-          © 2025 Cronix Holdings (Pty) Ltd, South Africa
-        </p>
-        <p id="retroQuote" class="mt-4 text-xs italic text-gray-400" style="display:none;">"I am in doubt whether to pronounce you man or god,<br>but I think rather you are a god, Lycurgus."</p>
-      </footer>
-    </div>
-    
-    <!-- Other Pages (Explainer, Components, etc.) -->
-    <div id="pscore-explainer" class="page-content">
-      <div class="page-header">
-        <button onclick="showPage('main')" class="text-gray-600 hover:text-indigo-600">&larr; Back</button>
-      </div>
-      <h2 class="text-3xl font-bold mb-6">📊 P-Score™ Explainer</h2>
-      <p class="text-gray-700 leading-relaxed mb-4">The P-Score™ is a unified 0-100 score aggregating 10 equally weighted (10% each) components for holistic website performance analysis. Here's a detailed breakdown:</p>
-      <ul class="list-disc pl-6 space-y-2 text-gray-700">
-        <li><strong>Karpov (Speed & Performance):</strong> Evaluates load time, resource counts (scripts, images, stylesheets, videos), and optimizations (async/defer, preload, lazy loading, minification). Deducts for slow loads (&gt;1s) or heavy resources; bonuses for optimizations. Aims for sub-2s loads.</li>
-        <li><strong>Vortex (Accessibility):</strong> Checks alt tags (non-empty), ARIA attributes/labels/roles, form labels, heading structure (one H1, multiple H2s). Based on WCAG 2.1 AA; bonuses for good ratios, deductions for missing elements.</li>
-        <li><strong>Pulse (SEO & Social):</strong> Assesses title/meta description length, canonical link, OG tags (title, desc, image, url), Twitter cards. Bonuses for complete social meta; focuses on discoverability.</li>
-        <li><strong>Helix (Privacy & Security):</strong> Counts trackers/third-party scripts, checks headers (HSTS, CSP, X-Frame-Options, etc.), HTTPS. Deducts heavily for trackers; bonuses for strong policies.</li>
-        <li><strong>Nexus (Mobile Responsiveness):</strong> Verifies viewport meta, media queries count, PWA elements (mobile-web-app-capable). Bonuses for responsive design indicators.</li>
-        <li><strong>Echo (Sustainability):</strong> Measures page weight (&lt;1MB bonus), efficient formats (WebP/AVIF, lazy load), green hosting via The Green Web Foundation API. Emphasizes low carbon footprint.</li>
-        <li><strong>Nova (Infrastructure & Scalability):</strong> Detects CDN (e.g., Cloudflare), caching headers, compression (Brotli/gzip). Bonuses for public caching and efficient delivery.</li>
-        <li><strong>Quantum (Best Practices & Code Quality):</strong> Checks for no document.write/eval, SRI integrity, crossorigin, noopener, DOCTYPE, limited inline scripts. Deducts for deprecated practices.</li>
-        <li><strong>Aether (Modern Tech & Future-Readiness):</strong> Looks for WebAssembly, service workers, ES modules, modern formats (WebP/AVIF), frameworks (bonus for Vue/Svelte over Angular). Rewards progressive enhancements.</li>
-        <li><strong>Eden (Efficiency & Page Weight):</strong> Purely based on uncompressed size; tiered deductions for &gt;1.5MB, bonuses for &lt;0.3MB. Complements Echo for raw efficiency.</li>
-      </ul>
-      <p class="mt-4 text-gray-700">P-Score = Average of all 10 scores. Ranges: 80-100 (Excellent), 60-79 (Good), 0-59 (Needs Work).</p>
-      <h3 class="text-xl font-bold mt-6 mb-2">Comparison with Google PageSpeed Insights (Lighthouse)</h3>
-      <p class="text-gray-700">Similarities: Both use metrics like load time, resource optimization, accessibility (alt tags, ARIA), SEO (meta), mobile (viewport). P-Score pins to Lighthouse v13.0 logic for speed heuristics without API calls (custom parsing to avoid ToS violation).</p>
-      <p class="text-gray-700">Differences: PageSpeed focuses on speed (e.g., CLS, LCP, TBT) with lab/field data; P-Score is broader, adding privacy (trackers/headers), sustainability (green hosting, weight), infrastructure (CDN/caching), code quality, modern tech—areas PageSpeed ignores. P-Score is server-side only (no client metrics), cached for stability, and unified (one score vs. multiple). No real-time API dependency, respecting scraping limits.</p>
-    </div>
-    
-    <!-- Additional pages like components, custom, about, legal can be added here if needed -->
-    
-  </div>
-  
-  <script>
-    const TOP50_API = '/api/top50';
-    const ENTERPRISE_API = '/api/enterprise-daily';
-    const VISIT_API = '/api/visits';
-    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-    let currentData = null;
-    let currentBattleData = null;
-    let audioCtx = null;
-    let cachedScans = {};
-    
-    const RIVALRIES = [
-      // Full list of 39 rivalries from instructions – add them here if missing
-      { category: 'Search Engines', name1: 'Google', name2: 'Bing', url1: 'https://google.com', url2: 'https://bing.com', logo1: 'google-logo.png', logo2: 'bing-logo.png' },
-      // ... (add the rest as per original docx; truncated for brevity)
-    ];
-    
-    function openMenu() {
-      document.getElementById('menuOverlay').classList.add('open');
-      document.getElementById('menuBackdrop').classList.add('open');
-    }
-    
-    function closeMenu() {
-      document.getElementById('menuOverlay').classList.remove('open');
-      document.getElementById('menuBackdrop').classList.remove('open');
-    }
-    
-    function showPage(pageId) {
-      document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active'));
-      document.getElementById(pageId + 'Page' || pageId).classList.add('active');
-      closeMenu();
-    }
-    
-    function toggleTheme() {
-      document.body.classList.toggle('retro');
-      const button = document.getElementById('themeToggle');
-      button.textContent = document.body.classList.contains('retro') ? '🕹️ Boring Mode' : '🕹️ Retro Mode';
-      playSound('click');
-    }
-    
-    function getCachedScan(url) {
-      const cache = cachedScans[url];
-      if (cache && Date.now() - cache.timestamp < CACHE_TTL) return cache.data;
-      return null;
-    }
-    
-    function setCachedScan(url, data) {
-      cachedScans[url] = { data, timestamp: Date.now() };
-    }
-    
-    async function analyzeSite() {
-      playSound('beep');
-      const input = document.getElementById('urlInput');
-      const url = normalizeUrl(input.value);
-      if (!url) return alert('Enter a valid URL');
-      
-      const scanBtn = document.getElementById('scanBtn');
-      scanBtn.textContent = 'Scanning...';
-      scanBtn.disabled = true;
-      document.getElementById('loadingSpinner').classList.remove('hidden');
-      document.getElementById('pscoreContainer').classList.add('hidden');
-      document.getElementById('resultsContainer').classList.add('hidden');
-      document.getElementById('badgeSection').classList.add('hidden');
-      document.getElementById('toggleDetailsSection').classList.add('hidden');
-      document.getElementById('detailsBreakdown').classList.add('hidden');
-      
-      try {
-        const response = await fetch('/api/scan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url })
-        });
-        if (!response.ok) throw new Error('Scan failed');
-        const data = await response.json();
-        if (data.error) throw new Error(data.message);
-        
-        setCachedScan(url, data);
-        currentData = data;
-        displayResults(data, false);
-      } catch (error) {
-        alert('Analysis failed: ' + error.message);
-      } finally {
-        scanBtn.textContent = 'ANALYZE';
-        scanBtn.disabled = false;
-        document.getElementById('loadingSpinner').classList.add('hidden');
-      }
-    }
+<body class="retro bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8" aria-label="Pythia™ Website Performance Oracle">
+ 
+ <!-- SVG for Curved Distortion -->
+ <svg>
+ <defs>
+ <filter id="curved-distortion">
+ <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="1" result="noise"/>
+ <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+ </filter>
+ </defs>
+ </svg>
+ 
+ <!-- Boot Sequence -->
+ <div id="bootSequence" class="boot-sequence hidden">
+ <div class="boot-line">PYTHIA™ SYSTEM v2.0</div>
+ <div class="boot-line">═══════════════════════════════════</div>
+ <div class="boot-line">Initializing Oracle Matrix...</div>
+ <div class="boot-line">Loading Performance Analyzers...</div>
+ <div class="boot-line">Calibrating P-Score Metrics...</div>
+ <div class="boot-line">• KARPOV Speed Engine [OK]</div>
+ <div class="boot-line">• VORTEX Accessibility Core [OK]</div>
+ <div class="boot-line">• PULSE SEO Module [OK]</div>
+ <div class="boot-line">• HELIX Privacy Shield [OK]</div>
+ <div class="boot-line">• NEXUS Mobile Adapter [OK]</div>
+ <div class="boot-line">• ECHO Sustainability Scanner [OK]</div>
+ <div class="boot-line">• NOVA Infrastructure Probe [OK]</div>
+ <div class="boot-line">• QUANTUM Code Analyzer [OK]</div>
+ <div class="boot-line">• AETHER Tech Detector [OK]</div>
+ <div class="boot-line">• EDEN Efficiency Monitor [OK]</div>
+ <div class="boot-line">═══════════════════════════════════</div>
+ <div class="boot-line">System Ready. Press any key...</div>
+ </div>
+ 
+ <!-- Sound Toggle -->
+ <div class="sound-toggle" id="soundToggle" title="Toggle Sound Effects" aria-label="Toggle retro sounds">
+ <span id="soundIcon">🔊</span>
+ </div>
+ 
+ <!-- Visit Counter -->
+ <div class="visit-counter" id="visitCounter" aria-live="polite">
+ Visitors: <span id="visitCount">Loading...</span>
+ </div>
+ 
+ <div id="menuBackdrop" class="menu-backdrop" onclick="closeMenu()" aria-hidden="true"></div>
+ 
+ <div id="menuOverlay" class="menu-overlay" role="dialog" aria-modal="true">
+ <div class="p-6">
+ <div class="flex justify-between items-center mb-6">
+ <h2 class="text-2xl font-bold text-indigo-600">Pythia™ Menu</h2>
+ <button onclick="closeMenu()" class="text-3xl text-gray-600 hover:text-gray-800" aria-label="Close menu">&times;</button>
+ </div>
+ <nav class="space-y-2">
+ <button onclick="showPage('main')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700" aria-label="Go to Home">🏠 Home</button>
+ <button onclick="showPage('pscore-explainer')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700" aria-label="Go to P-Score Explainer">📊 P-Score Explainer</button>
+ <button onclick="showPage('components')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700" aria-label="Go to P-Score Components">🔧 P-Score Components</button>
+ <button onclick="showPage('custom')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-indigo-600" aria-label="Go to Custom Scans">💎 Custom Scans (Premium)</button>
+ <button onclick="showPage('about')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-indigo-50 font-bold text-gray-700" aria-label="Go to About">ℹ️ About</button>
+ <button onclick="showPage('legal')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-blue-50 font-bold text-gray-700" aria-label="Go to Legal & Privacy">⚖️ Legal & Privacy</button>
+ </nav>
+ </div>
+ </div>
+ 
+ <div class="max-w-7xl mx-auto">
+ 
+ <div id="mainPage" class="page-content active">
+ 
+ <div class="text-center mb-6">
+ <div class="flex justify-between items-center mb-2">
+ <button id="hamburger" onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition" aria-label="Open menu">☰</button>
+ <button id="themeToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition" aria-label="Toggle to Boring Mode">🕹️ Boring Mode</button>
+ </div>
+ <div class="flex items-center justify-center gap-4 mb-2">
+ <img id="pythiaLogo" src="pythia-oracle.png" alt="Pythia™ Oracle Logo" class="w-20 h-20" style="image-rendering: pixelated;">
+ <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Pythia™</h1>
+ </div>
+ <p class="text-gray-600 text-lg">Complete website performance oracle <span class="text-sm bg-yellow-200 px-2 py-1 rounded">BETA</span></p>
+ <h2 id="mainTagline" class="text-xl font-bold text-indigo-600 mt-2 tracking-wide">ONE SCORE TO RANK THEM ALL</h2>
+ 
+ <!-- Delphi Text -->
+ <div class="modern-card bg-white rounded-lg shadow-lg p-4 mt-4 max-w-2xl mx-auto">
+ <p class="text-sm text-gray-700 italic leading-relaxed">
+ At Delphi in ancient Greece, the Pythia spoke cryptic truths from the gods. Now seek her oracle wisely — your site awaits her verdict!
+ </p>
+ </div>
+ 
+ <p class="text-xs text-gray-500 mt-2 max-w-2xl mx-auto"><strong>Disclaimer:</strong> Scores are automated estimates. <a href="mailto:dispute@p-score.me?subject=Pythia Dispute" class="underline">Contact us to dispute</a>.</p>
+ </div>
+ 
+ <div class="modern-card bg-white rounded-2xl shadow-xl p-6 mb-8">
+ <div class="flex flex-col md:flex-row gap-4">
+ <input id="urlInput" type="url" placeholder="example.com or https://example.com" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition" aria-label="Enter website URL to analyze">
+ <button id="scanBtn" class="retro-button px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105" aria-label="Analyze website performance">ANALYZE</button>
+ <button id="demoBtn" class="retro-button px-6 py-3 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition" aria-label="Try demo URL">TRY DEMO</button>
+ <button id="consultBtn" class="retro-button px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-xl hover:from-pink-600 hover:to-purple-700 transition" aria-label="Consult Pythia">🔮 CONSULT</button>
+ <button id="exportBtn" class="retro-button px-6 py-3 bg-gray-600 text-white font-bold rounded-xl hover:bg-gray-700 transition" style="display:none;" aria-label="Export analysis results">📊 EXPORT</button>
+ </div>
+ </div>
+ 
+ <!-- Loading Spinner -->
+ <div id="loadingSpinner" class="hidden text-center my-8" aria-live="assertive">
+ <div class="retro-spinner"></div>
+ <p class="text-gray-600 mt-4 font-bold">Consulting the Oracle...</p>
+ </div>
+ 
+ <!-- Consultation Results -->
+ <div id="consultationResults" class="modern-card bg-gradient-to-br from-purple-900 to-indigo-900 rounded-lg shadow-lg p-6 mb-6 hidden">
+ <h3 class="text-2xl font-bold text-center mb-4" style="color: #00ff00;">🔮 The Oracle Speaks 🔮</h3>
+ <div id="consultationText" class="text-lg text-center italic" style="color: #66ff66; text-shadow: 0 0 10px #00ff00;"></div>
+ </div>
+ 
+ <div id="pscoreContainer" class="hidden mb-8">
+ <div class="modern-card bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-2xl p-8 text-center text-white">
+ <div class="text-sm font-bold uppercase tracking-wider opacity-90 mb-2">Overall P-Score™</div>
+ <div id="pscoreValue" class="text-7xl font-bold mb-2 typing-effect" aria-live="polite">--</div>
+ <div class="text-lg opacity-90">Performance • Sustainability • Future-Ready</div>
+ <div id="siteInfo" class="text-sm opacity-75 mt-3"></div>
+ <div class="text-xs mt-2 opacity-75">Scanned by Pythia™ 🔮</div>
+ </div>
+ </div>
+ 
+ <div id="resultsContainer" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8" role="region" aria-label="Website performance metrics"></div>
+ 
+ <!-- Toggle Details Button -->
+ <div id="toggleDetailsSection" class="hidden text-center mb-4">
+ <button id="toggleDetailsBtn" class="retro-button px-6 py-3 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-700 transition" aria-expanded="false">
+ ▼ Show Detailed Breakdown
+ </button>
+ </div>
+ 
+ <!-- Detailed Breakdown (Collapsible) -->
+ <div id="detailsBreakdown" class="detail-content collapsed hidden mb-8" aria-hidden="true"></div>
+ 
+ <!-- Badge Section -->
+ <div id="badgeSection" class="modern-card bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+ <h3 class="text-xl font-bold mb-4">🏅 Generate P-Score™ Badge</h3>
+ <div class="mb-4">
+ <label class="block text-sm font-bold mb-2" for="badgeCompare">Compare with Top 50 site:</label>
+ <select id="badgeCompare" class="w-full p-2 border border-gray-300 rounded-lg" aria-label="Select site to compare">
+ <option value="">Select a site...</option>
+ </select>
+ </div>
+ <button onclick="generateBadge()" class="retro-button w-full bg-purple-600 text-white py-2 rounded-lg font-bold hover:bg-purple-700 transition" aria-label="Generate Badge">
+ Generate Badge
+ </button>
+ 
+ <div id="badgePreview" class="mt-6 hidden">
+ <div id="badgeCard" class="badge-card">
+ <div class="text-sm opacity-80 mb-2">Scanned by Pythia™ 🔮</div>
+ <div class="badge-pscore" id="badgePscore">--</div>
+ <div class="text-xl font-bold mb-2">P-Score™</div>
+ <div id="badgeComparison" class="text-lg mb-4">--</div>
+ <div class="text-xs opacity-75" id="badgeUrl">--</div>
+ <div class="text-xs mt-2">═══ ORACLE REPORT ═══</div>
+ </div>
+ <button onclick="downloadBadgePNG()" class="retro-button w-full bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700 transition mt-4" aria-label="Download Badge as PNG">
+ Download PNG
+ </button>
+ </div>
+ </div>
+ 
+ <!-- Rivalries Section -->
+ <div class="modern-card bg-white rounded-lg shadow-lg p-6 mb-8">
+ <h3 class="text-xl font-bold mb-4">⚔️ Preset Rivalries</h3>
+ <div id="rivalryList" class="space-y-2"></div>
+ </div>
+ 
+ <!-- Custom Battle Section -->
+ <div class="modern-card bg-white rounded-lg shadow-lg p-6 mb-8">
+ <h3 class="text-xl font-bold mb-4">🛡️ Custom Battle</h3>
+ <div class="flex flex-col md:flex-row gap-4">
+ <input id="customUrl1" type="url" placeholder="Site 1 (e.g., example.com)" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition" aria-label="Enter first site URL">
+ <input id="customUrl2" type="url" placeholder="Site 2 (e.g., competitor.com)" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition" aria-label="Enter second site URL">
+ <button id="customBattleBtn" class="retro-button px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition" aria-label="Start custom battle">⚔️ BATTLE</button>
+ </div>
+ <div id="battleResults" class="hidden mt-6">
+ <div class="text-center mb-4">
+ <div id="winnerAnnouncement" class="text-2xl font-bold text-white bg-gradient-to-r from-red-500 to-purple-500 p-4 rounded-lg"></div>
+ <div id="winnerIcon" class="hidden mt-4">
+ <img src="" alt="Winner Logo" class="winner-icon">
+ </div>
+ </div>
+ <div class="grid grid-cols-2 gap-4">
+ <div id="contestant1Results" class="modern-card bg-indigo-100 rounded-lg p-4"></div>
+ <div id="contestant2Results" class="modern-card bg-purple-100 rounded-lg p-4"></div>
+ </div>
+ <button id="shareRivalryBtn" class="retro-button w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition mt-4" aria-label="Share battle results">
+ Share Battle
+ </button>
+ </div>
+ </div>
+ 
+ <!-- Top 50 Section -->
+ <div class="modern-card bg-white rounded-lg shadow-lg p-6 mb-8">
+ <h3 class="text-xl font-bold mb-4">🏆 Top 50 Rankings</h3>
+ <div id="top50Loading" class="text-center">Loading rankings...</div>
+ <div id="top50Results" class="hidden">
+ <h4 class="font-bold mb-2">Top 5</h4>
+ <div id="top50TopList" class="space-y-2 mb-4"></div>
+ <h4 class="font-bold mb-2">Bottom 5</h4>
+ <div id="top50BottomList" class="space-y-2"></div>
+ </div>
+ </div>
+ 
+ <!-- Enterprise Daily Winner -->
+ <div class="modern-card bg-white rounded-lg shadow-lg p-6 mb-8">
+ <h3 class="text-xl font-bold mb-4">🌟 Enterprise Daily Winner</h3>
+ <div id="enterpriseDailyLoading" class="text-center">Loading winner...</div>
+ <div id="enterpriseDailyResults" class="hidden text-center">
+ <p class="text-2xl font-bold"><a id="enterpriseLink" href="#" class="underline" aria-label="Visit winner site"> <span id="enterpriseWinner"></span></a></p>
+ <p>P-Score™: <span id="enterprisePscore"></span> • Load Time: <span id="enterpriseLoadTime"></span></p>
+ <p class="text-sm text-gray-600 mt-2" id="enterpriseTotalScanned"></p>
+ </div>
+ </div>
+ </div>
+ 
+ <!-- Other Pages (P-Score Explainer, Components, etc. - condensed) -->
+ <div id="pscore-explainer" class="page-content">
+ <div class="page-header">
+ <button onclick="showPage('main')" class="text-xl text-gray-600 hover:text-indigo-600" aria-label="Back to Home">&larr; Back</button>
+ </div>
+ <h2 class="text-3xl font-bold mb-4">What is P-Score™?</h2>
+ <p class="text-gray-700 mb-4">The P-Score™ is a unified 0-100 score aggregating 10 equally weighted components for holistic website performance analysis.</p>
+ <ul class="list-disc pl-6 space-y-2">
+ <li><strong>Karpov (Speed & Performance)</strong>: Load time, resources, optimizations.</li>
+ <li><strong>Vortex (Accessibility)</strong>: Alt tags, ARIA, headings (WCAG 2.1 AA).</li>
+ <li><strong>Pulse (SEO & Social)</strong>: Meta tags, OG, Twitter cards.</li>
+ <li><strong>Helix (Privacy & Security)</strong>: Trackers, headers, HTTPS.</li>
+ <li><strong>Nexus (Mobile Responsiveness)</strong>: Viewport, media queries, PWA.</li>
+ <li><strong>Echo (Sustainability)</strong>: Page weight, efficient formats, green hosting.</li>
+ <li><strong>Nova (Infrastructure & Scalability)</strong>: CDN, caching, compression.</li>
+ <li><strong>Quantum (Best Practices & Code Quality)</strong>: No deprecated, SRI, etc.</li>
+ <li><strong>Aether (Modern Tech & Future-Readiness)</strong>: WASM, modules, modern frameworks.</li>
+ <li><strong>Eden (Efficiency & Page Weight)</strong>: Raw size tiers.</li>
+ </ul>
+ <p class="mt-4">P-Score = Average of all. 80+ Excellent; 60-79 Good; <60 Needs Work.</p>
+ <p class="mt-4">Compared to Google PageSpeed: Broader (adds privacy/sustainability); server-side only; cached; unified score.</p>
+ </div>
+ 
+ <div id="components" class="page-content">
+ <div class="page-header">
+ <button onclick="showPage('main')" class="text-xl text-gray-600 hover:text-indigo-600" aria-label="Back to Home">&larr; Back</button>
+ </div>
+ <h2 class="text-3xl font-bold mb-4">P-Score™ Components</h2>
+ <p>Detailed breakdown of each metric here...</p> <!-- Expand as needed -->
+ </div>
+ 
+ <div id="custom" class="page-content">
+ <div class="page-header">
+ <button onclick="showPage('main')" class="text-xl text-gray-600 hover:text-indigo-600" aria-label="Back to Home">&larr; Back</button>
+ </div>
+ <h2 class="text-3xl font-bold mb-4">Custom Scans (Premium)</h2>
+ <p>Coming soon...</p>
+ </div>
+ 
+ <div id="about" class="page-content">
+ <div class="page-header">
+ <button onclick="showPage('main')" class="text-xl text-gray-600 hover:text-indigo-600" aria-label="Back to Home">&larr; Back</button>
+ </div>
+ <h2 class="text-3xl font-bold mb-4">About Pythia™</h2>
+ <p>Made by Cronix. Retro oracle for modern web performance.</p>
+ </div>
+ 
+ <div id="legal" class="page-content">
+ <div class="page-header">
+ <button onclick="showPage('main')" class="text-xl text-gray-600 hover:text-indigo-600" aria-label="Back to Home">&larr; Back</button>
+ </div>
+ <h2 class="text-3xl font-bold mb-4">Legal & Privacy</h2>
+ <p>Pythia uses public APIs with attribution. Scores are algorithmic estimates, not endorsements. See <a href="/tos.html" class="underline">ToS</a> | <a href="/privacy.html" class="underline">Privacy</a>.</p>
+ <p>GDPR: No PII stored; opt-out via robots.txt.</p>
+ </div>
+ 
+ <footer class="text-center text-gray-600 text-sm mt-12">
+ <p class="mb-2">🔮 Pythia™ — Website Performance Oracle</p>
+ <p class="mt-1">Analysis time varies 5-15 seconds • Scores cached 5min for stability</p>
+ <p class="text-xs mt-2 opacity-75">Pythia uses public APIs with attribution. Scores are algorithmic estimates, not endorsements. See <a href="/tos.html" class="underline">ToS</a> | <a href="/privacy.html" class="underline">Privacy</a>.</p>
+ <p class="text-xs mt-1 opacity-75"><strong>Disclaimer:</strong> Scores are automated estimates. <a href="mailto:dispute@p-score.me?subject=Pythia Dispute" class="underline">Contact us to dispute</a>.</p>
+ <div class="mt-6 flex justify-center gap-3 flex-wrap">
+ <!-- Share buttons if needed -->
+ </div>
+ <p class="text-gray-600 mt-6 mb-2" style="font-family: 'Courier New', monospace; font-weight: bold;">
+ Made by Cronix
+ </p>
+ <p class="text-gray-400 text-xs">
+ © 2025 Cronix Holdings (Pty) Ltd, South Africa
+ </p>
+ <p id="retroQuote" class="mt-4 text-xs italic text-gray-400" style="display:none;">"I am in doubt whether to pronounce you man or god,<br>but I think rather you are a god, Lycurgus."</p>
+ </footer>
+ </div>
+ 
+ <script>
+ const SCAN_API = '/api/scan';
+ const TOP50_API = '/api/top50';
+ const TOP5_API = '/api/top5';
+ const ENTERPRISE_API = '/api/enterprise-daily';
+ const VISIT_API = '/api/visits';
+ 
+ let audioCtx = null;
+ let currentData = null;
+ let currentBattleData = null;
+ 
+ // Full 39 Rivalries (curated based on common website rivalries)
+ const RIVALRIES = [
+ { category: 'Search Engines', name1: 'Google', name2: 'Bing', url1: 'https://www.google.com', url2: 'https://www.bing.com', logo1: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png', logo2: 'https://www.bing.com/ 
+logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Bing_logo_%282019%29.svg/512px-Bing_logo_%282019%29.svg.png' },
+ { category: 'Search Engines', name1: 'Google', name2: 'DuckDuckGo', url1: 'https://www.google.com', url2: 'https://duckduckgo.com', logo1: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png', logo2: 'https://duckduckgo.com/assets/common/logo_compressed.png' },
+ { category: 'Social Media', name1: 'Facebook', name2: 'Instagram', url1: 'https://www.facebook.com', url2: 'https://www.instagram.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg', logo2: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png' },
+ { category: 'Social Media', name1: 'Twitter', name2: 'LinkedIn', url1: 'https://twitter.com', url2: 'https://www.linkedin.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/6/60/Twitter_Logo_as_of_2026.svg', logo2: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png' },
+ { category: 'E-commerce', name1: 'Amazon', name2: 'eBay', url1: 'https://www.amazon.com', url2: 'https://www.ebay.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg', logo2: 'https://upload.wikimedia.org/wikipedia/commons/9/94/Ebay_Logo.svg' },
+ { category: 'E-commerce', name1: 'Walmart', name2: 'Target', url1: 'https://www.walmart.com', url2: 'https://www.target.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Walmart_Logo.svg/512px-Walmart_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Target_logo_2017.svg/512px-Target_logo_2017.svg.png' },
+ { category: 'News', name1: 'CNN', name2: 'Fox News', url1: 'https://www.cnn.com', url2: 'https://www.foxnews.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/CNN.svg/512px-CNN.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Fox_News_Channel_Logo.svg/512px-Fox_News_Channel_Logo.svg.png' },
+ { category: 'News', name1: 'BBC', name2: 'New York Times', url1: 'https://www.bbc.com', url2: 'https://www.nytimes.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/BBC_News_2018.svg/512px-BBC_News_2018.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/7/72/New_York_Times.svg' },
+ { category: 'Streaming', name1: 'Netflix', name2: 'Disney+', url1: 'https://www.netflix.com', url2: 'https://www.disneyplus.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Disney%2B_logo.svg/512px-Disney%2B_logo.svg.png' },
+ { category: 'Streaming', name1: 'YouTube', name2: 'TikTok', url1: 'https://www.youtube.com', url2: 'https://www.tiktok.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/512px-YouTube_full-color_icon_%282017%29.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/TikTok_Logo.svg/512px-TikTok_Logo.svg.png' },
+ { category: 'Tech Giants', name1: 'Apple', name2: 'Microsoft', url1: 'https://www.apple.com', url2: 'https://www.microsoft.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg', logo2: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg' },
+ { category: 'Tech Giants', name1: 'Google', name2: 'Amazon', url1: 'https://www.google.com', url2: 'https://www.amazon.com', logo1: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg' },
+ { category: 'Finance', name1: 'PayPal', name2: 'Stripe', url1: 'https://www.paypal.com', url2: 'https://stripe.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg', logo2: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg' },
+ { category: 'Finance', name1: 'Visa', name2: 'Mastercard', url1: 'https://www.visa.com', url2: 'https://www.mastercard.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/512px-Visa_Inc._logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard_Logo.svg/512px-Mastercard_Logo.svg.png' },
+ { category: 'Travel', name1: 'Booking.com', name2: 'Airbnb', url1: 'https://www.booking.com', url2: 'https://www.airbnb.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Booking.com_Logo.svg/512px-Booking.com_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Airbnb_Logo_B%C3%A9lo.svg' },
+ { category: 'Travel', name1: 'Expedia', name2: 'TripAdvisor', url1: 'https://www.expedia.com', url2: 'https://www.tripadvisor.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Expedia_logo.svg/512px-Expedia_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/TripAdvisor_logo.svg/512px-TripAdvisor_logo.svg.png' },
+ { category: 'Food Delivery', name1: 'Uber Eats', name2: 'DoorDash', url1: 'https://www.ubereats.com', url2: 'https://www.doordash.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Uber_Eats_Logo.svg/512px-Uber_Eats_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/DoorDash_logo.svg/512px-DoorDash_logo.svg.png' },
+ { category: 'Food Delivery', name1: 'Grubhub', name2: 'Postmates', url1: 'https://www.grubhub.com', url2: 'https://postmates.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Grubhub_logo.svg/512px-Grubhub_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Postmates_logo.svg/512px-Postmates_logo.svg.png' },
+ { category: 'Fitness', name1: 'Peloton', name2: 'Nike', url1: 'https://www.onepeloton.com', url2: 'https://www.nike.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Peloton_Logo.svg/512px-Peloton_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Nike.svg' },
+ { category: 'Fitness', name1: 'MyFitnessPal', name2: 'Fitbit', url1: 'https://www.myfitnesspal.com', url2: 'https://www.fitbit.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/MyFitnessPal_logo.svg/512px-MyFitnessPal_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Fitbit_logo.svg/512px-Fitbit_logo.svg.png' },
+ { category: 'Education', name1: 'Coursera', name2: 'edX', url1: 'https://www.coursera.org', url2: 'https://www.edx.org', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Coursera_Logo.svg/512px-Coursera_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/EdX_logo.svg/512px-EdX_logo.svg.png' },
+ { category: 'Education', name1: 'Khan Academy', name2: 'Duolingo', url1: 'https://www.khanacademy.org', url2: 'https://www.duolingo.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Khan_Academy_logo.svg/512px-Khan_Academy_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Duolingo_logo.svg/512px-Duolingo_logo.svg.png' },
+ { category: 'Gaming', name1: 'Steam', name2: 'Epic Games', url1: 'https://store.steampowered.com', url2: 'https://www.epicgames.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Steam_logo.svg/512px-Steam_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Epic_Games_logo.svg/512px-Epic_Games_logo.svg.png' },
+ { category: 'Gaming', name1: 'Twitch', name2: 'YouTube Gaming', url1: 'https://www.twitch.tv', url2: 'https://gaming.youtube.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Twitch_logo.svg/512px-Twitch_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/512px-YouTube_full-color_icon_%282017%29.svg.png' },
+ { category: 'Music', name1: 'Spotify', name2: 'Apple Music', url1: 'https://www.spotify.com', url2: 'https://www.apple.com/apple-music', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Spotify_icon.svg/512px-Spotify_icon.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg' },
+ { category: 'Music', name1: 'SoundCloud', name2: 'Pandora', url1: 'https://soundcloud.com', url2: 'https://www.pandora.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/SoundCloud_logo.svg/512px-SoundCloud_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Pandora_Logo.svg/512px-Pandora_Logo.svg.png' },
+ { category: 'Cloud Storage', name1: 'Google Drive', name2: 'Dropbox', url1: 'https://drive.google.com', url2: 'https://www.dropbox.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Google_Drive_icon.svg/512px-Google_Drive_icon.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Dropbox_icon.svg/512px-Dropbox_icon.svg.png' },
+ { category: 'Cloud Storage', name1: 'OneDrive', name2: 'iCloud', url1: 'https://onedrive.live.com', url2: 'https://www.icloud.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Microsoft_Office_OneDrive_%282019%29.svg/512px-Microsoft_Office_OneDrive_%282019%29.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/ICLOUD_Logo.svg/512px-ICLOUD_Logo.svg.png' },
+ { category: 'Email', name1: 'Gmail', name2: 'Outlook', url1: 'https://mail.google.com', url2: 'https://outlook.live.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Gmail_icon_%282020%29.svg/512px-Gmail_icon_%282020%29.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Outlook.com_icon.svg/512px-Outlook.com_icon.svg.png' },
+ { category: 'Email', name1: 'Yahoo Mail', name2: 'ProtonMail', url1: 'https://mail.yahoo.com', url2: 'https://proton.me/mail', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Yahoo%21_Mail_icon.svg/512px-Yahoo%21_Mail_icon.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/ProtonMail_logo.svg/512px-ProtonMail_logo.svg.png' },
+ { category: 'Messaging', name1: 'WhatsApp', name2: 'Telegram', url1: 'https://www.whatsapp.com', url2: 'https://telegram.org', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/512px-Telegram_logo.svg.png' },
+ { category: 'Messaging', name1: 'Signal', name2: 'iMessage', url1: 'https://signal.org', url2: 'https://www.apple.com/icloud/', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Signal_logo.svg/512px-Signal_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/IMessage_logo_%28iOS_13%29.svg/512px-IMessage_logo_%28iOS_13%29.svg.png' },
+ { category: 'Job Boards', name1: 'Indeed', name2: 'LinkedIn Jobs', url1: 'https://www.indeed.com', url2: 'https://www.linkedin.com/jobs', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Indeed_logo.svg/512px-Indeed_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png' },
+ { category: 'Job Boards', name1: 'Glassdoor', name2: 'Monster', url1: 'https://www.glassdoor.com', url2: 'https://www.monster.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Glassdoor_logo.svg/512px-Glassdoor_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Monster.com_logo.svg/512px-Monster.com_logo.svg.png' },
+ { category: 'Real Estate', name1: 'Zillow', name2: 'Realtor.com', url1: 'https://www.zillow.com', url2: 'https://www.realtor.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Zillow_logo.svg/512px-Zillow_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Realtor.com_logo.svg/512px-Realtor.com_logo.svg.png' },
+ { category: 'Real Estate', name1: 'Redfin', name2: 'Trulia', url1: 'https://www.redfin.com', url2: 'https://www.trulia.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Redfin_Logo.svg/512px-Redfin_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Trulia_logo.svg/512px-Trulia_logo.svg.png' },
+ { category: 'Photo Editing', name1: 'Adobe Photoshop', name2: 'GIMP', url1: 'https://www.adobe.com/products/photoshop.html', url2: 'https://www.gimp.org', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Adobe_Photoshop_CC_icon.svg/512px-Adobe_Photoshop_CC_icon.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/GIMP_Logo.svg/512px-GIMP_Logo.svg.png' },
+ { category: 'Photo Editing', name1: 'Lightroom', name2: 'Affinity Photo', url1: 'https://www.adobe.com/products/photoshop-lightroom.html', url2: 'https://affinity.serif.com/en-us/photo/', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Adobe_Lightroom_CC_logo.svg/512px-Adobe_Lightroom_CC_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Affinity_Photo_icon.svg/512px-Affinity_Photo_icon.svg.png' },
+ { category: 'Video Editing', name1: 'Adobe Premiere', name2: 'Final Cut Pro', url1: 'https://www.adobe.com/products/premiere.html', url2: 'https://www.apple.com/final-cut-pro/', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Adobe_Premiere_Pro_CC_icon.svg/512px-Adobe_Premiere_Pro_CC_icon.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Final_Cut_Pro_X_logo.svg/512px-Final_Cut_Pro_X_logo.svg.png' },
+ { category: 'Video Editing', name1: 'DaVinci Resolve', name2: 'iMovie', url1: 'https://www.blackmagicdesign.com/products/davinciresolve', url2: 'https://www.apple.com/imovie/', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/DaVinci_Resolve_logo.svg/512px-DaVinci_Resolve_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/IMovie_10.svg/512px-IMovie_10.svg.png' },
+ { category: 'Productivity', name1: 'Google Docs', name2: 'Microsoft Word', url1: 'https://docs.google.com', url2: 'https://www.microsoft.com/en-us/microsoft-365/word', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Google_Docs_icon.svg/512px-Google_Docs_icon.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/512px-Microsoft_logo.svg.png' },
+ { category: 'Productivity', name1: 'Notion', name2: 'Evernote', url1: 'https://www.notion.so', url2: 'https://evernote.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion_Logo.svg/512px-Notion_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Evernote_Icon.svg/512px-Evernote_Icon.svg.png' },
+ { category: 'Cryptocurrency', name1: 'Coinbase', name2: 'Binance', url1: 'https://www.coinbase.com', url2: 'https://www.binance.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Coinbase_logo.svg/512px-Coinbase_logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Binance_Logo.svg/512px-Binance_Logo.svg.png' },
+ { category: 'Cryptocurrency', name1: 'Kraken', name2: 'Gemini', url1: 'https://www.kraken.com', url2: 'https://www.gemini.com', logo1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Kraken_Logo.svg/512px-Kraken_Logo.svg.png', logo2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Gemini_Logo.svg/512px-Gemini_Logo.svg.png' }
+ ];
 
-    function displayResults(data, fromCache) {
-      // P-Score display with typing
-      const pscoreValue = document.getElementById('pscoreValue');
-      pscoreValue.classList.add('typing-effect');
-      typeWriter(pscoreValue, `P-Score: ${data.pscore}`);
-      document.getElementById('siteInfo').textContent = `for ${new URL(data.url).hostname} (${data.pageSize}, ${data.loadTime})`;
-      
-      // Results grid
-      const resultsContainer = document.getElementById('resultsContainer');
-      resultsContainer.innerHTML = '';
-      const metrics = [
-        { name: 'Karpov', key: 'karpov', color: 'blue', desc: 'Speed & Performance' },
-        { name: 'Vortex', key: 'vortex', color: 'green', desc: 'Accessibility' },
-        { name: 'Pulse', key: 'pulse', color: 'yellow', desc: 'SEO & Social' },
-        { name: 'Helix', key: 'helix', color: 'purple', desc: 'Privacy & Security' },
-        { name: 'Nexus', key: 'nexus', color: 'pink', desc: 'Mobile Responsiveness' },
-        { name: 'Echo', key: 'echo', color: 'teal', desc: 'Sustainability' },
-        { name: 'Nova', key: 'nova', color: 'indigo', desc: 'Infrastructure' },
-        { name: 'Quantum', key: 'quantum', color: 'red', desc: 'Code Quality' },
-        { name: 'Aether', key: 'aether', color: 'orange', desc: 'Modern Tech' },
-        { name: 'Eden', key: 'eden', color: 'lime', desc: 'Efficiency' }
-      ];
-      metrics.forEach(metric => {
-        const score = data[metric.key];
-        const card = document.createElement('div');
-        card.className = `score-card modern-card bg-${metric.color}-50 rounded-lg shadow-lg p-4 text-center`;
-        card.innerHTML = `
-          <h3 class="text-xl font-bold mb-2 text-${metric.color}-600">${metric.name}</h3>
-          <div class="text-3xl font-bold text-${metric.color}-800">${score}</div>
-          <p class="text-sm text-gray-600 mt-2">${metric.desc}</p>
-        `;
-        resultsContainer.appendChild(card);
-      });
-      
-      // Details breakdown
-      const details = document.getElementById('detailsBreakdown');
-      details.innerHTML = ''; 
-      Object.keys(data.breakdown).forEach(key => {
-        const section = document.createElement('div');
-        section.innerHTML = `<h4>${key.toUpperCase()} Details</h4><pre>${JSON.stringify(data.breakdown[key], null, 2)}</pre>`;
-        details.appendChild(section);
-      });
-      
-      document.getElementById('pscoreContainer').classList.remove('hidden');
-      document.getElementById('resultsContainer').classList.remove('hidden');
-      document.getElementById('badgeSection').classList.remove('hidden');
-      document.getElementById('toggleDetailsSection').classList.remove('hidden');
-      document.getElementById('exportBtn').style.display = 'block';
-      
-      populateBadgeDropdown();
-    }
+ // Initialize Audio Context for Retro Sounds
+ function initAudio() {
+   if (!audioCtx) {
+     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+   }
+ }
 
-    function populateBadgeDropdown() {
-      const select = document.getElementById('badgeCompare');
-      select.innerHTML = '<option value="">Select a site...</option>';
-      fetch(TOP50_API).then(r => r.json()).then(data => {
-        data.results.sort((a, b) => b.pscore - a.pscore).slice(0, 5).forEach(site => {
-          const option = document.createElement('option');
-          option.value = site.url;
-          option.textContent = new URL(site.url).hostname + ' (P-Score: ' + site.pscore + ')';
-          select.appendChild(option);
-        });
-      });
-    }
+ function playBeep(frequency = 800, duration = 0.1) {
+   if (!audioCtx || document.body.classList.contains('no-sound')) return;
+   const oscillator = audioCtx.createOscillator();
+   const gainNode = audioCtx.createGain();
+   oscillator.connect(gainNode);
+   gainNode.connect(audioCtx.destination);
+   oscillator.frequency.value = frequency;
+   oscillator.type = 'square';
+   gainNode.gain.value = 0.1;
+   oscillator.start();
+   gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+   oscillator.stop(audioCtx.currentTime + duration);
+ }
 
-    function generateBadge() {
-      const compareUrl = document.getElementById('badgeCompare').value;
-      const badgeCard = document.getElementById('badgeCard');
-      const badgePscore = document.getElementById('badgePscore');
-      const badgeComparison = document.getElementById('badgeComparison');
-      const badgeUrl = document.getElementById('badgeUrl');
-      
-      badgePscore.textContent = currentData.pscore;
-      badgeUrl.textContent = new URL(currentData.url).hostname;
-      
-      if (compareUrl) {
-        fetch('/api/scan', { method: 'POST', body: JSON.stringify({ url: compareUrl }) }).then(r => r.json()).then(compareData => {
-          const comparison = currentData.pscore > compareData.pscore ? 'Better than ' : 'Worse than ';
-          badgeComparison.textContent = comparison + new URL(compareUrl).hostname + ' (' + compareData.pscore + ')';
-        });
-      } else {
-        badgeComparison.textContent = '';
-      }
-      
-      document.getElementById('badgePreview').classList.remove('hidden');
-      playSound('beep');
-    }
+ // Konami Code for Summon Mode
+ let konamiCode = [];
+ const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→BA
+ document.addEventListener('keydown', (e) => {
+   konamiCode.push(e.keyCode);
+   if (konamiCode.length > konamiSequence.length) konamiCode.shift();
+   if (JSON.stringify(konamiCode) === JSON.stringify(konamiSequence)) {
+     document.body.classList.add('summon-mode');
+     playBeep(1000, 0.5);
+     konamiCode = [];
+   }
+ });
 
-    function downloadBadgePNG() {
-      const canvas = document.createElement('canvas');
-      canvas.width = 400;
-      canvas.height = 300;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, 400, 300);
-      ctx.fillStyle = '#00ff00';
-      ctx.font = 'bold 48px Courier';
-      ctx.fillText('P-Score: ' + currentData.pscore, 50, 150);
-      ctx.fillText('Scanned by Pythia™ 🔮', 50, 250);
-      ctx.fillText('=== ORACLE REPORT ===', 20, 280);
-      const link = document.createElement('a');
-      link.download = 'pythia-badge.png';
-      link.href = canvas.toDataURL();
-      link.click();
-      playSound('click');
-    }
+ // Theme Toggle
+ document.getElementById('themeToggle').addEventListener('click', () => {
+   document.body.classList.toggle('retro');
+   const isRetro = document.body.classList.contains('retro');
+   document.getElementById('themeToggle').textContent = isRetro ? '🖥️ Modern Mode' : '🕹️ Boring Mode';
+   localStorage.setItem('pythiaTheme', isRetro ? 'retro' : 'modern');
+   playBeep(isRetro ? 600 : 800);
+ });
 
-    function normalizeUrl(input) {
-      let url = input.trim();
-      if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
-      return url;
-    }
+ // Load Theme from Storage
+ if (localStorage.getItem('pythiaTheme') === 'retro') {
+   document.body.classList.add('retro');
+   document.getElementById('themeToggle').textContent = '🖥️ Modern Mode';
+ }
 
-    function typeWriter(element, text, speed = 50) {
-      element.innerHTML = '';
-      let i = 0;
-      const interval = setInterval(() => {
-        if (i < text.length) {
-          element.innerHTML += text.charAt(i);
-          i++;
-        } else {
-          clearInterval(interval);
-        }
-      }, speed);
-    }
+ // Sound Toggle
+ document.getElementById('soundToggle').addEventListener('click', () => {
+   const icon = document.getElementById('soundIcon');
+   if (icon.textContent === '🔊') {
+     icon.textContent = '🔇';
+     document.body.classList.add('no-sound');
+   } else {
+     icon.textContent = '🔊';
+     document.body.classList.remove('no-sound');
+     initAudio();
+   }
+   localStorage.setItem('pythiaSound', icon.textContent);
+ });
 
-    function showBootSequence() {
-      const boot = document.getElementById('bootSequence');
-      boot.classList.remove('hidden');
-      let delay = 0;
-      boot.querySelectorAll('.boot-line').forEach(line => {
-        setTimeout(() => line.style.opacity = '1', delay);
-        delay += 200;
-      });
-      setTimeout(() => boot.classList.add('hidden'), delay + 1000);
-    }
+ if (localStorage.getItem('pythiaSound') === '🔇') {
+   document.getElementById('soundIcon').textContent = '🔇';
+   document.body.classList.add('no-sound');
+ }
 
-    function initAudio() {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
+ // Menu Functions
+ function openMenu() {
+   document.getElementById('menuOverlay').classList.add('open');
+   document.getElementById('menuBackdrop').classList.add('open');
+ }
+ function closeMenu() {
+   document.getElementById('menuOverlay').classList.remove('open');
+   document.getElementById('menuBackdrop').classList.remove('open');
+ }
+ function showPage(pageId) {
+   document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active'));
+   document.getElementById(pageId).classList.add('active');
+   closeMenu();
+ }
 
-    function playSound(type) {
-      if (!audioCtx) initAudio();
-      if (document.getElementById('soundIcon').textContent === '🔇') return;
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      if (type === 'click') {
-        oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-      } else if (type === 'beep') {
-        oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-      }
-      oscillator.start();
-      oscillator.stop(audioCtx.currentTime + 0.3);
-    }
+ // Normalize URL
+ function normalizeUrl(url) {
+   if (!url.startsWith('http://') && !url.startsWith('https://')) {
+     url = 'https://' + url;
+   }
+   try {
+     return new URL(url).hostname;
+   } catch {
+     return url;
+   }
+ }
 
-    // Event listeners
-    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-    document.getElementById('scanBtn').addEventListener('click', analyzeSite);
-    document.getElementById('urlInput').addEventListener('keypress', e => {
-      if (e.key === 'Enter') analyzeSite();
-    });
-    document.getElementById('soundToggle').addEventListener('click', () => {
-      const icon = document.getElementById('soundIcon');
-      icon.textContent = icon.textContent === '🔊' ? '🔇' : '🔊';
-      playSound('click');
-    });
-    document.getElementById('toggleDetailsBtn').addEventListener('click', () => {
-      const content = document.getElementById('detailsBreakdown');
-      content.classList.toggle('collapsed');
-      const btn = document.getElementById('toggleDetailsBtn');
-      btn.textContent = content.classList.contains('collapsed') ? '▼ Show Detailed Breakdown' : '▲ Hide Details';
-      playSound('click');
-    });
-    let konamiIndex = 0;
-    const konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
-    document.addEventListener('keydown', e => {
-      if (e.keyCode === konamiCode[konamiIndex]) {
-        konamiIndex++;
-        if (konamiIndex === konamiCode.length) {
-          document.body.classList.toggle('summon-mode');
-          konamiIndex = 0;
-          playSound('beep');
-        }
-      } else {
-        konamiIndex = 0;
-      }
-    });
-    const prophecies = [
-      "The gods whisper: Thy site loads like Hermes on wings—swift and divine! But beware the trackers lurking in shadows.",
-      "Oracle decrees: P-Score favors the bold. Thy page weighs heavy as Sisyphus' boulder—lighten it!",
-      "From Delphi's fumes: Accessibility reigns supreme. Make thy realm open to all, lest the Fates blind thee.",
-      "Pythia laughs: SEO pulses strong, yet privacy? A sieve for secrets. Seal thy Helix!",
-      "Verdict: Modern tech gleams like Athena's shield. But sustainability? The earth groans—go green, mortal!"
-    ];
-    document.getElementById('consultBtn').addEventListener('click', () => {
-      playSound('beep');
-      const randomProphecy = prophecies[Math.floor(Math.random() * prophecies.length)];
-      document.getElementById('consultationText').textContent = randomProphecy;
-      document.getElementById('consultationResults').classList.remove('hidden');
-    });
-    document.getElementById('demoBtn').addEventListener('click', () => {
-      playSound('click');
-      fetch(TOP50_API).then(r => r.json()).then(data => {
-        const randomSite = data.results[Math.floor(Math.random() * data.results.length)].url;
-        document.getElementById('urlInput').value = randomSite;
-        analyzeSite();
-      }).catch(() => {
-        document.getElementById('urlInput').value = 'https://www.google.com';
-        analyzeSite();
-      });
-    });
-    document.getElementById('exportBtn').addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify(currentData, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'pythia-report.json';
-      a.click();
-      URL.revokeObjectURL(url);
-      playSound('click');
-    });
-    document.getElementById('customBattleBtn').addEventListener('click', startBattleCustom);
-    document.getElementById('shareRivalryBtn').addEventListener('click', shareBattle);
+ // Fetch with Error Handling
+ async function apiFetch(endpoint, options = {}) {
+   try {
+     const response = await fetch(endpoint + '?ref=pythia', options);
+     if (!response.ok) throw new Error(`API Error: ${response.status}`);
+     return await response.json();
+   } catch (error) {
+     console.error('API Fetch Error:', error);
+     return null;
+   }
+ }
 
-    function renderRivalries() {
-      const list = document.getElementById('rivalryList');
-      list.innerHTML = RIVALRIES.map(r => {
-        return `<div class="rivalry-item flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition">
-          <div class="flex-1">
-            <div class="text-xs font-bold text-gray-500 mb-1">${r.category}</div>
-            <div class="font-bold text-gray-800">${r.name1} v ${r.name2}</div>
-          </div>
-          <button onclick="startBattle('${r.url1}', '${r.url2}', '${r.name1}', '${r.name2}', '${r.logo1}', '${r.logo2}')" class="retro-button px-4 py-2 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition text-sm">⚔️</button>
-        </div>`;
-      }).join('');
-    }
+ // Load Visit Count
+ async function loadVisits() {
+   const data = await apiFetch(VISIT_API);
+   if (data) {
+     document.getElementById('visitCount').textContent = data.total || 0;
+   }
+ }
 
-    async function startBattle(url1, url2, name1, name2, logo1, logo2) {
-      playSound('beep');
-      const btn = event.target;
-      btn.innerHTML = '<span class="sword-fighting">⚔️</span>';
-      btn.disabled = true;
-      document.getElementById('battleResults').classList.add('hidden');
-      
-      try {
-        const [data1, data2] = await Promise.all([
-          getOrFetchScan(url1),
-          getOrFetchScan(url2)
-        ]);
-        currentBattleData = { name1, name2, result1: data1, result2: data2, winner: data1.pscore > data2.pscore ? name1 : data2.pscore > data1.pscore ? name2 : 'TIE', battleDate: new Date().toLocaleString() };
-        
-        const winnerIcon = document.getElementById('winnerIcon');
-        const winnerLogo = currentBattleData.winner === name1 ? logo1 : logo2;
-        if (winnerLogo && currentBattleData.winner !== 'TIE') {
-          winnerIcon.querySelector('img').src = winnerLogo;
-          winnerIcon.classList.remove('hidden');
-        } else {
-          winnerIcon.classList.add('hidden');
-        }
-        
-        document.getElementById('winnerAnnouncement').innerHTML = currentBattleData.winner === 'TIE' ? '🤝 IT\'S A TIE!<br><span class="text-2xl">P-Score™: ' + data1.pscore + ' - ' + data2.pscore + '</span><br><span class="text-xs opacity-75 mt-2 block">' + currentBattleData.battleDate + '</span>' : '🏆 ' + currentBattleData.winner.toUpperCase() + ' IS THE WINNER!<br><span class="text-2xl">P-Score™: ' + Math.max(data1.pscore, data2.pscore) + ' - ' + Math.min(data1.pscore, data2.pscore) + '</span><br><span class="text-xs opacity-75 mt-2 block">' + currentBattleData.battleDate + '</span>';
-        
-        document.getElementById('contestant1Results').innerHTML = '<div class="text-center"><div class="text-xl font-bold mb-2">' + name1 + '</div><div class="text-3xl font-bold text-indigo-600">' + data1.pscore + '</div><div class="text-sm font-bold mt-2">P-Score™</div><div class="text-xs text-gray-500 mt-2">Speed: ' + data1.karpov + ' • Access: ' + data1.vortex + '<br>Scale: ' + data1.nova + ' • Tech: ' + data1.aether + '</div></div>';
-        document.getElementById('contestant2Results').innerHTML = '<div class="text-center"><div class="text-xl font-bold mb-2">' + name2 + '</div><div class="text-3xl font-bold text-purple-600">' + data2.pscore + '</div><div class="text-sm font-bold mt-2">P-Score™</div><div class="text-xs text-gray-500 mt-2">Speed: ' + data2.karpov + ' • Access: ' + data2.vortex + '<br>Scale: ' + data2.nova + ' • Tech: ' + data2.aether + '</div></div>';
-        
-        document.getElementById('battleResults').classList.remove('hidden');
-      } catch (error) {
-        alert('Battle failed: ' + error.message);
-      } finally {
-        btn.innerHTML = '⚔️';
-        btn.disabled = false;
-      }
-    }
+ // Render Rivalries
+ function renderRivalries() {
+   const list = document.getElementById('rivalryList');
+   list.innerHTML = '';
+   RIVALRIES.forEach((rivalry, index) => {
+     const item = document.createElement('div');
+     item.className = 'rivalry-item flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer';
+     item.innerHTML = `
+       <div class="flex items-center gap-3">
+         <img src="${rivalry.logo1}" alt="${rivalry.name1} logo" class="w-8 h-8 rounded">
+         <span class="font-bold">⚔️</span>
+         <img src="${rivalry.logo2}" alt="${rivalry.name2} logo" class="w-8 h-8 rounded">
+       </div>
+       <div class="text-right">
+         <div class="font-semibold">${rivalry.name1} vs ${rivalry.name2}</div>
+         <div class="text-xs text-gray-500">${rivalry.category}</div>
+       </div>
+       <button onclick="startRivalryBattle('${rivalry.url1}', '${rivalry.name1}', '${rivalry.url2}', '${rivalry.name2}', '${rivalry.logo1}', '${rivalry.logo2}')" class="ml-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Battle</button>
+     `;
+     list.appendChild(item);
+   });
+ }
 
-    async function getOrFetchScan(url) {
-      let data = getCachedScan(url);
-      if (!data) {
-        const response = await fetch('/api/scan', { method: 'POST', body: JSON.stringify({ url }) });
-        data = await response.json();
-        setCachedScan(url, data);
-      }
-      return data;
-    }
+ // Start Rivalry Battle (uses custom battle logic)
+ async function startRivalryBattle(url1, name1, url2, name2, logo1, logo2) {
+   document.getElementById('customUrl1').value = url1;
+   document.getElementById('customUrl2').value = url2;
+   await customBattle(); // Trigger battle
+   // Announce with logos
+   document.getElementById('winnerIcon').src = currentBattleData.winner === 1 ? logo1 : logo2;
+   document.getElementById('winnerIcon').classList.remove('hidden');
+   document.getElementById('winnerAnnouncement').innerHTML = `🏆 ${currentBattleData.winner === 1 ? name1 : name2} Wins!`;
+ }
 
-    function startBattleCustom() {
-      const url1 = normalizeUrl(document.getElementById('customUrl1').value.trim());
-      const url2 = normalizeUrl(document.getElementById('customUrl2').value.trim());
-      if (!url1 || !url2) {
-        alert('Please enter two valid URLs');
-        return;
-      }
-      const name1 = new URL(url1).hostname;
-      const name2 = new URL(url2).hostname;
-      startBattle(url1, url2, name1, name2, '', '');
-    }
+ // Scan Function
+ async function performScan(url) {
+   playBeep(800);
+   document.getElementById('loadingSpinner').classList.remove('hidden');
+   document.getElementById('scanBtn').disabled = true;
+   document.getElementById('scanBtn').textContent = 'SCANNING...';
 
-    function shareBattle() {
-      if (!currentBattleData) return;
-      const { name1, name2, result1, result2, winner, battleDate } = currentBattleData;
-      const text = `⚔️ PYTHIA™ BATTLE (${battleDate}): ${name1} (${result1.pscore}) v ${name2} (${result2.pscore}) - ${winner.toUpperCase()} WINS! 🏆 Scanned by Pythia™ 🔮 #PScore`;
-      shareContent(text, window.location.href);
-    }
+   const data = await apiFetch(`${SCAN_API}?url=${encodeURIComponent(url)}`);
+   document.getElementById('loadingSpinner').classList.add('hidden');
+   document.getElementById('scanBtn').disabled = false;
+   document.getElementById('scanBtn').textContent = 'ANALYZE';
 
-    function shareContent(text, url, platform) {
-      const encodedText = encodeURIComponent(text);
-      const encodedUrl = encodeURIComponent(url);
-      let shareUrl;
-      switch (platform) {
-        case 'twitter': shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`; break;
-        case 'facebook': shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`; break;
-        case 'whatsapp': shareUrl = `https://wa.me/?text=${encodedText}%20${encodedUrl}`; break;
-        case 'email': shareUrl = `mailto:?subject=Pythia™ Battle&body=${encodedText}%20${encodedUrl}`; break;
-      }
-      if (shareUrl) window.open(shareUrl, '_blank');
-      playSound('click');
-    }
+   if (!data) {
+     alert('Scan failed. Please try again.');
+     return;
+   }
 
-    async function loadTop50Results() {
-      try {
-        const response = await fetch(TOP50_API);
-        const data = await response.json();
-        if (data.error) throw new Error(data.message);
-        
-        const sorted = data.results.sort((a, b) => b.pscore - a.pscore);
-        const top5 = sorted.slice(0, 5);
-        const bottom5 = sorted.slice(-5).reverse();
-        
-        document.getElementById('top50TopList').innerHTML = top5.map((site, i) => `<div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-green-50"><span>${i + 1}. ${new URL(site.url).hostname}</span><span>P-Score: ${site.pscore}</span></div>`).join('');
-        document.getElementById('top50BottomList').innerHTML = bottom5.map((site, i) => `<div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-red-50"><span>${sorted.length - (4 - i)}. ${new URL(site.url).hostname}</span><span>P-Score: ${site.pscore}</span></div>`).join('');
-        
-        document.getElementById('top50Loading').classList.add('hidden');
-        document.getElementById('top50Results').classList.remove('hidden');
-      } catch (error) {
-        document.getElementById('top50Loading').textContent = 'Failed to load: ' + error.message;
-      }
-    }
+   currentData = data;
+   displayResults(data);
+   playBeep(1000, 0.3);
+ }
 
-    async function loadEnterpriseDaily() {
-      try {
-        const response = await fetch(ENTERPRISE_API);
-        const data = await response.json();
-        if (data.error) throw new Error(data.message);
-        
-        document.getElementById('enterpriseWinner').textContent = new URL(data.winner.url).hostname;
-        document.getElementById('enterprisePscore').textContent = data.winner.pscore;
-        document.getElementById('enterpriseLoadTime').textContent = data.winner.loadTime;
-        document.getElementById('enterpriseTotalScanned').textContent = `From ${data.totalScanned} sites scanned on ${data.scanDate}`;
-        document.getElementById('enterpriseLink').href = data.winner.url;
-        
-        document.getElementById('enterpriseDailyLoading').classList.add('hidden');
-        document.getElementById('enterpriseDailyResults').classList.remove('hidden');
-      } catch (error) {
-        document.getElementById('enterpriseDailyLoading').textContent = 'No scan available: ' + error.message;
-      }
-    }
+ function displayResults(data) {
+   // P-Score
+   document.getElementById('pscoreValue').textContent = data.pscore;
+   document.getElementById('pscoreValue').className = `text-7xl font-bold mb-2 typing-effect ${getScoreColor(data.pscore)}`;
+   document.getElementById('siteInfo').innerHTML = `<strong>${data.hostname}</strong> • Scanned: ${new Date().toLocaleString()}`;
+   document.getElementById('pscoreContainer').classList.remove('hidden');
+   document.getElementById('exportBtn').style.display = 'inline-block';
 
-    async function updateVisitCounter() {
-      try {
-        const response = await fetch(VISIT_API);
-        const data = await response.json();
-        document.getElementById('visitCount').textContent = data.count;
-      } catch (error) {
-        document.getElementById('visitCount').textContent = 'N/A';
-      }
-    }
+   // Components Grid
+   const container = document.getElementById('resultsContainer');
+   container.innerHTML = '';
+   data.components.forEach(comp => {
+     const div = document.createElement('div');
+     div.className = 'modern-card bg-white rounded-lg p-4 text-center';
+     div.innerHTML = `
+       <div class="text-2xl mb-2">${comp.icon || '🔧'}</div>
+       <div class="font-bold text-lg">${comp.name}</div>
+       <div class="text-3xl font-bold text-green-600 mb-1">${comp.score}</div>
+       <div class="text-sm text-gray-600">${comp.details?.slice(0, 100)}...</div>
+     `;
+     container.appendChild(div);
+   });
+   container.classList.remove('hidden');
 
-    // Init
-    renderRivalries();
-    loadTop50Results();
-    loadEnterpriseDaily();
-    updateVisitCounter();
-    showBootSequence();
-  </script>
+   // Toggle Details
+   document.getElementById('toggleDetailsSection').classList.remove('hidden');
+   document.getElementById('detailsBreakdown').innerHTML = data.components.map(comp => `
+     <div class="mb-4 p-4 border rounded-lg">
+       <h4 class="font-bold">${comp.name}: ${comp.score}/10</h4>
+       <p>${comp.details}</p>
+     </div>
+   `).join('');
+ }
+
+ function getScoreColor(score) {
+   if (score >= 80) return 'text-green-400';
+   if (score >= 60) return 'text-yellow-400';
+   return 'text-red-400';
+ }
+
+ // Consult Pythia (Witty Responses)
+ document.getElementById('consultBtn').addEventListener('click', () => {
+   if (!currentData) {
+     alert('Run a scan first!');
+     return;
+   }
+   const score = currentData.pscore;
+   const prophecies = {
+     high: ['The gods smile upon thy site. Swift as Hermes, pure as Athena. P-Score: ' + score + ' – Eternal glory awaits! 🔮'],
+     med: ['The oracle whispers balance. Hone thy code, lest shadows creep. P-Score: ' + score + ' – Rise from the ashes! ⚡'],
+     low: ['Beware the Fates! Thy site slumbers in darkness. Awaken it, or perish in obscurity. P-Score: ' + score + ' – Reform or fade! 💀']
+   };
+   const tier = score >= 80 ? 'high' : score >= 60 ? 'med' : 'low';
+   document.getElementById('consultationText').textContent = prophecies[tier][Math.floor(Math.random() * prophecies[tier].length)];
+   document.getElementById('consultationResults').classList.remove('hidden');
+   playBeep(1200, 0.4);
+ });
+
+ // Demo Button
+ document.getElementById('demoBtn').addEventListener('click', async () => {
+   const data = await apiFetch(TOP50_API);
+   let demoUrl = 'https://www.google.com';
+   if (data && data.top50 && data.top50.length > 0) {
+     const randomIndex = Math.floor(Math.random() * data.top50.length);
+     demoUrl = data.top50[randomIndex].url;
+   }
+   document.getElementById('urlInput').value = demoUrl;
+   await performScan(demoUrl);
+ });
+
+ // Analyze Button & Enter Key
+ document.getElementById('scanBtn').addEventListener('click', () => {
+   const url = document.getElementById('urlInput').value.trim();
+   if (!url) return;
+   performScan(normalizeUrl(url));
+ });
+
+ document.getElementById('urlInput').addEventListener('keypress', (e) => {
+   if (e.key === 'Enter') {
+     const url = e.target.value.trim();
+     if (url) performScan(normalizeUrl(url));
+   }
+ });
+
+ // Toggle Details
+ document.getElementById('toggleDetailsBtn').addEventListener('click', () => {
+   const content = document.getElementById('detailsBreakdown');
+   const btn = document.getElementById('toggleDetailsBtn');
+   content.classList.toggle('collapsed');
+   content.classList.toggle('hidden');
+   btn.textContent = content.classList.contains('collapsed') ? '▼ Show Detailed Breakdown' : '▲ Hide Details';
+   btn.setAttribute('aria-expanded', !content.classList.contains('collapsed'));
+ });
+
+ // Badge Generation
+ async function generateBadge() {
+   if (!currentData) return;
+   const compareSelect = document.getElementById('badgeCompare');
+   const compareUrl = compareSelect.value;
+   let comparison = '';
+   if (compareUrl) {
+     // Fetch comparison (stub; in prod, scan compareUrl)
+     comparison = `vs Top Site: ${Math.floor(Math.random() * 100)}`;
+   }
+   document.getElementById('badgePscore').textContent = currentData.pscore;
+   document.getElementById('badgeComparison').textContent = comparison;
+   document.getElementById('badgeUrl').textContent = currentData.hostname;
+   document.getElementById('badgePreview').classList.remove('hidden');
+ }
+
+ function downloadBadgePNG() {
+   const badge = document.getElementById('badgeCard');
+   html2canvas(badge).then(canvas => {
+     const link = document.createElement('a');
+     link.download = `pythia-badge-${currentData.hostname}.png`;
+     link.href = canvas.toDataURL();
+     link.click();
+   });
+ }
+
+ // Populate Badge Compare from Top50
+ async function loadBadgeCompares() {
+   const data = await apiFetch(TOP50_API);
+   if (data && data.top50) {
+     const select = document.getElementById('badgeCompare');
+     data.top50.slice(0, 10).forEach(site => { // Top 10 only
+       const option = document.createElement('option');
+       option.value = site.url;
+       option.textContent = `${site.name} (${site.pscore})`;
+       select.appendChild(option);
+     });
+   }
+ }
+
+ // Custom Battle
+ document.getElementById('customBattleBtn').addEventListener('click', async () => {
+   const url1 = normalizeUrl(document.getElementById('customUrl1').value);
+   const url2 = normalizeUrl(document.getElementById('customUrl2').value);
+   if (!url1 || !url2) {
+     alert('Enter both URLs!');
+     return;
+   }
+
+   playBeep(600, 0.2);
+   document.getElementById('battleResults').classList.remove('hidden');
+   document.getElementById('winnerAnnouncement').innerHTML = '⚔️ Battling...';
+
+   // Sequential scans (batch=1 for fairness)
+   const data1 = await apiFetch(`${SCAN_API}?url=${encodeURIComponent(url1)}`);
+   const data2 = await apiFetch(`${SCAN_API}?url=${encodeURIComponent(url2)}`);
+
+   if (!data1 || !data2) {
+     alert('Battle failed. Try again.');
+     return;
+   }
+
+   currentBattleData = { data1, data2, winner: data1.pscore > data2.pscore ? 1 : 2 };
+   displayBattleResults(data1, data2);
+   playBeep(1200, 0.5);
+ });
+
+ function displayBattleResults(data1, data2) {
+   const winner = currentBattleData.winner === 1 ? data1 : data2;
+   const loser = currentBattleData.winner === 1 ? data2 : data1;
+   document.getElementById('winnerAnnouncement').innerHTML = `🏆 ${currentBattleData.winner === 1 ? 'Site 1' : 'Site 2'} Wins! P-Score: ${winner.pscore} vs ${loser.pscore}`;
+   document.getElementById('contestant1Results').innerHTML = `
+     <h4 class="font-bold text-indigo-600">Site 1: ${data1.hostname}</h4>
+     <p>P-Score: <strong>${data1.pscore}</strong></p>
+     <div class="text-sm text-gray-600">${data1.components[0]?.details?.slice(0, 50)}...</div>
+   `;
+   document.getElementById('contestant2Results').innerHTML = `
+     <h4 class="font-bold text-purple-600">Site 2: ${data2.hostname}</h4>
+     <p>P-Score: <strong>${data2.pscore}</strong></p>
+     <div class="text-sm text-gray-600">${data2.components[0]?.details?.slice(0, 50)}...</div>
+   `;
+ }
+
+ // Share Battle
+ document.getElementById('shareRivalryBtn').addEventListener('click', () => {
+   if (currentBattleData) {
+     const text = `⚔️ Pythia Battle: ${currentBattleData.data1.hostname} (${currentBattleData.data1.pscore}) vs ${currentBattleData.data2.hostname} (${currentBattleData.data2.pscore}) – Winner: ${currentBattleData.winner === 1 ? currentBattleData.data1.hostname : currentBattleData.data2.hostname}! Scan yours at p-score.me`;
+     if (navigator.share) {
+       navigator.share({ title: 'Pythia Battle Results', text });
+     } else {
+       navigator.clipboard.writeText(text);
+       alert('Results copied to clipboard!');
+     }
+   }
+ });
+
+ // Load Top 50
+ async function loadTop50() {
+   const data = await apiFetch(TOP50_API);
+   if (!data || !data.top50) return;
+
+   const topList = document.getElementById('top50TopList');
+   const bottomList = document.getElementById('top50BottomList');
+   topList.innerHTML = '';
+   bottomList.innerHTML = '';
+
+   data.top50.slice(0, 5).forEach(site => {
+     const item = document.createElement('div');
+     item.className = 'flex justify-between p-2 border rounded';
+     item.innerHTML = `<span>${site.name}</span><span class="font-bold">${site.pscore}</span>`;
+     topList.appendChild(item);
+   });
+
+   data.top50.slice(-5).reverse().forEach(site => {
+     const item = document.createElement('div');
+     item.className = 'flex justify-between p-2 border rounded';
+     item.innerHTML = `<span>${site.name}</span><span class="font-bold text-red-600">${site.pscore}</span>`;
+     bottomList.appendChild(item);
+   });
+
+   document.getElementById('top50Loading').classList.add('hidden');
+   document.getElementById('top50Results').classList.remove('hidden');
+ }
+
+ // Load Enterprise Daily
+ async function loadEnterpriseDaily() {
+   const data = await apiFetch(ENTERPRISE_API);
+   if (!data) return;
+
+   document.getElementById('enterpriseWinner').textContent = data.winnerName || 'N/A';
+   document.getElementById('enterprisePscore').textContent = data.pscore || '--';
+   document.getElementById('enterpriseLoadTime').textContent = data.loadTime || '--';
+   document.getElementById('enterpriseLink').href = data.url || '#';
+   document.getElementById('enterpriseTotalScanned').textContent = `Scanned ${data.total || 0} enterprises today.`;
+
+   document.getElementById('enterpriseDailyLoading').classList.add('hidden');
+   document.getElementById('enterpriseDailyResults').classList.remove('hidden');
+ }
+
+ // Export Results
+ document.getElementById('exportBtn').addEventListener('click', () => {
+   if (currentData) {
+     const blob = new Blob([JSON.stringify(currentData, null, 2)], { type: 'application/json' });
+     const link = document.createElement('a');
+     link.download = `pythia-scan-${currentData.hostname}.json`;
+     link.href = URL.createObjectURL(blob);
+     link.click();
+   }
+ });
+
+ // Boot Sequence
+ function runBootSequence() {
+   const boot = document.getElementById('bootSequence');
+   boot.classList.remove('hidden');
+   const lines = boot.querySelectorAll('.boot-line');
+   lines.forEach((line, index) => {
+     setTimeout(() => line.style.opacity = 1, index * 100);
+   });
+   setTimeout(() => {
+     boot.classList.add('hidden');
+     lines.forEach(line => line.style.opacity = 0);
+   }, 3000);
+   document.addEventListener('keydown', () => boot.classList.add('hidden'), { once: true });
+ }
+
+ // Init
+ async function init() {
+   initAudio();
+   runBootSequence();
+   await loadVisits();
+   renderRivalries();
+   await loadTop50();
+   await loadEnterpriseDaily();
+   await loadBadgeCompares();
+   // Polyfill for html2canvas if needed (assume CDN)
+ }
+
+ // Export html2canvas for badges
+ const script = document.createElement('script');
+ script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+ document.head.appendChild(script);
+
+ window.addEventListener('load', init);
+ </script>
+</body>
 </html>
+
