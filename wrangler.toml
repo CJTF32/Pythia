@@ -1,0 +1,6 @@
+name = "pythia"
+compatibility_date = "2025-11-06"
+pages_build_output_dir = "."
+kv_namespaces = [
+  { binding = "PYTHIA_TOP50_KV", id = "[YOUR_KV_ID]" }
+]
