@@ -40,30 +40,40 @@ export async function onRequest(context) {
     const RATE_LIMIT = 25; // scans per hour
 
     if (env.PYTHIA_TOP50_KV) {
-      const current = await env.PYTHIA_TOP50_KV.get(rateLimitKey);
-      const count = current ? parseInt(current) : 0;
+      try {
+        const current = await env.PYTHIA_TOP50_KV.get(rateLimitKey);
+        const count = current ? parseInt(current) : 0;
 
-      if (count >= RATE_LIMIT) {
-        return new Response(JSON.stringify({ 
-          error: 'Rate limit exceeded. Maximum 25 scans per hour.' 
-        }), {
-          status: 429,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
+        if (count >= RATE_LIMIT) {
+          return new Response(JSON.stringify({ 
+            error: 'Rate limit exceeded. Maximum 25 scans per hour.' 
+          }), {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        await env.PYTHIA_TOP50_KV.put(rateLimitKey, (count + 1).toString(), { expirationTtl: 3600 });
+      } catch (kvError) {
+        // If KV fails, log but continue (don't block the scan)
+        console.log('KV error (rate limit):', kvError.message);
       }
-
-      await env.PYTHIA_TOP50_KV.put(rateLimitKey, (count + 1).toString(), { expirationTtl: 3600 });
     }
 
     // Check cache first
     const cacheKey = `scan:${targetUrl}`;
     if (env.PYTHIA_TOP50_KV) {
-      const cached = await env.PYTHIA_TOP50_KV.get(cacheKey);
-      if (cached) {
-        const data = JSON.parse(cached);
-        return new Response(JSON.stringify({ ...data, cached: true }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
+      try {
+        const cached = await env.PYTHIA_TOP50_KV.get(cacheKey);
+        if (cached) {
+          const data = JSON.parse(cached);
+          return new Response(JSON.stringify({ ...data, cached: true }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      } catch (cacheError) {
+        console.log('Cache read error:', cacheError.message);
+        // Continue with fresh scan if cache fails
       }
     }
 
@@ -136,7 +146,12 @@ export async function onRequest(context) {
 
     // Store in cache
     if (env.PYTHIA_TOP50_KV) {
-      await env.PYTHIA_TOP50_KV.put(cacheKey, JSON.stringify(result), { expirationTtl: 300 });
+      try {
+        await env.PYTHIA_TOP50_KV.put(cacheKey, JSON.stringify(result), { expirationTtl: 300 });
+      } catch (cacheError) {
+        console.log('Cache write error:', cacheError.message);
+        // Continue even if cache save fails
+      }
     }
 
     return new Response(JSON.stringify(result), {
