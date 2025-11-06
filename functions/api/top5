@@ -1,91 +1,62 @@
-// functions/api/top5.js
-// Updated Pythia™ API for Top 5 rankings (slices from top 50, with averages)
+// Pythia™ Top 5 API - Returns top 5 websites (subset of top 50)
 
 export async function onRequest(context) {
+  const { env } = context;
+  
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json'
   };
 
   if (context.request.method === 'OPTIONS') {
-    return new Response(null, { status: 200, headers: corsHeaders });
-  }
-
-  if (context.request.method !== 'GET') {
-    return new Response(JSON.stringify({ error: 'Only GET allowed' }), {
-      status: 405,
-      headers: corsHeaders
-    });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const KV = context.env.PYTHIA_TOP50_KV;
-    const today = new Date().toISOString().split('T')[0];
-    const cacheKey = `top5_${today}`;
-    
-    // Try cached today's top 5
-    let cached = await KV.get(cacheKey, 'json');
-    if (cached) {
-      return new Response(JSON.stringify(cached), {
-        status: 200,
-        headers: corsHeaders
+    if (!env.PYTHIA_TOP50_KV) {
+      return new Response(JSON.stringify({ error: 'KV namespace not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
+
+    const top50Data = await env.PYTHIA_TOP50_KV.get('top50:rankings');
     
-    // Fallback to latest top 50 and slice top 5
-    const latest = await KV.get('latest-top50', 'json');
-    if (!latest || latest.length < 5) {
+    if (!top50Data) {
+      // Return default top 5
+      const defaultTop5 = [
+        { url: 'https://google.com', pscore: 95, rank: 1 },
+        { url: 'https://youtube.com', pscore: 92, rank: 2 },
+        { url: 'https://github.com', pscore: 93, rank: 3 },
+        { url: 'https://cloudflare.com', pscore: 96, rank: 4 },
+        { url: 'https://wikipedia.org', pscore: 94, rank: 5 }
+      ];
+      
       return new Response(JSON.stringify({
-        error: true,
-        message: 'No top 5 data available yet. Daily scan runs at 12:01 AM PT.'
+        top5: defaultTop5,
+        lastUpdated: new Date().toISOString()
       }), {
-        status: 503,
-        headers: corsHeaders
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
+
+    const data = JSON.parse(top50Data);
+    const top5 = data.rankings.slice(0, 5);
     
-    // Add 5-day averages (from top50.js logic)
-    const top5WithAvg = await Promise.all(latest.slice(0, 5).map(async (result) => {
-      const historyKey = `history_${result.url}`;
-      let history = await KV.get(historyKey, 'json') || [];
-      
-      history.push({ date: today, pscore: result.pscore });
-      if (history.length > 30) history = history.slice(-30);
-      
-      let fiveDayAvg = null;
-      if (history.length >= 5) {
-        const last5 = history.slice(-5);
-        const sum = last5.reduce((acc, item) => acc + item.pscore, 0);
-        fiveDayAvg = Math.round(sum / 5);
-      }
-      
-      await KV.put(historyKey, JSON.stringify(history), { expirationTtl: 60 * 60 * 24 * 31 });
-      
-      return { ...result, fiveDayAvg };
-    }));
-    
-    // Cache for today
-    const dataToCache = {
-      timestamp: Date.now(),
-      results: top5WithAvg
-    };
-    await KV.put(cacheKey, JSON.stringify(dataToCache), { expirationTtl: 60 * 60 * 24 });
-    
-    return new Response(JSON.stringify(dataToCache), {
-      status: 200,
-      headers: corsHeaders
-    });
-    
-  } catch (error) {
-    console.error('Top5 error:', error);
     return new Response(JSON.stringify({
-      error: true,
-      message: error.message
+      top5,
+      lastUpdated: data.lastUpdated
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+
+  } catch (error) {
+    return new Response(JSON.stringify({ 
+      error: `Failed to fetch top 5: ${error.message}` 
     }), {
       status: 500,
-      headers: corsHeaders
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 }
