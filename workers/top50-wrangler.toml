@@ -1,7 +1,7 @@
-name = "pythia-top50-cron"
-main = "top50-scheduler.js"
-compatibility_date = "2025-11-04"
-
-[[kv_namespaces]]
-binding = "PYTHIA_TOP50_KV"
-id = "6561d92e53c2470296e0ec367a44fa51"
+name = "top50-scheduler"
+main = "workers/top50-scheduler.js"
+compatibility_date = "2025-11-06"
+kv_namespaces = [
+  { binding = "PYTHIA_TOP50_KV", id = "[YOUR_KV_ID]" }
+]
+triggers = { crons = ["0 8 * * *"] }  # Daily at 8AM
