@@ -110,7 +110,7 @@ export async function onRequest(context) {
       if (loadTime > 5000) score -= 40; else if (loadTime > 3000) score -= 30; else if (loadTime > 2000) score -= 20; else if (loadTime > 1000) score -= 10; else if (loadTime < 500) score += 10;
       score -= Math.min(30, analysis.scripts * 2);
       score -= Math.min(15, analysis.images * 0.6);
-      score -= Math.min(12, analysis.stylesheets * 3.5);
+      score -= Math.min(15, analysis.stylesheets * 3.5);
       score -= Math.min(15, analysis.videos * 8);
       score -= Math.min(25, sizeMB * 10);
       if (analysis.hasAsync > 0) score += 5;
@@ -134,18 +134,104 @@ export async function onRequest(context) {
       return Math.max(0, Math.min(100, Math.round(score)));
     }
 
-    // ... (similar modular functions for calcNova, calcAether, calcPulse, calcEden, calcHelix, calcEcho, calcQuantum, calcNexus - omitted for brevity, but included in full code as per docx)
+    function calcPulse() {
+      let score = 50;
+      if (analysis.title.length > 10 && analysis.title.length < 70) score += 15;
+      if (analysis.metaDescription.length > 50 && analysis.metaDescription.length < 160) score += 15;
+      if (analysis.canonical) score += 5;
+      if (analysis.ogTags.title) score += 3;
+      if (analysis.ogTags.description) score += 3;
+      if (analysis.ogTags.image) score += 3;
+      if (analysis.ogTags.url) score += 3;
+      if (analysis.twitterCard) score += 3;
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    function calcHelix() {
+      let score = 80;
+      score -= Math.min(50, analysis.trackers.length * 10);
+      score -= Math.min(30, analysis.thirdPartyScripts * 5);
+      if (headers.get('strict-transport-security')) score += 10;
+      if (headers.get('content-security-policy')) score += 10;
+      if (headers.get('x-frame-options')) score += 5;
+      if (headers.get('x-content-type-options')) score += 5;
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    function calcNexus() {
+      let score = 60;
+      if (html.includes('viewport')) score += 20;
+      if (html.match(/@media/gi)?.length > 0) score += 10;
+      if (html.includes('apple-mobile-web-app-capable')) score += 5;
+      if (analysis.hasServiceWorker) score += 5;
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    function calcEcho() {
+      let score = 70;
+      if (sizeMB < 1) score += 10; else score -= Math.min(40, sizeMB * 5);
+      if (analysis.hasLazyLoad) score += 5;
+      if (analysis.hasWebP || analysis.hasAVIF) score += 10;
+      // Placeholder for green hosting check (async API call if needed, but omitted for speed)
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    function calcNova() {
+      let score = 50;
+      const server = headers.get('server') || '';
+      const via = headers.get('via') || '';
+      const hasCDN = /cloudflare|akamai|fastly|cloudfront|cdn/i.test(server + via);
+      if (hasCDN) score += 15;
+      const cacheControl = headers.get('cache-control') || '';
+      const hasCache = cacheControl.includes('public') && cacheControl.includes('max-age');
+      if (hasCache) score += 15;
+      const compression = headers.get('content-encoding') || '';
+      if (compression.includes('br') || compression.includes('gzip')) score += 10;
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    function calcQuantum() {
+      let score = 70;
+      if (html.includes('document.write')) score -= 10;
+      if (html.includes('eval(')) score -= 10;
+      if (html.match(/integrity=["']/gi)?.length > 0) score += 5;
+      if (html.match(/crossorigin=["']/gi)?.length > 0) score += 5;
+      if (html.includes('rel="noopener"')) score += 5;
+      if (html.includes('<!DOCTYPE html>')) score += 5;
+      score -= Math.min(20, analysis.inlineScripts * 2);
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    function calcAether() {
+      let score = 50;
+      if (analysis.hasWebAssembly) score += 10;
+      if (analysis.hasServiceWorker) score += 10;
+      if (analysis.hasModules) score += 10;
+      if (analysis.hasWebP || analysis.hasAVIF) score += 10;
+      let frameworkBonus = 0;
+      if (analysis.frameworks.svelte || analysis.frameworks.vue) frameworkBonus += 5;
+      else if (analysis.frameworks.react) frameworkBonus += 3;
+      else if (analysis.frameworks.angular) frameworkBonus -= 5;
+      score += frameworkBonus;
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    function calcEden() {
+      let score = 100;
+      if (sizeMB > 1.5) score -= 50; else if (sizeMB > 1) score -= 30; else if (sizeMB > 0.5) score -= 15; else if (sizeMB < 0.3) score += 10;
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
 
     const karpov = calcKarpov();
     const vortex = calcVortex();
-    const nova = calcNova();
-    const aether = calcAether();
     const pulse = calcPulse();
-    const eden = calcEden();
     const helix = calcHelix();
-    const echo = calcEcho();
-    const quantum = calcQuantum();
     const nexus = calcNexus();
+    const echo = calcEcho();
+    const nova = calcNova();
+    const quantum = calcQuantum();
+    const aether = calcAether();
+    const eden = calcEden();
 
     const pscore = Math.round((karpov + vortex + pulse + helix + nexus + echo + nova + quantum + aether + eden) / 10);
 
@@ -160,8 +246,14 @@ export async function onRequest(context) {
       breakdown: {
         karpov: { loadTimeMs: loadTime, scripts: analysis.scripts, images: analysis.images, stylesheets: analysis.stylesheets, videos: analysis.videos, hasAsync: analysis.hasAsync, hasDefer: analysis.hasDefer, hasMinified: analysis.hasMinified },
         vortex: { totalImages: analysis.images, imagesWithAlt: analysis.altTags, emptyAlts: analysis.emptyAlts, ariaLabels: analysis.ariaLabels, roles: analysis.roles, labels: analysis.labels, h1Count: analysis.headings.h1 },
-        nova: { hasCDN: /* check */, hasCache: /* check */, compression: headers.get('content-encoding'), serverHeader: headers.get('server') },
-        // ... (full breakdown for all metrics)
+        nova: { hasCDN: /cloudflare|akamai|fastly|cloudfront|cdn/i.test(headers.get('server') || '') || /cloudflare|akamai|fastly|cloudfront|cdn/i.test(headers.get('via') || ''), hasCache: (headers.get('cache-control') || '').includes('public') && (headers.get('cache-control') || '').includes('max-age'), compression: headers.get('content-encoding'), serverHeader: headers.get('server') },
+        aether: { hasWebAssembly: analysis.hasWebAssembly, hasServiceWorker: analysis.hasServiceWorker, hasModules: analysis.hasModules, hasWebP: analysis.hasWebP, hasAVIF: analysis.hasAVIF, frameworks: analysis.frameworks },
+        pulse: { titleLength: analysis.title.length, metaDescLength: analysis.metaDescription.length, hasCanonical: analysis.canonical, ogTags: analysis.ogTags, hasTwitterCard: analysis.twitterCard },
+        eden: { pageSizeMB: sizeMB },
+        helix: { trackersCount: analysis.trackers.length, thirdPartyScripts: analysis.thirdPartyScripts, hasHSTS: !!headers.get('strict-transport-security'), hasCSP: !!headers.get('content-security-policy'), hasXFrame: !!headers.get('x-frame-options') },
+        echo: { pageSizeMB: sizeMB, hasLazyLoad: analysis.hasLazyLoad, hasEfficientFormats: analysis.hasWebP || analysis.hasAVIF },
+        quantum: { hasDocumentWrite: html.includes('document.write'), hasEval: html.includes('eval('), hasSRI: (html.match(/integrity=["']/gi) || []).length, hasCrossorigin: (html.match(/crossorigin=["']/gi) || []).length, hasNoopener: html.includes('rel="noopener"'), hasDoctype: html.includes('<!DOCTYPE html>'), inlineScripts: analysis.inlineScripts },
+        nexus: { hasViewport: html.includes('viewport'), mediaQueriesCount: html.match(/@media/gi)?.length || 0, hasPWA: html.includes('apple-mobile-web-app-capable'), hasServiceWorker: analysis.hasServiceWorker }
       }
     };
 
