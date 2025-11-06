@@ -4,4 +4,4 @@ compatibility_date = "2025-11-06"
 kv_namespaces = [
   { binding = "PYTHIA_TOP50_KV", id = "[YOUR_KV_ID]" }
 ]
-triggers = { crons = ["0 8 * * *"] }  # Daily at 8AM
+triggers = { crons = ["0 8 * * *"] }
