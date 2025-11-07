@@ -127,29 +127,27 @@ async function bootSequence() {
   const bootScreen = document.getElementById('bootScreen');
   const bootLog = document.getElementById('bootLog');
   bootLog.innerHTML = '';
-  let totalTypingTime = 0; // Tracks the actual time spent typing
+  let totalTypingTime = 0; // New variable to track actual time spent
 
   for (let i = 0; i < BOOT_LOG.length; i++) {
     const line = BOOT_LOG[i];
     const p = document.createElement('p');
-    
-    // *** FIX: Removed 'h-6' class to prevent text cutoff ***
     p.classList.add('overflow-hidden', 'whitespace-nowrap', 'w-full', 'border-r-4', 'border-r-[#00ff00]'); 
     bootLog.appendChild(p);
 
     for (let j = 0; j < line.length; j++) {
-      // *** FIX: Reduced delay to 1-3ms for aggressive speedup ***
+      // *** FIX: Changed delay from 5-30ms to 1-3ms per character ***
       const charDelay = Math.random() * 2 + 1; 
       
-      totalTypingTime += charDelay; 
+      totalTypingTime += charDelay; // Accumulate the delay
       await new Promise(resolve => setTimeout(resolve, charDelay));
       
       p.innerHTML += line[j];
     }
     p.style.borderRight = 'none'; // Remove cursor
   }
-  
-  // *** FIX: Enforce 2000ms (2 second) duration for the log output ***
+
+  // *** FIX: Calculate remaining time to enforce a 2000ms (2s) minimum duration ***
   const timeToWait = Math.max(0, 2000 - totalTypingTime); 
   await new Promise(resolve => setTimeout(resolve, timeToWait));
   
@@ -159,7 +157,7 @@ async function bootSequence() {
   
   setTimeout(() => {
     bootScreen.remove();
-    initMainPage();
+    initMainPage(); 
   }, 500); // Wait for the 0.5s opacity transition to finish
 }
 
