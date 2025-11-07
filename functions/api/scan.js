@@ -122,33 +122,38 @@ function updateSoundToggleText() {
   document.getElementById('soundToggle').textContent = isSoundOn ? '🔊 SOUND' : '🔇 SOUND';
 }
 
-// Boot sequence function (fake terminal log, random speed, 2s pause)
+// Boot sequence function (FAST typing with 2-second time cap)
 async function bootSequence() {
   const bootScreen = document.getElementById('bootScreen');
   const bootLog = document.getElementById('bootLog');
   bootLog.innerHTML = '';
-  // Removed `let delay = 0;`
+  let totalTypingTime = 0; // Tracks the actual time spent typing
 
   for (let i = 0; i < BOOT_LOG.length; i++) {
     const line = BOOT_LOG[i];
     const p = document.createElement('p');
-    // REMOVED 'h-6' to prevent text cutoff.
+    
+    // *** FIX: Removed 'h-6' class to prevent text cutoff ***
     p.classList.add('overflow-hidden', 'whitespace-nowrap', 'w-full', 'border-r-4', 'border-r-[#00ff00]'); 
     bootLog.appendChild(p);
 
     for (let j = 0; j < line.length; j++) {
-      // NON-ACCUMULATING, FAST loading delay (5ms - 30ms per char)
-      // The total typing time will be close to the requested 2 seconds.
-      const charDelay = Math.random() * 25 + 5; 
+      // *** FIX: Reduced delay to 1-3ms for aggressive speedup ***
+      const charDelay = Math.random() * 2 + 1; 
+      
+      totalTypingTime += charDelay; 
       await new Promise(resolve => setTimeout(resolve, charDelay));
+      
       p.innerHTML += line[j];
     }
     p.style.borderRight = 'none'; // Remove cursor
   }
-
-  // REMOVED the long 2-second pause. The typing animation is now the delay.
   
-  // Smooth transition out of boot screen (0.5s transition time)
+  // *** FIX: Enforce 2000ms (2 second) duration for the log output ***
+  const timeToWait = Math.max(0, 2000 - totalTypingTime); 
+  await new Promise(resolve => setTimeout(resolve, timeToWait));
+  
+  // Smooth transition out of boot screen (0.5s opacity transition)
   bootScreen.style.opacity = '0';
   bootScreen.style.transition = 'opacity 0.5s';
   
@@ -174,7 +179,7 @@ function initMainPage() {
   // Set initial theme and start effects
   applyTheme(isRetro);
   
-  // Start the pixelated dissolve (This is instant in JS, the 2-second duration must be in CSS)
+  // Start the pixelated dissolve (2 second duration must be in CSS)
   setTimeout(() => {
       mainContent.classList.add('pixel-dissolve');
   }, 0); 
@@ -800,7 +805,7 @@ async function scanTop50Websites() {
         `;
         
         document.getElementById('top50BottomList').innerHTML = `
-          <div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
+          <div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanResults.length} sites)</div>
           ${bottom10.reverse().map((site, i) => {
             const rank = sorted.length - (9 - i);
             const scoreClass = getScoreColorClass(site.pscore);
