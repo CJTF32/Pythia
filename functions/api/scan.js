@@ -127,63 +127,40 @@ async function bootSequence() {
   const bootScreen = document.getElementById('bootScreen');
   const bootLog = document.getElementById('bootLog');
   bootLog.innerHTML = '';
+  let totalTypingTime = 0; // New variable to track actual time spent
 
-  const charsPerSecond = 80;   // Tweak this: higher = faster typing
-  const lineDelay = 0.12;      // Small pause between lines (seconds)
-  let currentDelay = 0;
-
-  BOOT_LOG.forEach((line, index) => {
+  for (let i = 0; i < BOOT_LOG.length; i++) {
+    const line = BOOT_LOG[i];
     const p = document.createElement('p');
-    p.textContent = line;
-
-    const numChars = line.length;
-    const typingDuration = numChars / charsPerSecond;
-
-    // CSS custom property for dynamic width
-    p.style.setProperty('--chars', numChars);
-
-    // Base styles
-    p.classList.add('overflow-hidden', 'whitespace-nowrap');
-    p.classList.add('border-r-4', 'border-r-[#00ff00]');
-
-    // Animations (longhand for full control)
-    p.style.animationName = 'typing, blink';
-    p.style.animationDuration = `${typingDuration}s, 0.75s`;
-    p.style.animationTimingFunction = `steps(${numChars}, end), step-end`;
-    p.style.animationIterationCount = '1, infinite';
-    p.style.animationDelay = `${currentDelay}s, ${currentDelay}s`;
-    p.style.animationFillMode = 'forwards, none';
-
-    // Remove cursor when this line finishes typing
-    p.addEventListener('animationend', (e) => {
-      if (e.animationName === 'typing') {
-        p.style.borderRight = 'none';
-      }
-    }, { once: true });
-
+    p.classList.add('overflow-hidden', 'whitespace-nowrap', 'w-full', 'border-r-4', 'border-r-[#00ff00]'); 
     bootLog.appendChild(p);
 
-    // Advance delay for next line
-    currentDelay += typingDuration;
-    if (index < BOOT_LOG.length - 1) {
-      currentDelay += lineDelay;
+    for (let j = 0; j < line.length; j++) {
+      // *** FIX: Changed delay from 5-30ms to 1-3ms per character ***
+      const charDelay = Math.random() * 2 + 1; 
+      
+      totalTypingTime += charDelay; // Accumulate the delay
+      await new Promise(resolve => setTimeout(resolve, charDelay));
+      
+      p.innerHTML += line[j];
     }
-  });
+    p.style.borderRight = 'none'; // Remove cursor
+  }
 
-  // Total duration in ms, enforced minimum 2 seconds + fade buffer
-  const totalDurationMs = Math.max(2000, currentDelay * 1000 + 600);
-
-  await new Promise(resolve => setTimeout(resolve, totalDurationMs));
-
-  // Fade out
+  // *** FIX: Calculate remaining time to enforce a 2000ms (2s) minimum duration ***
+  const timeToWait = Math.max(0, 2000 - totalTypingTime); 
+  await new Promise(resolve => setTimeout(resolve, timeToWait));
+  
+  // Smooth transition out of boot screen (0.5s opacity transition)
   bootScreen.style.opacity = '0';
   bootScreen.style.transition = 'opacity 0.5s';
-
+  
   setTimeout(() => {
     bootScreen.remove();
-    initMainPage();
-  }, 500);
+    initMainPage(); 
+  }, 500); // Wait for the 0.5s opacity transition to finish
 }
+
 // Function to initialize main page and handle pixelated load
 function initMainPage() {
   const mainContent = document.getElementById('mainContent');
@@ -210,6 +187,13 @@ function initMainPage() {
     startTypingAnimation('pythiaH1');
     startTypingAnimation('mainTagline');
   }, 200);
+  
+  // === FIX START: Attach event listeners *after* the main elements are visible in the DOM ===
+  document.getElementById('scanBtn').addEventListener('click', analyzeSite);
+  document.getElementById('urlInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') analyzeSite();
+  });
+  // === FIX END ===
   
   // Check if there are any cached results to display the leaderboard
   updateLeaderboardDisplay(); 
@@ -338,10 +322,7 @@ window.showPage = function(pageId) {
 };
 
 // === MAIN SCAN FUNCTION ===
-document.getElementById('scanBtn').addEventListener('click', analyzeSite);
-document.getElementById('urlInput').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') analyzeSite();
-});
+// The scan button event listeners have been moved into the initMainPage() function.
 
 async function analyzeSite() {
   playSound('click');
