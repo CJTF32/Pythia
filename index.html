@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pythia™ – Website Performance Oracle (BETA)</title>
+  <title>Pythia – Website Performance Oracle (BETA)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @keyframes pulse-glow {
@@ -313,224 +313,19 @@
       display: inline-block;
       font-size: 1.5em;
     }
-    
-    /* ===== TRANCHE 1 ENHANCEMENTS ===== */
-    
-    /* Retro Spinner */
-    @keyframes retro-spin {
-      0% { content: '|'; }
-      25% { content: '/'; }
-      50% { content: '—'; }
-      75% { content: '\\'; }
-      100% { content: '|'; }
-    }
-    .retro-spinner::after {
-      content: '|';
-      animation: retro-spin 0.5s infinite;
-      display: inline-block;
-      margin-left: 8px;
-      color: #00ff00;
-      font-weight: bold;
-    }
-    
-    /* CRT Scanline Effect */
-    @keyframes scanline {
-      0% { transform: translateY(-100%); }
-      100% { transform: translateY(100vh); }
-    }
-    @keyframes crt-flicker {
-      0%, 100% { opacity: 0.1; }
-      50% { opacity: 0.15; }
-    }
-    .crt-overlay {
-      pointer-events: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 9999;
-      background: 
-        repeating-linear-gradient(
-          0deg,
-          rgba(0, 0, 0, 0.15),
-          rgba(0, 0, 0, 0.15) 1px,
-          transparent 1px,
-          transparent 2px
-        );
-      animation: crt-flicker 3s infinite;
-    }
-    .crt-overlay::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: rgba(255, 255, 255, 0.1);
-      animation: scanline 8s linear infinite;
-    }
-    body.retro .crt-overlay {
-      display: block;
-    }
-    body:not(.retro) .crt-overlay {
-      display: none;
-    }
-    
-    /* Curved CRT Distortion */
-    body.retro {
-      filter: 
-        contrast(1.1) 
-        brightness(0.95);
-    }
-    body.retro .modern-card,
-    body.retro .page-content {
-      transform: perspective(1000px);
-    }
-    
-    /* Typing Animation */
-    @keyframes typing {
-      from { width: 0; }
-      to { width: 100%; }
-    }
-    @keyframes blink-caret {
-      from, to { border-color: transparent; }
-      50% { border-color: #00ff00; }
-    }
-    .typing-text {
-      overflow: hidden;
-      border-right: 3px solid #00ff00;
-      white-space: nowrap;
-      animation: 
-        typing 2s steps(40, end),
-        blink-caret 0.75s step-end infinite;
-      display: inline-block;
-    }
-    
-    /* Boot Screen with Pixelated Loading */
-    #bootScreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      background: #000000;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Courier New', monospace;
-      color: #00ff00;
-      transition: opacity 0.5s ease;
-    }
-    #bootLog {
-      width: 80%;
-      max-width: 600px;
-      text-align: left;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    #bootLog p {
-      margin: 4px 0;
-      text-shadow: 0 0 5px #00ff00;
-    }
-    
-    /* Pixelated Loading Effect */
-    @keyframes pixelate-in {
-      from {
-        filter: blur(10px);
-        opacity: 0;
-      }
-      to {
-        filter: blur(0px);
-        opacity: 1;
-      }
-    }
-    .pixelate-load {
-      animation: pixelate-in 2s ease-out;
-    }
-    
-    /* Position sound toggle to avoid overlap */
-    #soundToggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 100;
-      padding: 8px 16px;
-      background: #e5e7eb;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: bold;
-      border: 2px solid #d1d5db;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    #soundToggle:hover {
-      background: #d1d5db;
-    }
-    body.retro #soundToggle {
-      background: #001a00 !important;
-      color: #33ff33 !important;
-      border: 2px solid #33ff33 !important;
-      text-shadow: 0 0 3px #33ff33 !important;
-    }
-    body.retro #soundToggle:hover {
-      background: #003300 !important;
-      color: #66ff66 !important;
-    }
-    
-    /* Delphi Text Box */
-    .delphi-box {
-      background: #f3f4f6;
-      border: 3px solid #6366f1;
-      border-radius: 12px;
-      padding: 20px;
-      max-width: 400px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    body.retro .delphi-box {
-      background: #001a00 !important;
-      border: 3px solid #00ff00 !important;
-      border-radius: 0 !important;
-      box-shadow: 0 0 15px #00ff00 !important;
-    }
-    body.retro .delphi-box p {
-      color: #33ff33 !important;
-      text-shadow: 0 0 3px #33ff33 !important;
-    }
-    
-    /* Make Pythia Logo 2x bigger in retro */
-    #pythiaLogo {
-      width: 400px !important;
-      height: auto !important;
-      max-width: 95vw !important;
-    }
-    body.retro #pythiaLogo {
-      width: 800px !important;
-    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8">
   
-  <!-- CRT Overlay for Retro Mode -->
-  <div class="crt-overlay"></div>
-  
-  <!-- Boot Screen -->
-  <div id="bootScreen">
-    <div id="bootLog"></div>
-  </div>
-  
-  <!-- Sound Toggle (Fixed Position) -->
-  <button id="soundToggle" onclick="toggleSound()">🔇 SOUND</button>
-  
+  <!-- Menu Backdrop -->
   <div id="menuBackdrop" class="menu-backdrop" onclick="closeMenu()"></div>
   
+  <!-- Slide-out Menu -->
   <div id="menuOverlay" class="menu-overlay">
     <div class="p-6">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-indigo-600">Menu</h2>
-        <button onclick="closeMenu()" class="text-3xl text-gray-600 hover:text-gray-800">×</button>
+        <button onclick="closeMenu()" class="text-3xl text-gray-600 hover:text-gray-800">&times;</button>
       </div>
       
       <nav class="space-y-2">
@@ -553,40 +348,25 @@
     </div>
   </div>
   
-  <div id="mainContent" class="max-w-7xl mx-auto hidden">
+  <div class="max-w-7xl mx-auto">
     
+    <!-- Main Page -->
     <div id="mainPage" class="page-content active">
       
+      <!-- Header -->
       <div class="text-center mb-6">
         <div class="flex justify-between items-center mb-2">
           <button id="hamburger" onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition">
             ☰
           </button>
           <button id="themeToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition">
-            😴 BORING MODE
+            🕹️ RETRO MODE
           </button>
         </div>
-        
-        <!-- Hero Section with Delphi Text and Pythia Image -->
-        <div class="flex flex-col lg:flex-row items-center justify-center gap-8 mb-4">
-          <!-- Delphi Text Box (LEFT) -->
-          <div class="delphi-box order-2 lg:order-1">
-            <p class="text-sm leading-relaxed text-gray-700">
-              <strong>At Delphi in ancient Greece, the Pythia<sup>TM</sup> spoke cryptic truths from the gods.</strong><br><br>
-              Now seek her oracle wisely — your site awaits her verdict!
-            </p>
-          </div>
-          
-          <!-- Pythia Logo (RIGHT) -->
-          <div class="order-1 lg:order-2">
-            <img id="pythiaLogo" src="pythia-oracle.png" alt="Pythia™ Oracle" style="image-rendering: pixelated;">
-          </div>
-        </div>
-        
         <div class="flex items-center justify-center gap-4 mb-2">
-          <img id="oracleImage" src="pythia-oracle.png" alt="Pythia™ Oracle" class="w-20 h-20" style="display:none; image-rendering: pixelated;">
+          <img id="oracleImage" src="pythia-oracle.png" alt="Pythia Oracle" class="w-20 h-20" style="display:none; image-rendering: pixelated;">
           <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            Pythia<sup class="text-2xl">TM</sup>
+            Pythia
           </h1>
         </div>
         <p class="text-gray-600 text-lg">
@@ -596,10 +376,11 @@
           ONE SCORE TO RANK THEM ALL
         </p>
         <p class="text-xs text-gray-500 mt-2 max-w-2xl mx-auto">
-          <strong>Disclaimer:</strong> Pythia<sup>TM</sup> is an independent analysis tool. Scores are heuristic-based and for informational purposes only.
+          <strong>Disclaimer:</strong> Pythia is an independent analysis tool. Scores are heuristic-based and for informational purposes only.
         </p>
       </div>
       
+      <!-- Input Card -->
       <div class="modern-card bg-white rounded-2xl shadow-xl p-6 mb-8">
         <div class="flex flex-col md:flex-row gap-4">
           <input 
@@ -624,13 +405,7 @@
         </div>
       </div>
       
-      <!-- Scanning Indicator -->
-      <div id="scanningIndicator" class="hidden text-center mb-4">
-        <p class="text-lg font-bold text-indigo-600">
-          <span class="retro-spinner">ANALYZING</span>
-        </p>
-      </div>
-      
+      <!-- P-Score -->
       <div id="pscoreContainer" class="hidden mb-8">
         <div class="modern-card bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-2xl p-8 text-center text-white">
           <div class="text-sm font-bold uppercase tracking-wider opacity-90 mb-2">Overall P-Score</div>
@@ -640,9 +415,11 @@
         </div>
       </div>
       
+      <!-- Detailed Metrics -->
       <div id="resultsContainer" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
       </div>
       
+      <!-- Leaderboard -->
       <div id="leaderboard" class="hidden modern-card bg-white rounded-2xl shadow-xl p-6 mb-8">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">🏆 Global Leaderboard</h2>
         <div class="grid md:grid-cols-2 gap-6">
@@ -657,8 +434,10 @@
         </div>
       </div>
       
+      <!-- Main Grid: Rivalries + Top 50 -->
       <div class="grid lg:grid-cols-2 gap-8 mb-8">
         
+        <!-- Left: Rivalry Battle Arena -->
         <div class="modern-card bg-white rounded-2xl shadow-xl p-6">
           <h2 class="text-2xl font-bold text-gray-800 mb-2">⚔️ Rivalry Battle Arena</h2>
           <p class="text-sm text-gray-600 mb-4">Pit legendary rivals against each other</p>
@@ -683,6 +462,7 @@
           </div>
         </div>
         
+        <!-- Right: World's Top 50 -->
         <div class="modern-card bg-white rounded-2xl shadow-xl p-6">
           <h2 class="text-2xl font-bold text-gray-800 mb-2">🌍 World's Top 50 Websites</h2>
           <p class="text-sm text-gray-600 mb-4">Scan the most popular sites by monthly traffic</p>
@@ -709,6 +489,7 @@
         
       </div>
       
+      <!-- Battle Results -->
       <div id="battleResults" class="hidden modern-card mb-8 p-6 rounded-lg border-4 border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50">
         <div class="text-center">
           <div id="winnerAnnouncement" class="text-4xl font-bold mb-4"></div>
@@ -722,13 +503,14 @@
         </div>
       </div>
       
+      <!-- Footer -->
       <div class="mt-8 text-center text-sm text-gray-500">
         <p>Powered by independent analysis, Green Web Foundation API, and advanced heuristics</p>
         <p class="mt-1">Analysis time varies 5-15 seconds • Scores cached 5min for stability</p>
         
         <div class="mt-6 flex justify-center gap-3 flex-wrap">
           <button onclick="shareOn('twitter')" class="px-4 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition text-xs font-bold">
-            𝕏 Share Pythia™
+            𝕏 Share on X
           </button>
           <button onclick="shareOn('facebook')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-bold">
             📘 Share on Facebook
@@ -748,6 +530,7 @@
       
     </div>
     
+    <!-- P-Score Explainer Page -->
     <div id="pscoreExplainerPage" class="page-content">
       <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
       <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
@@ -808,6 +591,7 @@
       </div>
     </div>
     
+    <!-- Components Page -->
     <div id="componentsPage" class="page-content">
       <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
       <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
@@ -874,6 +658,7 @@
       </div>
     </div>
     
+    <!-- Custom Scans Page -->
     <div id="customPage" class="page-content">
       <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
       <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
@@ -938,15 +723,16 @@
       </div>
     </div>
     
+    <!-- About Page -->
     <div id="aboutPage" class="page-content">
       <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
       <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
-        <h1 class="text-4xl font-bold text-indigo-600 mb-6">ℹ️ About Pythia<sup>TM</sup></h1>
+        <h1 class="text-4xl font-bold text-indigo-600 mb-6">ℹ️ About Pythia</h1>
         
         <div class="prose max-w-none about-content">
           <h2 class="text-2xl font-bold text-gray-800 mb-3">The Oracle of Web Performance</h2>
           <p class="text-gray-700 leading-relaxed mb-4">
-            Named after the legendary Oracle of Delphi, Pythia<sup>TM</sup> brings ancient wisdom to modern web analysis. We believe websites should be fast, accessible, private, and sustainable—not just profitable.
+            Named after the legendary Oracle of Delphi, Pythia brings ancient wisdom to modern web analysis. We believe websites should be fast, accessible, private, and sustainable—not just profitable.
           </p>
           
           <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Our Mission</h2>
@@ -972,12 +758,12 @@
           
           <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Technology Stack</h2>
           <p class="text-gray-700 leading-relaxed mb-4">
-            Pythia<sup>TM</sup> is built on Cloudflare Pages with serverless functions, leveraging APIs from Google PageSpeed Insights and the Green Web Foundation. Our caching layer ensures consistent scores while respecting API rate limits.
+            Pythia is built on Cloudflare Pages with serverless functions, leveraging APIs from Google PageSpeed Insights and the Green Web Foundation. Our caching layer ensures consistent scores while respecting API rate limits.
           </p>
           
           <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Beta Notice</h2>
           <p class="text-gray-700 leading-relaxed mb-4">
-            Pythia<sup>TM</sup> is currently in public beta. We're actively refining our algorithms and adding new features. Your feedback shapes our roadmap—reach out via the menu if you have suggestions!
+            Pythia is currently in public beta. We're actively refining our algorithms and adding new features. Your feedback shapes our roadmap—reach out via the menu if you have suggestions!
           </p>
           
           <div class="mt-8 text-center">
@@ -1065,137 +851,12 @@
     
     let currentData = null;
     let currentBattleData = null;
-    let isRetro = true; // RETRO MODE IS THE DEFAULT
-    let isSoundOn = false; // Sound state
-    
-    // === SOUND SYSTEM ===
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    let audioContext = null;
-
-    function initAudio() {
-      if (!audioContext) {
-        audioContext = new AudioContext();
-      }
-    }
-
-    function playBeep(frequency = 800, duration = 50) {
-      if (!isSoundOn) return;
-      
-      try {
-        initAudio();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.value = frequency;
-        oscillator.type = 'square';
-        
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + duration / 1000);
-      } catch (e) {
-        console.error('Audio playback failed:', e);
-      }
-    }
-
-    function playClick() {
-      playBeep(1200, 30);
-    }
-
-    function playSuccess() {
-      playBeep(880, 100);
-      setTimeout(() => playBeep(1100, 100), 100);
-    }
-    
-    function toggleSound() {
-      isSoundOn = !isSoundOn;
-      localStorage.setItem('isSoundOn', isSoundOn);
-      document.getElementById('soundToggle').textContent = isSoundOn ? '🔊 SOUND' : '🔇 SOUND';
-      if (isSoundOn) {
-        playClick();
-      }
-    }
-    
-    // === BOOT SEQUENCE ===
-    const BOOT_LOG = [
-      "Initializing Oracle…",
-      "Booting Indices…",
-      "Calibrating Metrics…",
-      "Done."
-    ];
-    
-    async function bootSequence() {
-      const bootScreen = document.getElementById('bootScreen');
-      const bootLog = document.getElementById('bootLog');
-      bootLog.innerHTML = '';
-      let totalTypingTime = 0;
-
-      // Typing animation for boot log
-      for (let i = 0; i < BOOT_LOG.length; i++) {
-        const line = BOOT_LOG[i];
-        const p = document.createElement('p');
-        p.classList.add('overflow-hidden', 'whitespace-nowrap', 'w-full', 'border-r-4', 'border-r-[#00ff00]'); 
-        bootLog.appendChild(p);
-
-        // Random uneven timing for each line
-        const lineDelay = Math.random() * 200 + 100; // 100-300ms before starting each line
-        await new Promise(resolve => setTimeout(resolve, lineDelay));
-        totalTypingTime += lineDelay;
-
-        for (let j = 0; j < line.length; j++) {
-          // Uneven character typing speed (1-5ms per character)
-          const charDelay = Math.random() * 4 + 1; 
-          
-          totalTypingTime += charDelay;
-          await new Promise(resolve => setTimeout(resolve, charDelay));
-          
-          p.innerHTML += line[j];
-        }
-        p.style.borderRight = 'none'; // Remove cursor after line is complete
-      }
-
-      // Enforce minimum 2-second total duration
-      const timeToWait = Math.max(0, 2000 - totalTypingTime); 
-      await new Promise(resolve => setTimeout(resolve, timeToWait));
-      
-      // Smooth transition out of boot screen
-      bootScreen.style.opacity = '0';
-      await new Promise(resolve => setTimeout(resolve, 500));
-      bootScreen.style.display = 'none';
-      
-      // Show main content with pixelation effect
-      const mainContent = document.getElementById('mainContent');
-      mainContent.classList.remove('hidden');
-      mainContent.classList.add('pixelate-load');
-      
-      // Apply retro mode if enabled
-      if (isRetro) {
-        document.body.classList.add('retro');
-        document.getElementById('themeToggle').textContent = '😴 BORING MODE';
-      }
-    }
-    
-    // Run boot sequence on page load
-    window.addEventListener('DOMContentLoaded', () => {
-      // Load sound preference
-      const storedSound = localStorage.getItem('isSoundOn');
-      isSoundOn = storedSound === 'true';
-      document.getElementById('soundToggle').textContent = isSoundOn ? '🔊 SOUND' : '🔇 SOUND';
-      
-      bootSequence();
-      renderRivalries();
-      updateLeaderboardDisplay();
-    });
+    let isRetro = false;
     
     // === MENU FUNCTIONS ===
     function openMenu() {
       document.getElementById('menuOverlay').classList.add('open');
       document.getElementById('menuBackdrop').classList.add('open');
-      playClick();
     }
     
     function closeMenu() {
@@ -1215,7 +876,6 @@
       document.getElementById(pageMap[pageId]).classList.add('active');
       closeMenu();
       window.scrollTo(0, 0);
-      playClick();
     }
     
     // === CACHING FUNCTIONS ===
@@ -1248,10 +908,9 @@
     document.getElementById('themeToggle').addEventListener('click', () => {
       isRetro = !isRetro;
       document.body.classList.toggle('retro');
-      document.getElementById('themeToggle').textContent = isRetro ? '😴 BORING MODE' : '🕹️ RETRO MODE';
+      document.getElementById('themeToggle').textContent = isRetro ? '✨ BORING MODE' : '🕹️ RETRO MODE';
       document.getElementById('oracleImage').style.display = isRetro ? 'block' : 'none';
       document.getElementById('retroQuote').style.display = isRetro ? 'block' : 'none';
-      playClick();
     });
     
     // === MAIN SCAN FUNCTION ===
@@ -1268,24 +927,19 @@
         return;
       }
       
-      playClick();
-      
       // Check cache first
       const cached = getCachedScan(url);
       if (cached) {
         console.log('Using cached result');
         currentData = cached;
         displayResults(cached, true);
-        playSuccess();
         return;
       }
       
       const scanBtn = document.getElementById('scanBtn');
-      const scanningIndicator = document.getElementById('scanningIndicator');
       scanBtn.textContent = 'ANALYZING...';
       scanBtn.disabled = true;
       scanBtn.classList.add('scanning');
-      scanningIndicator.classList.remove('hidden');
       document.getElementById('resultsContainer').classList.add('hidden');
       document.getElementById('pscoreContainer').classList.add('hidden');
       document.getElementById('exportBtn').style.display = 'none';
@@ -1310,7 +964,6 @@
         setCachedScan(url, data);
         currentData = data;
         displayResults(data, false);
-        playSuccess();
         
       } catch (error) {
         alert(`Analysis failed: ${error.message}`);
@@ -1319,7 +972,6 @@
         scanBtn.textContent = 'ANALYZE';
         scanBtn.disabled = false;
         scanBtn.classList.remove('scanning');
-        scanningIndicator.classList.add('hidden');
       }
     }
     
@@ -1580,7 +1232,7 @@
     document.getElementById('shareRivalryBtn').addEventListener('click', () => {
       if (currentBattleData) {
         const { name1, name2, result1, result2, winner, battleDate } = currentBattleData;
-        const text = `⚔️ PYTHIA™ BATTLE (${battleDate}): ${name1} (${result1.pscore}) v ${name2} (${result2.pscore}) - ${winner.toUpperCase()} WINS! 🏆`;
+        const text = `⚔️ PYTHIA BATTLE (${battleDate}): ${name1} (${result1.pscore}) v ${name2} (${result2.pscore}) - ${winner.toUpperCase()} WINS! 🏆`;
         shareContent(text, window.location.href);
       }
     });
@@ -1615,10 +1267,9 @@
       const progress = document.getElementById('scanProgress');
       
       btn.disabled = true;
-      btn.innerHTML = '<span class="retro-spinner">SCANNING</span>';
+      btn.textContent = '⏳ SCANNING...';
       loading.classList.remove('hidden');
       results.classList.add('hidden');
-      playClick();
       
       try {
         const scanResults = [];
@@ -1710,7 +1361,6 @@
           
           loading.classList.add('hidden');
           results.classList.remove('hidden');
-          playSuccess();
         } else {
           throw new Error(`Only ${scanResults.length} sites scanned successfully. Need at least 10.`);
         }
@@ -1727,7 +1377,7 @@
     
     // === SOCIAL SHARING ===
     function shareOn(platform) {
-      const text = 'Check out Pythia™ - The ultimate website performance oracle! ONE SCORE TO RANK THEM ALL 🔮';
+      const text = 'Check out Pythia - The ultimate website performance oracle! ONE SCORE TO RANK THEM ALL 🔮';
       const url = window.location.href;
       shareContent(text, url, platform);
     }
@@ -1736,11 +1386,9 @@
       const encodedText = encodeURIComponent(text);
       const encodedUrl = encodeURIComponent(url);
       
-      playClick();
-      
       if (!platform) {
         if (navigator.share) {
-          navigator.share({ title: 'Pythia™', text, url });
+          navigator.share({ title: 'Pythia', text, url });
         }
         return;
       }
@@ -1757,7 +1405,7 @@
           shareUrl = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
           break;
         case 'email':
-          shareUrl = `mailto:?subject=${encodeURIComponent('Pythia™')}&body=${encodedText}%20${encodedUrl}`;
+          shareUrl = `mailto:?subject=${encodeURIComponent('Pythia')}&body=${encodedText}%20${encodedUrl}`;
           break;
       }
       
@@ -1766,7 +1414,9 @@
       }
     }
     
-    // === INITIALIZATION HANDLED IN BOOT SEQUENCE ===
+    // === INITIALIZE ===
+    updateLeaderboardDisplay();
+    renderRivalries();
   </script>
   
 </body>
