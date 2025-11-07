@@ -1,5 +1,5 @@
 // === CONFIGURATION ===
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+const CACHE_DURATION = 5 * 10 ; // 5 minutes in milliseconds
 const BOOT_LOG = [
   "Initializing Oracle OS...",
   "Scanning Index Logics...",
