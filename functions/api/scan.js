@@ -1,438 +1,409 @@
-// Pythia™ Scan API - Main Website Analysis Endpoint
-// Rate limited, respects robots.txt, legal compliant
-
 export async function onRequest(context) {
-  const { request, env } = context;
-  
-  // CORS headers
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json'
   };
 
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+  if (context.request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: corsHeaders });
+  }
+
+  if (context.request.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Only POST allowed' }), {
+      status: 405,
+      headers: corsHeaders
+    });
   }
 
   try {
-    let targetUrl;
+    const { url } = await context.request.json();
     
-    // Support both GET (query param) and POST (JSON body)
-    if (request.method === 'POST') {
-      const body = await request.json();
-      targetUrl = body.url;
-    } else {
-      const url = new URL(request.url);
-      targetUrl = url.searchParams.get('url');
-    }
-
-    if (!targetUrl) {
-      return new Response(JSON.stringify({ error: 'URL parameter required' }), {
+    if (!url) {
+      return new Response(JSON.stringify({ error: 'URL required' }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: corsHeaders
       });
     }
 
-    // Rate limiting check
-    const clientIP = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const rateLimitKey = `ratelimit:${clientIP}`;
-    const RATE_LIMIT = 25; // scans per hour
-
-    if (env.PYTHIA_TOP50_KV) {
-      try {
-        const current = await env.PYTHIA_TOP50_KV.get(rateLimitKey);
-        const count = current ? parseInt(current) : 0;
-
-        if (count >= RATE_LIMIT) {
-          return new Response(JSON.stringify({ 
-            error: 'Rate limit exceeded. Maximum 25 scans per hour.' 
-          }), {
-            status: 429,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          });
-        }
-
-        await env.PYTHIA_TOP50_KV.put(rateLimitKey, (count + 1).toString(), { expirationTtl: 3600 });
-      } catch (kvError) {
-        // If KV fails, log but continue (don't block the scan)
-        console.log('KV error (rate limit):', kvError.message);
-      }
-    }
-
-    // Check cache first
-    const cacheKey = `scan:${targetUrl}`;
-    if (env.PYTHIA_TOP50_KV) {
-      try {
-        const cached = await env.PYTHIA_TOP50_KV.get(cacheKey);
-        if (cached) {
-          const data = JSON.parse(cached);
-          return new Response(JSON.stringify({ ...data, cached: true }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          });
-        }
-      } catch (cacheError) {
-        console.log('Cache read error:', cacheError.message);
-        // Continue with fresh scan if cache fails
-      }
-    }
-
-    // Check robots.txt compliance
-    const robotsUrl = new URL(targetUrl).origin + '/robots.txt';
+    const result = { url, timestamp: new Date().toISOString() };
+    const startTime = Date.now();
+    
+    // Fetch website with timing
+    let html = '';
+    let siteHeaders = null;
+    let contentLength = 0;
+    let loadTime = 0;
+    
     try {
-      const robotsResponse = await fetch(robotsUrl, {
-        headers: { 'User-Agent': 'PythiaBot/1.0 (+https://p-score.me)' }
+      const fetchStart = Date.now();
+      const [headResponse, htmlResponse] = await Promise.all([
+        fetch(url, { 
+          method: 'HEAD', 
+          redirect: 'follow',
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PythiaBot/1.0)' }
+        }),
+        fetch(url, { 
+          redirect: 'follow',
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PythiaBot/1.0)' }
+        })
+      ]);
+      
+      loadTime = Date.now() - fetchStart;
+      siteHeaders = headResponse.headers;
+      html = await htmlResponse.text();
+      contentLength = parseInt(siteHeaders.get('content-length') || html.length.toString(), 10);
+    } catch (fetchError) {
+      return new Response(JSON.stringify({
+        error: true,
+        message: `Could not fetch website: ${fetchError.message}`
+      }), {
+        status: 400,
+        headers: corsHeaders
       });
-      if (robotsResponse.ok) {
-        const robotsTxt = await robotsResponse.text();
-        if (robotsTxt.includes('PythiaBot') && robotsTxt.includes('Disallow')) {
-          return new Response(JSON.stringify({ 
-            error: 'Site blocks PythiaBot in robots.txt' 
-          }), {
-            status: 403,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          });
-        }
+    }
+    
+    // Deep HTML analysis
+    const analysis = {
+      scripts: (html.match(/<script/gi) || []).length,
+      externalScripts: (html.match(/<script[^>]*src=/gi) || []).length,
+      inlineScripts: (html.match(/<script[^>]*>[\s\S]*?<\/script>/gi) || []).length,
+      images: (html.match(/<img/gi) || []).length,
+      stylesheets: (html.match(/<link[^>]*rel=["']stylesheet/gi) || []).length,
+      inlineStyles: (html.match(/<style/gi) || []).length,
+      videos: (html.match(/<video|<iframe[^>]*youtube|<iframe[^>]*vimeo/gi) || []).length,
+      fonts: (html.match(/font-face|@font-face/gi) || []).length,
+      
+      // Performance indicators
+      hasAsync: (html.match(/async/gi) || []).length,
+      hasDefer: (html.match(/defer/gi) || []).length,
+      hasPreload: (html.match(/rel=["']preload/gi) || []).length,
+      hasLazyLoad: html.includes('loading="lazy"') || html.includes('data-src'),
+      hasMinified: html.includes('.min.js') || html.includes('.min.css'),
+      
+      // Accessibility
+      altTags: (html.match(/alt=["'][^"']*["']/gi) || []).length,
+      emptyAlts: (html.match(/alt=["']["']/gi) || []).length,
+      ariaLabels: (html.match(/aria-label/gi) || []).length,
+      ariaAttrs: (html.match(/aria-/gi) || []).length,
+      roles: (html.match(/role=/gi) || []).length,
+      labels: (html.match(/<label/gi) || []).length,
+      headings: {
+        h1: (html.match(/<h1/gi) || []).length,
+        h2: (html.match(/<h2/gi) || []).length,
+        h3: (html.match(/<h3/gi) || []).length,
+      },
+      
+      // SEO
+      title: html.match(/<title>([^<]+)<\/title>/i)?.[1] || '',
+      metaDescription: html.match(/meta[^>]*name=["']description["'][^>]*content=["']([^"']+)/i)?.[1] || '',
+      ogTags: {
+        title: html.includes('og:title'),
+        description: html.includes('og:description'),
+        image: html.includes('og:image'),
+        url: html.includes('og:url'),
+      },
+      twitterCard: html.includes('twitter:card'),
+      canonical: html.includes('rel="canonical"'),
+      
+      // Modern tech
+      hasWebAssembly: html.includes('.wasm') || html.includes('WebAssembly'),
+      hasServiceWorker: html.includes('ServiceWorker') || html.includes('navigator.serviceWorker'),
+      hasModules: html.includes('type="module"'),
+      hasWebP: html.includes('webp') || html.includes('.webp'),
+      hasAVIF: html.includes('avif') || html.includes('.avif'),
+      frameworks: {
+        react: html.match(/react/i) !== null,
+        vue: html.match(/vue/i) !== null,
+        angular: html.match(/angular/i) !== null,
+        svelte: html.match(/svelte/i) !== null,
+      },
+      
+      // Privacy & Security
+      trackers: (html.match(/google-analytics|googletagmanager|facebook\.com\/tr|gtag|doubleclick|mouseflow|clarity\.ms|hotjar|mixpanel|segment\.com/gi) || []),
+    };
+    
+    // Count third-party scripts separately
+    const hostname = new URL(url).hostname;
+    const scriptMatches = html.match(/<script[^>]*src=["']https?:\/\/[^"']+["']/gi) || [];
+    analysis.thirdPartyScripts = scriptMatches.filter(script => !script.includes(hostname)).length;
+    
+    // Calculate KARPOV: Speed & Performance (0-100)
+    let karpovScore = 85;
+    
+    // Load time penalty (more aggressive)
+    if (loadTime > 5000) karpovScore -= 40;
+    else if (loadTime > 3000) karpovScore -= 30;
+    else if (loadTime > 2000) karpovScore -= 20;
+    else if (loadTime > 1000) karpovScore -= 10;
+    else if (loadTime < 500) karpovScore += 10;
+    
+    // Resource penalties (harsher)
+    karpovScore -= Math.min(30, analysis.scripts * 2);
+    karpovScore -= Math.min(15, analysis.images * 0.6);
+    karpovScore -= Math.min(12, analysis.stylesheets * 3.5);
+    karpovScore -= Math.min(15, analysis.videos * 8);
+    
+    // Size penalty (much harsher)
+    const sizeMB = contentLength / (1024 * 1024);
+    karpovScore -= Math.min(25, sizeMB * 10);
+    
+    // Performance bonuses
+    if (analysis.hasAsync > 0) karpovScore += 5;
+    if (analysis.hasDefer > 0) karpovScore += 4;
+    if (analysis.hasPreload > 0) karpovScore += 3;
+    if (analysis.hasLazyLoad) karpovScore += 8;
+    if (analysis.hasMinified) karpovScore += 6;
+    
+    result.karpov = Math.max(0, Math.min(100, Math.round(karpovScore)));
+    
+    // Calculate VORTEX: Accessibility (0-100)
+    let vortexScore = 40;
+    
+    // Image accessibility (stricter)
+    const imageAccessScore = analysis.images > 0 
+      ? ((analysis.altTags - analysis.emptyAlts) / analysis.images) * 30
+      : 5;
+    vortexScore += imageAccessScore;
+    
+    // ARIA attributes
+    vortexScore += Math.min(20, analysis.ariaLabels * 2.5);
+    vortexScore += Math.min(12, analysis.ariaAttrs * 1);
+    vortexScore += Math.min(10, analysis.roles * 2);
+    
+    // Form accessibility
+    vortexScore += Math.min(10, analysis.labels * 2.5);
+    
+    // Heading structure
+    if (analysis.headings.h1 === 1) vortexScore += 8;
+    else if (analysis.headings.h1 > 1) vortexScore -= 5;
+    else if (analysis.headings.h1 === 0) vortexScore -= 10;
+    if (analysis.headings.h2 >= 2) vortexScore += 5;
+    
+    result.vortex = Math.max(0, Math.min(100, Math.round(vortexScore)));
+    
+    // Calculate NOVA: Scalability & Infrastructure (0-100)
+    let novaScore = 10;
+    
+    const cdnProviders = ['cloudflare', 'akamai', 'fastly', 'cloudfront', 'cdn77', 'bunnycdn', 'stackpath'];
+    const serverHeader = siteHeaders.get('server')?.toLowerCase() || '';
+    const viaHeader = siteHeaders.get('via')?.toLowerCase() || '';
+    
+    if (cdnProviders.some(cdn => serverHeader.includes(cdn) || viaHeader.includes(cdn))) novaScore += 35;
+    if (siteHeaders.get('x-cache') || siteHeaders.get('cf-cache-status') || siteHeaders.get('x-varnish')) novaScore += 25;
+    if (siteHeaders.get('cache-control')?.includes('public')) novaScore += 18;
+    if (siteHeaders.get('cache-control')?.includes('max-age')) novaScore += 10;
+    
+    const encoding = siteHeaders.get('content-encoding') || '';
+    if (encoding.includes('br')) novaScore += 12;
+    else if (encoding.includes('gzip')) novaScore += 6;
+    
+    result.nova = Math.min(100, Math.round(novaScore));
+    
+    // Calculate AETHER: Modern Tech & Future-Readiness (0-100)
+    let aetherScore = 8;
+    
+    if (analysis.hasWebAssembly) aetherScore += 22;
+    if (analysis.hasServiceWorker) aetherScore += 18;
+    if (analysis.hasModules) aetherScore += 16;
+    if (analysis.hasWebP) aetherScore += 12;
+    if (analysis.hasAVIF) aetherScore += 14;
+    if (analysis.hasAsync > 5) aetherScore += 6;
+    if (analysis.hasDefer > 5) aetherScore += 4;
+    
+    if (analysis.frameworks.react) aetherScore += 8;
+    else if (analysis.frameworks.vue || analysis.frameworks.svelte) aetherScore += 10;
+    else if (analysis.frameworks.angular) aetherScore += 6;
+    
+    result.aether = Math.min(100, Math.round(aetherScore));
+    
+    // Calculate PULSE: Social & SEO Optimization (0-100)
+    let pulseScore = 12;
+    
+    if (analysis.title && analysis.title.length > 10) pulseScore += 15;
+    if (analysis.metaDescription && analysis.metaDescription.length > 50) pulseScore += 12;
+    if (analysis.canonical) pulseScore += 11;
+    if (analysis.headings.h1 === 1) pulseScore += 8;
+    
+    if (analysis.ogTags.title) pulseScore += 14;
+    if (analysis.ogTags.description) pulseScore += 11;
+    if (analysis.ogTags.image) pulseScore += 16;
+    if (analysis.ogTags.url) pulseScore += 6;
+    if (analysis.twitterCard) pulseScore += 10;
+    
+    result.pulse = Math.min(100, Math.round(pulseScore));
+    
+    // Calculate EDEN: Efficiency & Page Weight (0-100)
+    let edenScore = 100;
+    
+    if (sizeMB > 5) edenScore = Math.max(15, 100 - (sizeMB - 5) * 16);
+    else if (sizeMB > 3) edenScore = Math.max(48, 100 - (sizeMB - 3) * 13);
+    else if (sizeMB > 1) edenScore = Math.max(72, 100 - (sizeMB - 1) * 9);
+    
+    // Bonus for efficient sites
+    if (sizeMB < 0.5) edenScore = 100;
+    
+    result.eden = Math.round(edenScore);
+    
+    // Calculate HELIX: Privacy & Security (0-100)
+    let helixScore = 45;
+    
+    // Tracker penalty (harsh)
+    helixScore -= analysis.trackers.length * 6.5;
+    helixScore -= Math.min(15, analysis.thirdPartyScripts * 1.2);
+    
+    // Security headers (bonuses)
+    if (siteHeaders.get('strict-transport-security')) helixScore += 14;
+    if (siteHeaders.get('content-security-policy')) helixScore += 13;
+    if (siteHeaders.get('x-frame-options')) helixScore += 10;
+    if (siteHeaders.get('x-content-type-options')) helixScore += 8;
+    if (siteHeaders.get('referrer-policy')) helixScore += 6;
+    if (siteHeaders.get('permissions-policy')) helixScore += 7;
+    if (url.startsWith('https://')) helixScore += 5;
+    
+    result.helix = Math.max(0, Math.min(100, Math.round(helixScore)));
+    
+    // Calculate ECHO: Green Hosting & Sustainability (0-100)
+    let echoScore = 48;
+    
+    // Small, efficient sites get sustainability bonus
+    if (sizeMB < 1) echoScore += 8;
+    if (analysis.hasWebP || analysis.hasAVIF) echoScore += 6;
+    if (analysis.hasLazyLoad) echoScore += 4;
+    
+    // Check green hosting
+    try {
+      const hostname = new URL(url).hostname;
+      const greenUrl = `https://api.thegreenwebfoundation.org/greencheck/${hostname}`;
+      const greenResponse = await fetch(greenUrl);
+      if (greenResponse.ok) {
+        const greenData = await greenResponse.json();
+        if (greenData.green) echoScore = Math.min(100, echoScore + 34);
       }
     } catch (e) {
-      // Continue if robots.txt check fails
+      console.log('Green check failed:', e.message);
     }
-
-    // Fetch the target URL with ref param
-    const fetchUrl = targetUrl + (targetUrl.includes('?') ? '&' : '?') + 'ref=pythia';
-    const response = await fetch(fetchUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; PythiaBot/1.0; +https://p-score.me)',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-      },
-      cf: { cacheTtl: 300 }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const html = await response.text();
-    const headers = Object.fromEntries(response.headers);
-
-    // Calculate metrics
-    const metrics = {
-      karpov: calcKarpov(html, headers, response),
-      vortex: calcVortex(html),
-      pulse: calcPulse(html),
-      helix: calcHelix(html, headers),
-      nexus: calcNexus(html),
-      echo: calcEcho(headers),
-      nova: calcNova(headers, html),
-      quantum: calcQuantum(html),
-      aether: calcAether(html),
-      eden: calcEden(html, response)
-    };
-
-    // Calculate P-Score (average of all 10 metrics)
-    const pscore = Math.round(
-      (metrics.karpov + metrics.vortex + metrics.pulse + metrics.helix + 
-       metrics.nexus + metrics.echo + metrics.nova + metrics.quantum + 
-       metrics.aether + metrics.eden) / 10
+    
+    result.echo = Math.round(echoScore);
+    
+    // Calculate QUANTUM: Best Practices & Code Quality (0-100)
+    let quantumScore = 62;
+    
+    if (!html.includes('document.write')) quantumScore += 9;
+    if (html.includes('integrity=')) quantumScore += 8;
+    if (!html.match(/eval\(/)) quantumScore += 7;
+    if (html.includes('crossorigin')) quantumScore += 6;
+    if (html.includes('rel="noopener"')) quantumScore += 5;
+    if (!html.includes('<!DOCTYPE html>') && !html.includes('<!doctype html>')) quantumScore -= 8;
+    
+    // Inline script penalty
+    if (analysis.inlineScripts > 5) quantumScore -= 6;
+    
+    result.quantum = Math.min(100, Math.round(quantumScore));
+    
+    // Calculate NEXUS: Mobile Responsiveness (0-100)
+    let nexusScore = 48;
+    
+    if (html.includes('viewport')) nexusScore += 24;
+    
+    const mediaQueries = (html.match(/@media/gi) || []).length;
+    nexusScore += Math.min(16, mediaQueries * 2.8);
+    
+    if (html.includes('mobile-web-app-capable')) nexusScore += 6;
+    if (html.includes('apple-mobile-web-app')) nexusScore += 6;
+    
+    result.nexus = Math.min(100, Math.round(nexusScore));
+    
+    // Calculate P-SCORE: Unified Performance Score (0-100)
+    // New weightings: Speed 20%, Access 20%, SEO 15%, Privacy 15%, Mobile 10%, 
+    // Green 7%, CDN 7%, Code 3%, Infrastructure 2%, Sustainability 1%
+    const pScore = (
+      result.karpov * 0.20 +    // Karpov Speed: 20%
+      result.vortex * 0.20 +    // Vortex Access: 20%
+      result.pulse * 0.15 +     // Pulse SEO: 15%
+      result.helix * 0.15 +     // Helix Privacy: 15%
+      result.nexus * 0.10 +     // Nexus Mobile: 10%
+      result.echo * 0.07 +      // Echo Green: 7%
+      result.nova * 0.07 +      // CDN Edge (Nova): 7%
+      result.quantum * 0.03 +   // Code Clean (Quantum): 3%
+      result.aether * 0.02 +    // Infrastructure (Aether): 2%
+      result.eden * 0.01        // Sustainability (Eden): 1%
     );
-
-    const result = {
-      url: targetUrl,
-      pscore,
-      metrics,
-      scannedAt: new Date().toISOString(),
-      cached: false
-    };
-
-    // Store in cache
-    if (env.PYTHIA_TOP50_KV) {
-      try {
-        await env.PYTHIA_TOP50_KV.put(cacheKey, JSON.stringify(result), { expirationTtl: 300 });
-      } catch (cacheError) {
-        console.log('Cache write error:', cacheError.message);
-        // Continue even if cache save fails
+    result.pscore = Math.round(pScore);
+    
+    // Add metadata and detailed breakdown
+    result.analysisTime = Date.now() - startTime;
+    result.pageSize = `${(sizeMB).toFixed(2)} MB`;
+    result.loadTime = `${(loadTime / 1000).toFixed(2)}s`;
+    
+    // Detailed breakdown for export/analysis
+    result.breakdown = {
+      karpov: {
+        loadTimeMs: loadTime,
+        scripts: analysis.scripts,
+        images: analysis.images,
+        stylesheets: analysis.stylesheets,
+        videos: analysis.videos,
+        hasAsync: analysis.hasAsync,
+        hasDefer: analysis.hasDefer,
+        hasMinified: analysis.hasMinified
+      },
+      vortex: {
+        totalImages: analysis.images,
+        imagesWithAlt: analysis.altTags,
+        emptyAlts: analysis.emptyAlts,
+        ariaLabels: analysis.ariaLabels,
+        roles: analysis.roles,
+        labels: analysis.labels,
+        h1Count: analysis.headings.h1
+      },
+      nova: {
+        hasCDN: cdnProviders.some(cdn => serverHeader.includes(cdn) || viaHeader.includes(cdn)),
+        hasCache: !!(siteHeaders.get('x-cache') || siteHeaders.get('cf-cache-status')),
+        compression: encoding,
+        serverHeader: serverHeader
+      },
+      aether: {
+        hasWebAssembly: analysis.hasWebAssembly,
+        hasServiceWorker: analysis.hasServiceWorker,
+        hasModules: analysis.hasModules,
+        framework: Object.keys(analysis.frameworks).find(k => analysis.frameworks[k]) || 'none'
+      },
+      pulse: {
+        hasTitle: !!analysis.title,
+        hasMetaDescription: !!analysis.metaDescription,
+        ogTags: analysis.ogTags,
+        hasCanonical: analysis.canonical
+      },
+      eden: {
+        sizeBytes: contentLength,
+        sizeMB: sizeMB
+      },
+      helix: {
+        trackerCount: analysis.trackers.length,
+        thirdPartyScripts: analysis.thirdPartyScripts,
+        securityHeaders: {
+          hsts: !!siteHeaders.get('strict-transport-security'),
+          csp: !!siteHeaders.get('content-security-policy'),
+          xFrame: !!siteHeaders.get('x-frame-options')
+        }
       }
-    }
-
+    };
+    
     return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      status: 200,
+      headers: corsHeaders
     });
-
+    
   } catch (error) {
-    return new Response(JSON.stringify({ 
-      error: `Scan failed: ${error.message}` 
+    console.error('Scan error:', error);
+    return new Response(JSON.stringify({
+      error: true,
+      message: error.message
     }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      headers: corsHeaders
     });
   }
-}
-
-// ===== METRIC CALCULATION FUNCTIONS =====
-
-function calcKarpov(html, headers, response) {
-  // ⚡ KARPOV - Speed & Performance
-  let score = 100;
-  
-  // Check response time (estimate from headers)
-  const serverTiming = headers['server-timing'];
-  if (serverTiming) {
-    const timing = parseInt(serverTiming.match(/\d+/)?.[0] || 0);
-    if (timing > 1000) score -= 20;
-    else if (timing > 500) score -= 10;
-  }
-  
-  // Check HTML size
-  const htmlSize = html.length / 1024; // KB
-  if (htmlSize > 500) score -= 15;
-  else if (htmlSize > 200) score -= 8;
-  
-  // Check for optimization indicators
-  if (!html.includes('async') && !html.includes('defer')) score -= 10;
-  if (html.split('<script').length > 20) score -= 10;
-  if (!headers['cache-control']) score -= 10;
-  
-  return Math.max(0, score);
-}
-
-function calcVortex(html) {
-  // ♿ VORTEX - Accessibility
-  let score = 100;
-  
-  // Check for ARIA attributes
-  const ariaCount = (html.match(/aria-/g) || []).length;
-  if (ariaCount === 0) score -= 20;
-  else if (ariaCount < 5) score -= 10;
-  
-  // Check for alt attributes on images
-  const imgTags = (html.match(/<img/g) || []).length;
-  const altTags = (html.match(/alt=/g) || []).length;
-  if (imgTags > 0 && altTags < imgTags * 0.5) score -= 15;
-  
-  // Check for semantic HTML
-  if (!html.includes('<header')) score -= 10;
-  if (!html.includes('<nav')) score -= 5;
-  if (!html.includes('<main')) score -= 10;
-  if (!html.includes('<footer')) score -= 5;
-  
-  // Check for form labels
-  const inputCount = (html.match(/<input/g) || []).length;
-  const labelCount = (html.match(/<label/g) || []).length;
-  if (inputCount > 0 && labelCount < inputCount * 0.7) score -= 15;
-  
-  return Math.max(0, score);
-}
-
-function calcPulse(html) {
-  // 📱 PULSE - Social & SEO Optimization
-  let score = 100;
-  
-  // Check for Open Graph tags
-  const ogTags = (html.match(/property="og:/g) || []).length;
-  if (ogTags === 0) score -= 25;
-  else if (ogTags < 4) score -= 15;
-  
-  // Check for Twitter cards
-  if (!html.includes('twitter:card')) score -= 15;
-  
-  // Check for meta description
-  if (!html.includes('name="description"')) score -= 15;
-  
-  // Check for title tag
-  if (!html.includes('<title>')) score -= 20;
-  
-  // Check for canonical link
-  if (!html.includes('rel="canonical"')) score -= 10;
-  
-  return Math.max(0, score);
-}
-
-function calcHelix(html, headers) {
-  // 🔒 HELIX - Privacy & Security
-  let score = 100;
-  
-  // Check for HTTPS (from response)
-  if (!headers['strict-transport-security']) score -= 20;
-  
-  // Check for privacy-respecting headers
-  if (!headers['x-frame-options'] && !headers['content-security-policy']) score -= 15;
-  
-  // Check for tracking scripts (negative indicators)
-  const trackingServices = ['google-analytics', 'facebook', 'doubleclick', 'googletagmanager'];
-  let trackingCount = 0;
-  trackingServices.forEach(service => {
-    if (html.includes(service)) trackingCount++;
-  });
-  score -= trackingCount * 5;
-  
-  // Check for privacy policy link
-  if (!html.toLowerCase().includes('privacy') || !html.toLowerCase().includes('policy')) {
-    score -= 10;
-  }
-  
-  // Check for cookie consent
-  if (!html.toLowerCase().includes('cookie')) score -= 10;
-  
-  return Math.max(0, score);
-}
-
-function calcNexus(html) {
-  // 📱 NEXUS - Mobile Responsiveness
-  let score = 100;
-  
-  // Check for viewport meta tag
-  if (!html.includes('name="viewport"')) score -= 30;
-  
-  // Check for responsive design indicators
-  if (!html.includes('media=') && !html.includes('@media')) score -= 20;
-  
-  // Check for mobile-friendly frameworks
-  const frameworks = ['bootstrap', 'tailwind', 'foundation', 'material', 'flexbox', 'grid'];
-  const hasFramework = frameworks.some(fw => html.toLowerCase().includes(fw));
-  if (!hasFramework) score -= 15;
-  
-  // Check for touch-friendly elements
-  if (!html.includes('touch')) score -= 10;
-  
-  return Math.max(0, score);
-}
-
-function calcEcho(headers) {
-  // 🌱 ECHO - Green Hosting & Sustainability
-  let score = 100;
-  
-  // Check for green hosting indicators (server headers)
-  const server = headers['server'] || '';
-  const poweredBy = headers['x-powered-by'] || '';
-  
-  // Known green hosting providers
-  const greenProviders = ['cloudflare', 'vercel', 'netlify', 'kinsta', 'greengeeks'];
-  const hasGreenProvider = greenProviders.some(provider => 
-    server.toLowerCase().includes(provider) || 
-    poweredBy.toLowerCase().includes(provider)
-  );
-  
-  if (!hasGreenProvider) score -= 20;
-  
-  // Check for CDN (reduces energy)
-  const hasCDN = headers['cf-ray'] || headers['x-cdn'] || 
-                 headers['x-cache'] || headers['via'];
-  if (!hasCDN) score -= 20;
-  
-  // Check for compression
-  if (!headers['content-encoding']) score -= 15;
-  
-  // Check for HTTP/2 or HTTP/3
-  if (!headers['alt-svc'] && !headers['http2']) score -= 15;
-  
-  return Math.max(0, score);
-}
-
-function calcNova(headers, html) {
-  // 🌐 NOVA - Scalability & Infrastructure
-  let score = 100;
-  
-  // Check for CDN
-  const hasCDN = headers['cf-ray'] || headers['x-cdn'] || 
-                 headers['x-cache'] || headers['via'] ||
-                 headers['x-amz-cf-id']; // CloudFront
-  if (!hasCDN) score -= 25;
-  
-  // Check for caching headers
-  const cacheControl = headers['cache-control'];
-  if (!cacheControl) score -= 20;
-  else if (!cacheControl.includes('max-age')) score -= 10;
-  
-  // Check for load balancing indicators
-  if (headers['x-served-by'] || headers['x-backend']) score += 10;
-  
-  // Check for compression
-  if (!headers['content-encoding']) score -= 15;
-  
-  // Check for resource hints
-  if (!html.includes('preload') && !html.includes('prefetch')) score -= 10;
-  
-  return Math.max(0, Math.min(100, score));
-}
-
-function calcQuantum(html) {
-  // ✨ QUANTUM - Best Practices & Code Quality
-  let score = 100;
-  
-  // Check for HTML5 doctype
-  if (!html.includes('<!DOCTYPE html>') && !html.includes('<!doctype html>')) score -= 20;
-  
-  // Check for valid meta charset
-  if (!html.includes('charset=')) score -= 15;
-  
-  // Check for proper heading hierarchy
-  const h1Count = (html.match(/<h1/g) || []).length;
-  if (h1Count === 0) score -= 20;
-  if (h1Count > 1) score -= 10;
-  
-  // Check for inline styles (bad practice)
-  const inlineStyles = (html.match(/style=/g) || []).length;
-  if (inlineStyles > 20) score -= 15;
-  
-  // Check for external CSS
-  if (!html.includes('<link') || !html.includes('stylesheet')) score -= 10;
-  
-  return Math.max(0, score);
-}
-
-function calcAether(html) {
-  // 🚀 AETHER - Modern Tech & Future-Readiness
-  let score = 100;
-  
-  // Check for modern JavaScript frameworks
-  const modernFrameworks = ['react', 'vue', 'angular', 'svelte', 'next', 'nuxt'];
-  const hasModernFramework = modernFrameworks.some(fw => html.toLowerCase().includes(fw));
-  if (hasModernFramework) score += 10;
-  else score -= 15;
-  
-  // Check for PWA indicators
-  const pwaFeatures = ['manifest', 'service-worker', 'sw.js'];
-  const pwaCount = pwaFeatures.filter(feature => html.toLowerCase().includes(feature)).length;
-  score += pwaCount * 10;
-  
-  // Check for WebP images
-  if (html.includes('.webp')) score += 10;
-  
-  // Check for modern CSS features
-  if (html.includes('css-grid') || html.includes('flexbox')) score += 5;
-  
-  // Check for lazy loading
-  if (html.includes('loading=') || html.includes('lazy')) score += 5;
-  
-  return Math.max(0, Math.min(100, score));
-}
-
-function calcEden(html, response) {
-  // 📊 EDEN - Efficiency & Page Weight
-  let score = 100;
-  
-  // Calculate total HTML size
-  const htmlSizeKB = html.length / 1024;
-  
-  if (htmlSizeKB < 50) score = 100;
-  else if (htmlSizeKB < 100) score = 95;
-  else if (htmlSizeKB < 200) score = 85;
-  else if (htmlSizeKB < 300) score = 75;
-  else if (htmlSizeKB < 500) score = 60;
-  else if (htmlSizeKB < 1000) score = 40;
-  else score = 20;
-  
-  // Count external resources
-  const scriptCount = (html.match(/<script/g) || []).length;
-  const linkCount = (html.match(/<link/g) || []).length;
-  const imgCount = (html.match(/<img/g) || []).length;
-  
-  const totalResources = scriptCount + linkCount + imgCount;
-  if (totalResources > 100) score -= 20;
-  else if (totalResources > 50) score -= 10;
-  
-  // Check for minification
-  if (html.includes('  ') || html.includes('\n\n')) score -= 10;
-  
-  return Math.max(0, score);
 }
