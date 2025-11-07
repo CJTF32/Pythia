@@ -500,14 +500,14 @@
       text-shadow: 0 0 3px #33ff33 !important;
     }
     
-    /* Make Pythia Logo 2x bigger */
+    /* Make Pythia Logo 2x bigger in retro */
     #pythiaLogo {
-      width: 1200px !important;
+      width: 400px !important;
       height: auto !important;
       max-width: 95vw !important;
     }
     body.retro #pythiaLogo {
-      width: 2400px !important;
+      width: 800px !important;
     }
   </style>
 </head>
@@ -553,7 +553,7 @@
     </div>
   </div>
   
-  <div class="max-w-7xl mx-auto">
+  <div id="mainContent" class="max-w-7xl mx-auto hidden">
     
     <div id="mainPage" class="page-content active">
       
@@ -1167,9 +1167,12 @@
       await new Promise(resolve => setTimeout(resolve, 500));
       bootScreen.style.display = 'none';
       
-      // Show main content and apply retro mode
-      const mainDiv = document.querySelector('.max-w-7xl');
-      mainDiv.classList.add('pixelate-load');
+      // Show main content with pixelation effect
+      const mainContent = document.getElementById('mainContent');
+      mainContent.classList.remove('hidden');
+      mainContent.classList.add('pixelate-load');
+      
+      // Apply retro mode if enabled
       if (isRetro) {
         document.body.classList.add('retro');
         document.getElementById('themeToggle').textContent = '😴 BORING MODE';
