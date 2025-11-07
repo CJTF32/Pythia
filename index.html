@@ -664,18 +664,27 @@
 
         // --- METRICS DATA (ORIGINAL) ---
         const metrics = [
-            { id: 'pscore', name: 'P-Score', desc: 'The unified performance oracle score (0-100)', color: 'from-indigo-500 to-purple-500', tooltip: 'Pythia\'s unified metric. A weighted average of all 10 component scores.' },
-            { id: 'karpov', name: 'Karpov Speed', desc: 'Page load performance', color: 'from-blue-500 to-cyan-500', tooltip: 'Measures load time, resource count, page weight, and optimization techniques.' },
-            { id: 'vortex', name: 'Vortex Access', desc: 'Accessibility score', color: 'from-green-500 to-emerald-500', tooltip: 'Evaluates image alt text, ARIA labels, semantic HTML, and accessibility features.' },
-            { id: 'nova', name: 'Nova Scalability', desc: 'Infrastructure and caching', color: 'from-purple-500 to-pink-500', tooltip: 'Checks for CDN usage, proper caching headers, and compression (Gzip/Brotli).' },
-            { id: 'aether', name: 'Aether Infra', desc: 'Modern technology score', color: 'from-red-500 to-orange-500', tooltip: 'Evaluates use of WebAssembly, Service Workers, and modern JavaScript modules.' },
-            { id: 'pulse', name: 'Pulse UX', desc: 'Visual stability and interactivity', color: 'from-yellow-500 to-amber-500', tooltip: 'Scores Core Web Vitals principles like Largest Contentful Paint (LCP) and Cumulative Layout Shift (CLS).' },
-            { id: 'eden', name: 'Eden Sustain', desc: 'Sustainability and size', color: 'from-lime-500 to-green-500', tooltip: 'Scores low page size and rewards hosting with certified green providers.' },
-            { id: 'helix', name: 'Helix Privacy', desc: 'Privacy and security headers', color: 'from-indigo-600 to-blue-600', tooltip: 'Penalizes third-party trackers and rewards strong security headers (CSP, HSTS).' },
-            { id: 'echo', name: 'Echo SEO', desc: 'On-page SEO fundamentals', color: 'from-pink-500 to-rose-500', tooltip: 'Checks title tags, meta descriptions, mobile-friendliness, and canonical URLs.' },
-            { id: 'quantum', name: 'Quantum Code', desc: 'Code cleanliness and quality', color: 'from-teal-500 to-cyan-600', tooltip: 'Measures script efficiency, code validation, and avoidance of deprecated HTML/CSS.' },
-            { id: 'nexus', name: 'Nexus Security', desc: 'Transport security', color: 'from-gray-600 to-gray-800', tooltip: 'Simple check for HTTPS and a valid SSL/TLS certificate.' }
-        ];
+{ id: 'karpov', name: 'Karpov Speed', desc: 'Page load performance', color: 'from-blue-500 to-cyan-500', tooltip: 'Measures load time, resource count, page weight, and optimization techniques.'
+},
+{ id: 'vortex', name: 'Vortex Access', desc: 'Accessibility score', color: 'from-green-500 to-emerald-500', tooltip: 'Evaluates image alt text, ARIA labels, semantic HTML, and accessibility features.'
+},
+{ id: 'nova', name: 'Nova Scale', desc: 'Infrastructure & CDN', color: 'from-purple-500 to-pink-500', tooltip: 'Checks for CDN usage, caching headers, and compression.'
+},
+{ id: 'aether', name: 'Aether Tech', desc: 'Modern technologies', color: 'from-orange-500 to-red-500', tooltip: 'Detects WebAssembly, Service Workers, ES6 modules, and modern frameworks.'
+},
+{ id: 'pulse', name: 'Pulse SEO', desc: 'Search & social optimization', color: 'from-indigo-500 to-purple-500', tooltip: 'Analyzes meta tags, Open Graph, Twitter Cards, and SEO basics.'
+},
+{ id: 'eden', name: 'Eden Efficiency', desc: 'Page weight & size', color: 'from-teal-500 to-green-500', tooltip: 'Scores based on total page weight.
+Smaller sites score higher.' },
+{ id: 'helix', name: 'Helix Privacy', desc: 'Security & tracking', color: 'from-gray-700 to-gray-900', tooltip: 'Counts trackers and checks security headers (HSTS, CSP, X-Frame).'
+},
+{ id: 'echo', name: 'Echo Green', desc: 'Sustainable hosting', color: 'from-lime-500 to-green-600', tooltip: 'Checks if hosting uses renewable energy via Green Web Foundation API.'
+},
+{ id: 'quantum', name: 'Quantum Quality', desc: 'Best practices', color: 'from-violet-500 to-purple-600', tooltip: 'Checks for code quality indicators and modern web practices.'
+},
+{ id: 'nexus', name: 'Nexus Mobile', desc: 'Mobile responsiveness', color: 'from-pink-500 to-rose-500', tooltip: 'Evaluates viewport meta tags and media queries.'
+}
+];
 
         // --- AUDIO (NEW) ---
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
