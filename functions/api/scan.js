@@ -188,13 +188,6 @@ function initMainPage() {
     startTypingAnimation('mainTagline');
   }, 200);
   
-  // === FIX START: Attach event listeners *after* the main elements are visible in the DOM ===
-  document.getElementById('scanBtn').addEventListener('click', analyzeSite);
-  document.getElementById('urlInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') analyzeSite();
-  });
-  // === FIX END ===
-  
   // Check if there are any cached results to display the leaderboard
   updateLeaderboardDisplay(); 
 }
@@ -322,7 +315,10 @@ window.showPage = function(pageId) {
 };
 
 // === MAIN SCAN FUNCTION ===
-// The scan button event listeners have been moved into the initMainPage() function.
+document.getElementById('scanBtn').addEventListener('click', analyzeSite);
+document.getElementById('urlInput').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') analyzeSite();
+});
 
 async function analyzeSite() {
   playSound('click');
