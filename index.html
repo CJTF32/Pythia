@@ -673,7 +673,7 @@
                 // Animate typing
                 lineEl.style.opacity = 1;
                 lineEl.style.width = `${line.length}ch`;
-                lineEl.style.animation = `typing 1s steps(${line.length}, end), blink-caret .75s step-end infinite`;
+                lineEl.style.animation = `typing 0.2s steps(${line.length}, end), blink-caret .75s step-end infinite`; // CHANGED from 1s
                 // After typing, remove animation
                 setTimeout(() => {
                     lineEl.style.animation = 'none';
