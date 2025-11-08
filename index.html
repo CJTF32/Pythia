@@ -625,8 +625,8 @@
         "Loading Web Analysis Engine...",
         "Done."
     ];
-    const BOOT_SEQUENCE_TIME_PER_LINE = 25; // CHANGED from 300
-    const BOOT_PAUSE_TIME = 100; // CHANGED from 1500
+    const BOOT_SEQUENCE_TIME_PER_LINE = 35; // CHANGED from 300
+    const BOOT_PAUSE_TIME = 80; // CHANGED from 1500
     
     // --- NEW: AUDIO SETUP ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -678,13 +678,13 @@
                 // Animate typing
                 lineEl.style.opacity = 1;
                 lineEl.style.width = `${line.length}ch`;
-                lineEl.style.animation = `typing 0.1s steps(${line.length}, end), blink-caret .75s step-end infinite`; // CHANGED from 1s
+                lineEl.style.animation = `typing 0.18s steps(${line.length}, end), blink-caret .75s step-end infinite`; // CHANGED from 1s
                 // After typing, remove animation
                 setTimeout(() => {
                     lineEl.style.animation = 'none';
                     lineEl.style.borderRight = 'none';
                     resolve();
-                }, 100);
+                }, 170);
             }, delay);
         });
     }
