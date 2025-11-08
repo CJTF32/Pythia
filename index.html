@@ -620,8 +620,8 @@
         "Loading Web Analysis Engine...",
         "Done."
     ];
-    const BOOT_SEQUENCE_TIME_PER_LINE = 300; // ~0.3s per line
-    const BOOT_PAUSE_TIME = 1500; // 1.5s pause after
+    const BOOT_SEQUENCE_TIME_PER_LINE = 50; // CHANGED from 300
+    const BOOT_PAUSE_TIME = 200; // CHANGED from 1500
     
     // --- NEW: AUDIO SETUP ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
