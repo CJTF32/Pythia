@@ -868,7 +868,7 @@
 
     function displayResults(data, fromCache) {
         // MODIFIED: Use typing animation for pscore
-        typeScore('pscoreValue', data.pscore || '--');
+        typeScore('pscoreValue', `P-SCORE: ${data.pscore || '--'}`);
         playResult(data.pscore >= 60); // NEW
         
         const scanDate = new Date(data.timestamp || Date.now()).toLocaleString('en-US', {
