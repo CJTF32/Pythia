@@ -209,6 +209,23 @@
             opacity: 0;
             white-space: nowrap;
         }
+        /* Fix for light-on-white text in modern mode sub-pages */
+        .menu-overlay p, 
+        .menu-overlay div:not(#rivalryList), 
+        .menu-overlay span, 
+        .menu-overlay a, 
+        .menu-overlay li {
+            color: #1f2937 !important; /* Force dark gray for readability on white background */
+        }
+        
+        /* Exception: ensure retro mode text is still bright green */
+        body.retro .menu-overlay p, 
+        body.retro .menu-overlay div, 
+        body.retro .menu-overlay span,
+        body.retro .menu-overlay a,
+        body.retro .menu-overlay li {
+            color: #33ff33 !important;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8 retro">
