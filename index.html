@@ -1233,42 +1233,40 @@ async function analyzeSite() {
 
             if (scanResults.length >= 10) {
                 const sorted = scanResults.sort((a, b) => b.pscore - a.pscore);
-                const top10 = sorted.slice(0, 10);
-                const bottom10 = sorted.slice(-10);
-                const scanDate = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-                
-                document.getElementById('top50TopList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
-                    ${top10.map((site, i) => `
-                    <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-green-50">
-                        <span class="text-sm font-bold text-gray-700">${i + 1}. ${new URL(site.url).hostname}</span>
-                        <span class="text-lg font-bold text-green-600">${site.pscore}</span>
-                    </div>`).join('')}`;
-                
-                document.getElementById('top50BottomList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
-                    ${bottom10.reverse().map((site, i) => {
-                        const rank = sorted.length - (9 - i);
-                        return `
-                        <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-red-50">
-                            <span class="text-sm font-bold text-gray-700">${rank}. ${new URL(site.url).hostname}</span>
-                            <span class="text-lg font-bold text-red-600">${site.pscore}</span>
-                        </div>`;
-                    }).join('')}`;
-                
-                loading.classList.add('hidden');
-                results.classList.remove('hidden');
-            } else {
-                throw new Error(`Only ${scanResults.length} sites scanned successfully. Need at least 10.`);
-            }
-        } catch (error) {
-            alert(`Top 50 scan failed: ${error.message}`);
-            console.error('Error:', error);
-        } finally {
-            btn.textContent = ' 🚀 SCAN TOP 50 WEBSITES';
-            btn.disabled = false;
-            loading.classList.add('hidden');
-        }
-    }
+                const top5 = results.slice(0, 5);
+    top5.forEach((item, index) => {
+        const li = document.createElement('li');
+        // Simple badge for 1st, 2nd, 3rd
+        const badgeClass = index === 0 ? 'text-yellow-600' : index === 1 ? 'text-gray-500' : index === 2 ? 'text-amber-700' : 'text-gray-700';
+        li.className = 'flex justify-between items-center py-2';
+        li.innerHTML = `
+            <span class="font-bold ${badgeClass}">${index + 1}. ${item.url}</span>
+            <span class="text-lg font-bold ${getScoreColor(item.pScore)}">${item.pScore.toFixed(1)}</span>
+        `;
+        list.appendChild(li);
+    });
 
+    // Add a separator
+    const separator = document.createElement('li');
+    separator.className = 'text-center text-sm py-4 text-gray-400 border-t border-b border-gray-100 mt-2 mb-2';
+    separator.textContent = '--- Top 5 Complete ---';
+    list.appendChild(separator);
+
+    // 2. WOODEN SPOON AWARD (Lowest score is the last element in the sorted array)
+    // Filter out items with score 0 just in case the scan failed
+    const validResults = results.filter(item => item.pScore > 0);
+    const lowestScoreItem = validResults[validResults.length - 1];
+    
+    if (lowestScoreItem) {
+        const li = document.createElement('li');
+        li.className = 'flex justify-between items-center py-2 bg-red-50 rounded-lg border border-red-200 mt-4 px-2';
+        li.innerHTML = `
+            <span class="font-bold text-red-700">💩 Wooden Spoon Award: ${lowestScoreItem.url}</span>
+            <span class="text-lg font-bold text-red-600">${lowestScoreItem.pScore.toFixed(1)}</span>
+        `;
+        list.appendChild(li);
+    }
+}
     // === SOCIAL SHARING (MODIFIED) ===
     function shareOn(platform) {
         playClick(); // NEW
