@@ -480,16 +480,70 @@
             <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
                 <h1 class="text-4xl font-bold text-indigo-600 mb-6"> 🔧 P-Score Components</h1>
                 <div class="space-y-6">
-                    <div class="border-l-4 border-blue-500 pl-4"> <h3 class="text-xl font-bold text-blue-600">Karpov Speed</h3> <p class="component-description text-gray-700">Measures page load time, resource optimization, and rendering performance. Faster sites rank higher.</p> </div>
-                    <div class="border-l-4 border-green-500 pl-4"> <h3 class="text-xl font-bold text-green-600">Vortex Accessibility</h3> <p class="component-description text-gray-700">Evaluates inclusive design: alt text, ARIA labels, semantic HTML, and keyboard navigation support.</p> </div>
-                    <div class="border-l-4 border-purple-500 pl-4"> <h3 class="text-xl font-bold text-purple-600">Nova Scalability</h3> <p class="component-description text-gray-700">Checks infrastructure: CDN usage, caching strategies, compression, and global distribution.</p> </div>
-                    <div class="border-l-4 border-orange-500 pl-4"> <h3 class="text-xl font-bold text-orange-600">Aether Technology</h3> <p class="component-description text-gray-700">Detects modern frameworks, WebAssembly, Service Workers, and next-gen image formats.</p> </div>
-                    <div class="border-l-4 border-indigo-500 pl-4"> <h3 class="text-xl font-bold text-indigo-600">Pulse SEO</h3> <p class="component-description text-gray-700">Analyzes meta tags, social cards, structured data, and search engine optimization basics.</p> </div>
-                    <div class="border-l-4 border-teal-500 pl-4"> <h3 class="text-xl font-bold text-teal-600">Eden Efficiency</h3> <p class="component-description text-gray-700">Measures page weight and resource usage. Leaner sites score better.</p> </div>
-                    <div class="border-l-4 border-gray-700 pl-4"> <h3 class="text-xl font-bold text-gray-700">Helix Privacy</h3> <p class="component-description text-gray-700">Tracks third-party scripts, analytics, and security headers. Privacy-conscious sites win.</p> </div>
-                    <div class="border-l-4 border-lime-500 pl-4"> <h3 class="text-xl font-bold text-lime-600">Echo Sustainability</h3> <p class="component-description text-gray-700">Checks green hosting and carbon-conscious practices via Green Web Foundation.</p> </div>
-                    <div class="border-l-4 border-violet-500 pl-4"> <h3 class="text-xl font-bold text-violet-600">Quantum Quality</h3> <p class="component-description text-gray-700">Evaluates code quality, modern practices, and adherence to web standards.</p> </div>
-                    <div class="border-l-4 border-pink-500 pl-4"> <h3 class="text-xl font-bold text-pink-600">Nexus Mobile</h3> <p class="component-description text-gray-700">Assesses mobile responsiveness, viewport configuration, and touch optimization.</p> </div>
+                    <div class="border-l-4 border-indigo-500 pl-4">
+    <h3 class="text-xl font-bold text-indigo-600">Karpov Speed</h3>
+    <p class="component-description text-gray-700">Measures the raw load time of the main page and the number of resources requested. It acts as a primary proxy for the perceived performance and Largest Contentful Paint (LCP) Core Web Vital.</p>
+</div>
+<hr class="my-4">
+
+<div class="border-l-4 border-yellow-500 pl-4">
+    <h3 class="text-xl font-bold text-yellow-600">Tyche Interactivity</h3>
+    <p class="component-description text-gray-700">Measures the efficiency of script loading. It heavily penalizes slow-loading third-party scripts and awards bonuses for using async/defer attributes to prevent main-thread blocking (proxy for Interaction to Next Paint - INP).</p>
+</div>
+<hr class="my-4">
+
+<div class="border-l-4 border-green-500 pl-4">
+    <h3 class="text-xl font-bold text-green-600">Vortex Access</h3>
+    <p class="component-description text-gray-700">A high-priority index scoring accessibility. It checks for image alt tags, proper ARIA use, semantic HTML structure, and mobile viewport settings to ensure usability for all users.</p>
+</div>
+<hr class="my-4">
+
+<div class="border-l-4 border-cyan-500 pl-4">
+    <h3 class="text-xl font-bold text-cyan-600">Nexus Mobile</h3>
+    <p class="component-description text-gray-700">Verifies core mobile responsiveness attributes, specifically the `viewport` meta tag. This is the baseline required for any successful modern website.</p>
+</div>
+<hr class="my-4">
+
+<div class="border-l-4 border-gray-700 pl-4">
+    <h3 class="text-xl font-bold text-gray-800">Helix Privacy</h3>
+    <p class="component-description text-gray-700">Scores site security and user trust. It penalizes third-party trackers and rewards the presence of critical security headers like HSTS and Content Security Policy.</p>
+</div>
+<hr class="my-4">
+
+<div class="border-l-4 border-purple-500 pl-4">
+    <h3 class="text-xl font-bold text-purple-600">Pulse SEO</h3>
+    <p class="component-description text-gray-700">A discovery index that checks for best practices in Search Engine Optimization. It looks for unique titles, meta descriptions, Open Graph (social sharing) tags, and canonical links.</p>
+</div>
+<hr class="my-4">
+
+<div class="border-l-4 border-pink-500 pl-4">
+    <h3 class="text-xl font-bold text-pink-600">Nova Scalability</h3>
+    <p class="component-description text-gray-700">Evaluates the infrastructure's ability to handle global traffic. It checks for CDN usage, HTTP compression, and aggressive browser caching to ensure speed and stability.</p>
+</div>
+<hr class="my-4">
+
+<div class="border-l-4 border-teal-500 pl-4">
+    <h3 class="text-xl font-bold text-teal-600">Eden Efficiency</h3>
+    <p class="component-description text-gray-700">The total page weight index. This rewards lean sites and heavily penalizes excessive page size (above 5MB), promoting faster downloads and lower data usage for the user.</p>
+</div>
+<hr class="my-4">
+
+<div class="border-l-4 border-orange-500 pl-4">
+    <h3 class="text-xl font-bold text-orange-600">Aether Tech</h3>
+    <p class="component-description text-gray-700">Rewards the adoption of modern, performance-enhancing web technologies such as Service Workers, WebAssembly, modern image formats (WebP/AVIF), and ES6 modules.</p>
+</div>
+<hr class="my-4">
+
+<div class="border-l-4 border-red-500 pl-4">
+    <h3 class="text-xl font-bold text-red-600">Quantum Quality</h3>
+    <p class="component-description text-gray-700">A general code quality index. It checks for HTML/CSS best practices, including doctype, proper tag closure, and the absence of deprecated or broken code patterns.</p>
+</div>
+<hr class="my-4">
+
+<div class="border-l-4 border-lime-500 pl-4">
+    <h3 class="text-xl font-bold text-lime-600">Echo Green</h3>
+    <p class="component-description text-gray-700">Scores the sustainability of the hosting environment by checking if the server is powered by renewable energy, based on a lookup against the Green Web Foundation.</p>
+</div>
                 </div>
                 <div class="mt-8 p-6 bg-indigo-50 rounded-lg">
                     <h3 class="text-lg font-bold text-indigo-600 mb-2">Methodology Note</h3>
@@ -612,18 +666,21 @@
     ];
 
     // === METRICS DATA (Original) ===
-    const metrics = [
-        { id: 'karpov', name: 'Karpov Speed', desc: 'Page load performance', color: 'from-blue-500 to-cyan-500', tooltip: 'Measures load time, resource count, page weight, and optimization techniques.' },
-        { id: 'vortex', name: 'Vortex Access', desc: 'Accessibility score', color: 'from-green-500 to-emerald-500', tooltip: 'Evaluates image alt text, ARIA labels, semantic HTML, and accessibility features.' },
-        { id: 'nova', name: 'Nova Scale', desc: 'Infrastructure & CDN', color: 'from-purple-500 to-pink-500', tooltip: 'Checks for CDN usage, caching headers, and compression.' },
-        { id: 'aether', name: 'Aether Tech', desc: 'Modern technologies', color: 'from-orange-500 to-red-500', tooltip: 'Detects WebAssembly, Service Workers, ES6 modules, and modern frameworks.' },
-        { id: 'pulse', name: 'Pulse SEO', desc: 'Search & social optimization', color: 'from-indigo-500 to-purple-500', tooltip: 'Analyzes meta tags, Open Graph, Twitter Cards, and SEO basics.' },
-        { id: 'eden', name: 'Eden Efficiency', desc: 'Page weight & size', color: 'from-teal-500 to-green-500', tooltip: 'Scores based on total page weight. Smaller sites score higher.' },
-        { id: 'helix', name: 'Helix Privacy', desc: 'Security & tracking', color: 'from-gray-700 to-gray-900', tooltip: 'Counts trackers and checks security headers (HSTS, CSP, X-Frame).' },
-        { id: 'echo', name: 'Echo Green', desc: 'Sustainable hosting', color: 'from-lime-500 to-green-600', tooltip: 'Checks if hosting uses renewable energy via Green Web Foundation API.' },
-        { id: 'quantum', name: 'Quantum Quality', desc: 'Best practices', color: 'from-violet-500 to-purple-600', tooltip: 'Checks for code quality indicators and modern web practices.' },
-        { id: 'nexus', name: 'Nexus Mobile', desc: 'Mobile responsiveness', color: 'from-pink-500 to-rose-500', tooltip: 'Evaluates viewport meta tags and media queries.' }
-    ];
+    // index-5.html: Around line 1055, replace the entire 'metrics' array
+// index-5.html: Replace the existing 'metrics' array with this content.
+const metrics = [
+    { id: 'karpov', name: 'Karpov Speed', desc: 'Load time & resources', color: 'from-blue-500 to-indigo-500', tooltip: 'Measures page load time, resource count, and general optimization techniques (LCP proxy).' },
+    { id: 'tyche', name: 'Tyche Interact', desc: 'Script interactivity', color: 'from-yellow-500 to-orange-500', tooltip: 'Measures script load efficiency, penalizing third-party and inline scripts while rewarding async/defer (INP/TBT proxy).' },
+    { id: 'vortex', name: 'Vortex Access', desc: 'Accessibility score', color: 'from-green-500 to-emerald-500', tooltip: 'Evaluates image alt text, ARIA labels, semantic HTML, and core accessibility features.' },
+    { id: 'nexus', name: 'Nexus Mobile', desc: 'Mobile responsiveness', color: 'from-cyan-500 to-blue-500', tooltip: 'Checks for viewport meta tag and responsive media/images—the mobile baseline.' },
+    { id: 'helix', name: 'Helix Privacy', desc: 'Security & tracking', color: 'from-gray-700 to-gray-900', tooltip: 'Counts trackers and checks security headers (HSTS, CSP, X-Frame-Options).' },
+    { id: 'pulse', name: 'Pulse SEO', desc: 'Search & social optimization', color: 'from-indigo-500 to-purple-500', tooltip: 'Analyzes title, meta description, canonical tags, Open Graph, and Twitter Cards.' },
+    { id: 'nova', name: 'Nova Scale', desc: 'Infrastructure & CDN', color: 'from-purple-500 to-pink-500', tooltip: 'Checks for CDN usage, caching headers, and compression.' },
+    { id: 'eden', name: 'Eden Efficiency', desc: 'Page weight & size', color: 'from-teal-500 to-green-500', tooltip: 'Scores based on total page weight. Smaller sites (under 500KB) score higher.' },
+    { id: 'aether', name: 'Aether Tech', desc: 'Modern technologies', color: 'from-orange-500 to-red-500', tooltip: 'Detects WebAssembly, Service Workers, ES6 modules, and modern frameworks.' },
+    { id: 'quantum', name: 'Quantum Quality', desc: 'Best practices & code', color: 'from-red-500 to-pink-500', tooltip: 'Checks for code quality, integrity, and adherence to HTML/CSS best practices.' },
+    { id: 'echo', name: 'Echo Green', desc: 'Sustainable hosting', color: 'from-lime-500 to-green-600', tooltip: 'Checks if hosting uses renewable energy via Green Web Foundation API.' }
+];
 
     // === STATE (Original) ===
     let currentData = null;
