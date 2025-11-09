@@ -416,32 +416,7 @@
                     </button>
                 </div>
             </div>
-<div id="badgeChallengeSection" class="p-6 bg-white rounded-xl shadow-lg mt-8">
-    <h2 class="text-xl font-bold text-gray-800 mb-2">Pythia Badge Challenge</h2>
-    <p class="text-gray-600 mb-4">Is your URL better than the competition? Prove it with a Pythia badge!</p>
-    
-    <div class="flex space-x-2">
-        <input type="url" id="badgeUrlInput" placeholder="Enter your URL (e.g., https://yoursite.com)" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-        <button id="badgeBtn" onclick="generateBadge()" class="bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-150 disabled:opacity-50 flex items-center justify-center">
-            <span id="badgeSpinner" class="hidden h-5 w-5 border-4 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
-            Challenge!
-        </button>
-    </div>
 
-    <div id="badgeResults" class="mt-4 p-4 border border-indigo-200 bg-indigo-50 rounded-lg hidden">
-        <h3 id="badgeResultTitle" class="text-lg font-bold text-indigo-800 mb-2"></h3>
-        <p id="badgeResultSummary" class="text-gray-700 mb-3"></p>
-        <ul id="worseUrlList" class="list-disc list-inside text-gray-600 space-y-1 ml-4"></ul>
-        
-        <div class="mt-4 text-center">
-            <button onclick="downloadBadge()" id="downloadBadgeBtn" class="bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-150 disabled:opacity-50 flex items-center justify-center">
-                Download Pythia Badge!
-            </button>
-        </div>
-    </div>
-    
-    <canvas id="badgeCanvas" class="hidden" width="400" height="200"></canvas>
-</div>
             <div class="mt-8 text-center text-sm text-gray-500">
                 <p>Powered by independent analysis, Green Web Foundation API, and advanced heuristics</p>
                 <p class="mt-1">Analysis time varies 5-15 seconds • Scores cached 5min for stability</p>
@@ -757,35 +732,7 @@ const metrics = [
     ];
     const BOOT_SEQUENCE_TIME_PER_LINE = 35; // CHANGED from 300
     const BOOT_PAUSE_TIME = 80; // CHANGED from 1500
-
-        [INSERT THIS CODE STARTING AT LINE 432]
-<div id="badgeChallengeSection" class="p-6 bg-white rounded-xl shadow-lg mt-8">
-    <h2 class="text-xl font-bold text-gray-800 mb-2">Pythia Badge Challenge</h2>
-    <p class="text-gray-600 mb-4">Is your URL better than the competition? Prove it with a Pythia badge!</p>
     
-    <div class="flex space-x-2">
-        <input type="url" id="badgeUrlInput" placeholder="Enter your URL (e.g., https://yoursite.com)" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-        <button id="badgeBtn" onclick="generateBadge()" class="bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-150 disabled:opacity-50 flex items-center justify-center">
-            <span id="badgeSpinner" class="hidden h-5 w-5 border-4 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
-            Challenge!
-        </button>
-    </div>
-
-    <div id="badgeResults" class="mt-4 p-4 border border-indigo-200 bg-indigo-50 rounded-lg hidden">
-        <h3 id="badgeResultTitle" class="text-lg font-bold text-indigo-800 mb-2"></h3>
-        <p id="badgeResultSummary" class="text-gray-700 mb-3"></p>
-        <ul id="worseUrlList" class="list-disc list-inside text-gray-600 space-y-1 ml-4"></ul>
-        
-        <div class="mt-4 text-center">
-            <button onclick="downloadBadge()" id="downloadBadgeBtn" class="bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-150 disabled:opacity-50 flex items-center justify-center">
-                Download Pythia Badge!
-            </button>
-        </div>
-    </div>
-    
-    <canvas id="badgeCanvas" class="hidden" width="400" height="200"></canvas>
-</div>
-        
     // --- NEW: AUDIO SETUP ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
@@ -1229,72 +1176,99 @@ async function analyzeSite() {
     // === TOP 50 SCANNER (MODIFIED) ===
     document.getElementById('scanTop50Btn').addEventListener('click', scanTop50Websites);
 
-    function displayTop50Results(results, isCached) {
-    const list = document.getElementById('top50List');
-    list.innerHTML = '';
-    
-    if (results.length === 0) {
-        list.innerHTML = '<li class="text-center py-4 text-gray-500">No scan data available.</li>';
-        return;
+    async function scanTop50Websites() {
+        playAnalyze(); // NEW
+        const TOP_50_URLS = [
+            'https://www.google.com', 'https://www.youtube.com', 'https://www.facebook.com', 'https://www.x.com', 'https://www.instagram.com', 'https://www.linkedin.com', 'https://www.reddit.com', 'https://www.wikipedia.org', 'https://www.amazon.com', 'https://www.netflix.com', 'https://www.yahoo.com', 'https://www.ebay.com', 'https://www.microsoft.com', 'https://www.apple.com', 'https://www.pinterest.com', 'https://www.github.com', 'https://www.stackoverflow.com', 'https://www.twitch.tv', 'https://www.wordpress.com', 'https://www.paypal.com', 'https://www.bbc.com', 'https://www.cnn.com', 'https://www.nytimes.com', 'https://www.espn.com', 'https://www.imdb.com', 'https://www.quora.com', 'https://www.medium.com', 'https://www.tumblr.com', 'https://www.shopify.com', 'https://www.etsy.com', 'https://www.target.com', 'https://www.walmart.com', 'https://www.bestbuy.com', 'https://www.homedepot.com', 'https://www.ikea.com', 'https://www.spotify.com', 'https://www.soundcloud.com', 'https://www.vimeo.com', 'https://www.dropbox.com', 'https://www.zoom.us', 'https://www.salesforce.com', 'https://www.adobe.com', 'https://www.oracle.com', 'https://www.ibm.com', 'https://www.cloudflare.com', 'https://www.airbnb.com', 'https://www.booking.com', 'https://www.tripadvisor.com', 'https://www.uber.com', 'https://www.tiktok.com'
+        ];
+
+        const btn = document.getElementById('scanTop50Btn');
+        const loading = document.getElementById('top50Loading');
+        const results = document.getElementById('top50Results');
+        const progress = document.getElementById('scanProgress');
+
+        btn.disabled = true;
+        btn.textContent = ' ⏳ SCANNING...'; // Original spinner logic is fine
+        loading.classList.remove('hidden');
+        results.classList.add('hidden');
+
+        try {
+            const scanResults = [];
+            let completed = 0;
+            for (let i = 0; i < TOP_50_URLS.length; i += 5) {
+                const batch = TOP_50_URLS.slice(i, i + 5);
+                const batchPromises = batch.map(async (url) => {
+                    const cached = getCachedScan(url);
+                    if (cached) {
+                        completed++;
+                        progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
+                        return { url, pscore: cached.pscore };
+                    }
+                    try {
+                        const response = await fetch('/api/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data && data.pscore !== undefined) {
+                                setCachedScan(url, data);
+                                completed++;
+                                progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
+                                return { url, pscore: data.pscore };
+                            }
+                        } else {
+                            console.error(`Failed ${url}: HTTP ${response.status}`);
+                        }
+                    } catch (error) {
+                        console.error(`Failed ${url}:`, error.message);
+                    }
+                    return null;
+                });
+                const batchResults = await Promise.all(batchPromises);
+                const validResults = batchResults.filter(r => r !== null && r.url && r.pscore !== undefined);
+                scanResults.push(...validResults);
+                console.log(`Batch complete. Total valid scans: ${scanResults.length}/${TOP_50_URLS.length}`);
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            console.log(`Top 50 scan complete. Successfully scanned: ${scanResults.length} sites`);
+
+            if (scanResults.length >= 10) {
+                const sorted = scanResults.sort((a, b) => b.pscore - a.pscore);
+                const top10 = sorted.slice(0, 10);
+                const bottom10 = sorted.slice(-10);
+                const scanDate = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                
+                document.getElementById('top50TopList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
+                    ${top10.map((site, i) => `
+                    <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-green-50">
+                        <span class="text-sm font-bold text-gray-700">${i + 1}. ${new URL(site.url).hostname}</span>
+                        <span class="text-lg font-bold text-green-600">${site.pscore}</span>
+                    </div>`).join('')}`;
+                
+                document.getElementById('top50BottomList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
+                    ${bottom10.reverse().map((site, i) => {
+                        const rank = sorted.length - (9 - i);
+                        return `
+                        <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-red-50">
+                            <span class="text-sm font-bold text-gray-700">${rank}. ${new URL(site.url).hostname}</span>
+                            <span class="text-lg font-bold text-red-600">${site.pscore}</span>
+                        </div>`;
+                    }).join('')}`;
+                
+                loading.classList.add('hidden');
+                results.classList.remove('hidden');
+            } else {
+                throw new Error(`Only ${scanResults.length} sites scanned successfully. Need at least 10.`);
+            }
+        } catch (error) {
+            alert(`Top 50 scan failed: ${error.message}`);
+            console.error('Error:', error);
+        } finally {
+            btn.textContent = ' 🚀 SCAN TOP 50 WEBSITES';
+            btn.disabled = false;
+            loading.classList.add('hidden');
+        }
     }
 
-    // 1. TOP 5
-    const top5 = results.slice(0, 5);
-    top5.forEach((item, index) => {
-        const li = document.createElement('li');
-        // Simple badge for 1st, 2nd, 3rd
-        const badgeClass = index === 0 ? 'text-yellow-600' : index === 1 ? 'text-gray-500' : index === 2 ? 'text-amber-700' : 'text-gray-700';
-        li.className = 'flex justify-between items-center py-2';
-        li.innerHTML = `
-            <span class="font-bold ${badgeClass}">${index + 1}. ${item.url}</span>
-            <span class="text-lg font-bold ${getScoreColor(item.pScore)}">${item.pScore.toFixed(1)}</span>
-        `;
-        list.appendChild(li);
-    });
-
-    // Add a separator
-    const separator = document.createElement('li');
-    separator.className = 'text-center text-sm py-4 text-gray-400 border-t border-b border-gray-100 mt-2 mb-2';
-    separator.textContent = '--- Top 5 Complete ---';
-    list.appendChild(separator);
-
-    // 2. WOODEN SPOON AWARD (Lowest score is the last element in the sorted array)
-    // Filter out items with score 0 just in case the scan failed
-    const validResults = results.filter(item => item.pScore > 0);
-    const lowestScoreItem = validResults[validResults.length - 1];
-    
-    if (lowestScoreItem) {
-        const li = document.createElement('li');
-        li.className = 'flex justify-between items-center py-2 bg-red-50 rounded-lg border border-red-200 mt-4 px-2';
-        li.innerHTML = `
-            <span class="font-bold text-red-700">💩 Wooden Spoon Award: ${lowestScoreItem.url}</span>
-            <span class="text-lg font-bold text-red-600">${lowestScoreItem.pScore.toFixed(1)}</span>
-        `;
-        list.appendChild(li);
-    }
-}
-
-    // Add a separator
-    const separator = document.createElement('li');
-    separator.className = 'text-center text-sm py-4 text-gray-400 border-t border-b border-gray-100 mt-2 mb-2';
-    separator.textContent = '--- Top 5 Complete ---';
-    list.appendChild(separator);
-
-    // 2. WOODEN SPOON AWARD (Lowest score is the last element in the sorted array)
-    // Filter out items with score 0 just in case the scan failed
-    const validResults = results.filter(item => item.pScore > 0);
-    const lowestScoreItem = validResults[validResults.length - 1];
-    
-    if (lowestScoreItem) {
-        const li = document.createElement('li');
-        li.className = 'flex justify-between items-center py-2 bg-red-50 rounded-lg border border-red-200 mt-4 px-2';
-        li.innerHTML = `
-            <span class="font-bold text-red-700">💩 Wooden Spoon Award: ${lowestScoreItem.url}</span>
-            <span class="text-lg font-bold text-red-600">${lowestScoreItem.pScore.toFixed(1)}</span>
-        `;
-        list.appendChild(li);
-    }
-}
     // === SOCIAL SHARING (MODIFIED) ===
     function shareOn(platform) {
         playClick(); // NEW
