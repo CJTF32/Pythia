@@ -201,71 +201,68 @@ export async function onRequest(context) {
     // ECHO GREEN (Sustainable Hosting)
     result.echo = greenWebHosted ? 100 : 0;
 
+// scan-5.js: After all scoring logic (e.g., after the 'echo' score calculation)
+// Add all individual scores to the overall result object and calculate the final pscore.
 
-    // =================================================================
-    // STEP 5: OVERALL P-SCORE CALCULATION
-    // =================================================================
+// =================================================================
+// STEP 5: FINAL P-SCORE CALCULATION
+// =================================================================
+const overallPScore = (
+    result.karpov * 0.20 +
+    result.tyche * 0.15 +
+    result.vortex * 0.10 +
+    result.nexus * 0.05 +
+    result.helix * 0.15 +
+    result.pulse * 0.05 +
+    result.nova * 0.10 +
+    result.eden * 0.10 +
+    result.aether * 0.05 +
+    result.quantum * 0.03 +
+    result.echo * 0.02 // Total must equal 1.00 or 100%
+);
+
+// =================================================================
+// STEP 6: CONSTRUCT FINAL PAYLOAD
+// =================================================================
+const fullResult = {
+    pscore: Math.min(100, Math.max(0, Math.round(overallPScore))),
+    url: result.url,
+    timestamp: result.timestamp,
     
-    const pscore = (
-        (result.karpov * 0.18) +
-        (result.tyche * 0.20) +
-        (result.vortex * 0.12) +
-        (result.nexus * 0.10) +
-        (result.helix * 0.10) +
-        (result.pulse * 0.08) +
-        (result.nova * 0.08) +
-        (result.eden * 0.05) +
-        (result.aether * 0.04) +
-        (result.quantum * 0.03) +
-        (result.echo * 0.02)
-    ) / 1.0; 
+    // Crucially, include all individual scores at the top level for the front-end
+    karpov: result.karpov,
+    tyche: result.tyche,
+    vortex: result.vortex,
+    nexus: result.nexus,
+    helix: result.helix,
+    pulse: result.pulse,
+    nova: result.nova,
+    eden: result.eden,
+    aether: result.aether,
+    quantum: result.quantum,
+    echo: result.echo,
 
-    result.pscore = Math.round(pscore);
+    // Nested data for sub-pages
+    data: {
+        karpov: { loadTime: loadTime, resourceCount: analysis.resourceCount },
+        tyche: { totalScripts: analysis.totalScripts, thirdPartyScripts: analysis.thirdPartyScripts, hasAsync: analysis.hasAsync, hasDefer: analysis.hasDefer },
+        vortex: { totalImages: analysis.images, imagesWithAlt: analysis.imagesWithAlt, hasSemanticTags: analysis.hasSemanticTags },
+        nexus: { hasViewport: analysis.hasViewport },
+        pulse: { hasTitle: !!analysis.title, hasMetaDescription: !!analysis.metaDescription, ogTags: analysis.ogTags, hasCanonical: analysis.canonical },
+        eden: { sizeBytes: contentLength }, // sizeMB is calculated on the front-end now
+        helix: { trackerCount: analysis.trackers.length, securityHeaders: { hsts: !!siteHeaders.get('strict-transport-security'), csp: !!siteHeaders.get('content-security-policy'), xFrame: !!siteHeaders.get('x-frame-options') } },
+        nova: { isCDN: isCDN, hasCache: !!siteHeaders.get('cache-control'), compression: encoding },
+        aether: { hasWebAssembly: analysis.hasWebAssembly, hasServiceWorker: analysis.hasServiceWorker, hasModules: analysis.hasModules, hasWebp: analysis.hasWebp },
+        quantum: { hasDoctype: analysis.hasDoctype, hasDeprecatedTags: analysis.hasDeprecatedTags },
+        echo: { isGreenHosted: greenWebHosted }
+    }
+};
 
-
-    // =================================================================
-    // STEP 6: FINAL RESPONSE STRUCTURE
-    // =================================================================
-    
-    const fullResult = {
-      pscore: result.pscore,
-      url: result.url,
-      timestamp: result.timestamp,
-      loadTime: loadTime,
-
-      // FLAT SCORES
-      karpov: result.karpov,
-      tyche: result.tyche,
-      vortex: result.vortex,
-      nexus: result.nexus,
-      helix: result.helix,
-      pulse: result.pulse,
-      nova: result.nova,
-      eden: result.eden,
-      aether: result.aether,
-      quantum: result.quantum,
-      echo: result.echo,
-      
-      // RAW DATA
-      data: {
-          karpov: { loadTime: loadTime, resourceCount: analysis.resourceCount },
-          tyche: { inlineScripts: analysis.inlineScripts, thirdPartyScripts: analysis.thirdPartyScripts, hasAsync: analysis.hasAsync, hasDefer: analysis.hasDefer },
-          vortex: { images: analysis.images, imagesWithAlt: analysis.imagesWithAlt, hasSemanticTags: analysis.hasSemanticTags },
-          nexus: { hasViewport: analysis.hasViewport },
-          pulse: { hasTitle: !!analysis.title, hasMetaDescription: !!analysis.metaDescription, ogTags: analysis.ogTags, hasCanonical: analysis.canonical },
-          eden: { sizeBytes: contentLength, sizeMB: sizeMB },
-          helix: { trackerCount: analysis.trackers.length, securityHeaders: { hsts: !!siteHeaders.get('strict-transport-security'), csp: !!siteHeaders.get('content-security-policy'), xFrame: !!siteHeaders.get('x-frame-options') } },
-          nova: { isCDN: isCDN, hasCache: !!siteHeaders.get('cache-control'), compression: encoding },
-          aether: { hasWebAssembly: analysis.hasWebAssembly, hasServiceWorker: analysis.hasServiceWorker, hasModules: analysis.hasModules, hasWebp: analysis.hasWebp },
-          quantum: { hasDoctype: analysis.hasDoctype, hasDeprecatedTags: analysis.hasDeprecatedTags },
-          echo: { isGreenHosted: greenWebHosted }
-      }
-    };
-    
-    return new Response(JSON.stringify(fullResult), {
-      status: 200,
-      headers: corsHeaders
-    });
+return new Response(JSON.stringify(fullResult), {
+    status: 200,
+    headers: corsHeaders
+});
+// ... end of the try block
     
   } catch (error) {
     console.error('Final Scan error:', error);
