@@ -973,8 +973,7 @@ const metrics = [
     // The fixed sub-text structure: Resources • KB • Timestamp
     document.getElementById('siteInfo').innerHTML = 
         `<span class="font-bold">${resourceCount}</span> Resources • <span class="font-bold">${sizeKB}</span> KB • ${formattedTime} ${fromCache ? '🧊 Cached' : '🟢 Live'}`;
-
-    // 4. Generate and split the 11 score cards
+// 4. Generate and split the 11 score cards
     const cardHtml = (metric) => {
         // Since we fixed the backend to flatten scores, we can access them directly:
         const score = data[metric.id] !== undefined ? data[metric.id] : '--'; 
@@ -995,12 +994,13 @@ const metrics = [
             </div>
         `;
     };
-
-    // Split the METRICS array for the 4/4/3 grid arrangement
-    const p1Metrics = metrics.slice(0, 4); // Karpov, Tyche, Vortex, Nexus (Performance)
-    const p2Metrics = metrics.slice(4, 8); // Helix, Pulse, Nova, Eden (Quality & Trust)
-    const p3Metrics = metrics.slice(8, 11); // Aether, Quantum, Echo (Future & Code)
     
+    // Split the METRICS array into the three pillars for display. This defines the missing variables.
+    const p1metrics = METRICS.slice(0, 4);  // Pillar 1: Performance (Karpov, Tyche, Vortex, Nexus)
+    const p2metrics = METRICS.slice(4, 8);  // Pillar 2: Quality (Helix, Pulse, Nova, Aether)
+    const p3metrics = METRICS.slice(8, 11); // Pillar 3: Future (Quantum, Echo, Gaia)
+    
+    // Update the DOM with the generated HTML
     document.getElementById('pillar1-performance-container').innerHTML = p1metrics.map(cardHtml).join('');
     document.getElementById('pillar2-quality-container').innerHTML = p2metrics.map(cardHtml).join('');
     document.getElementById('pillar3-future-container').innerHTML = p3metrics.map(cardHtml).join('');
