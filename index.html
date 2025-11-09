@@ -631,17 +631,17 @@
 // 🛠️ FIX: INSERT THE METRICS DEFINITION HERE
 // ------------------------------------------------------------------
 const METRICS = [
-    { id: 'karpov', name: 'Karpov Speed', desc: 'Load time & efficiency', color: 'from-indigo-500 to-purple-500', tooltip: 'Measures the raw load time of the main page and the number of resources requested. Proxy for LCP.' },
-    { id: 'tyche', name: 'Tyche Interactivity', desc: 'Script management & responsiveness', color: 'from-yellow-500 to-orange-500', tooltip: 'Measures script efficiency, heavily penalizes third-party scripts. Proxy for INP.' },
-    { id: 'vortex', name: 'Vortex Access', desc: 'Accessibility & semantic tags', color: 'from-green-500 to-teal-500', tooltip: 'Checks for image alt tags, semantic HTML, and ARIA attributes for inclusivity.' },
-    { id: 'nexus', name: 'Nexus Mobile', desc: 'Viewport & mobile readiness', color: 'from-cyan-500 to-blue-500', tooltip: 'Verifies the core mobile requirement: the viewport meta tag.' },
+    { id: 'karpov', name: 'Karpov Speed', desc: 'Load time & efficiency', color: 'from-blue-500 to-indigo-500', tooltip: 'Measures page load time, resource count, and general optimization techniques (LCP proxy).' },
+    { id: 'tyche', name: 'Tyche Interactivity', desc: 'Script management & responsiveness', color: 'from-yellow-500 to-orange-500', tooltip: 'Measures script load efficiency, penalizing third-party and inline scripts while rewarding async/defer (INP/TBT proxy).' },
+    { id: 'vortex', name: 'Vortex Access', desc: 'Accessibility score', color: 'from-green-500 to-emerald-500', tooltip: 'Evaluates image alt text, ARIA labels, semantic HTML, and core accessibility features.' },
+    { id: 'nexus', name: 'Nexus Mobile', desc: 'Mobile responsiveness', color: 'from-cyan-500 to-blue-500', tooltip: 'Checks for viewport meta tag and responsive media/images—the mobile baseline.' },
+    { id: 'helix', name: 'Helix Privacy', desc: 'Security & tracking', color: 'from-gray-700 to-gray-900', tooltip: 'Counts trackers and checks security headers (HSTS, CSP, X-Frame-Options).' },
     { id: 'pulse', name: 'Pulse SEO', desc: 'Search & social optimization', color: 'from-indigo-500 to-purple-500', tooltip: 'Analyzes title, meta description, canonical tags, Open Graph, and Twitter Cards.' },
-    { id: 'helix', name: 'Helix Privacy', desc: 'Tracking & security headers', color: 'from-gray-700 to-gray-900', tooltip: 'Penalizes third-party trackers and rewards the presence of security headers like HSTS/CSP.' },
     { id: 'nova', name: 'Nova Scale', desc: 'Infrastructure & CDN', color: 'from-purple-500 to-pink-500', tooltip: 'Checks for CDN usage, caching headers, and compression.' },
     { id: 'eden', name: 'Eden Efficiency', desc: 'Page weight & size', color: 'from-teal-500 to-green-500', tooltip: 'Scores based on total page weight. Smaller sites (under 500KB) score higher.' },
     { id: 'aether', name: 'Aether Tech', desc: 'Modern technologies', color: 'from-orange-500 to-red-500', tooltip: 'Detects WebAssembly, Service Workers, ES6 modules, and modern frameworks.' },
     { id: 'quantum', name: 'Quantum Quality', desc: 'Best practices & code', color: 'from-red-500 to-pink-500', tooltip: 'Checks for code quality, integrity, and adherence to HTML/CSS best practices.' },
-    { id: 'echo', name: 'Echo Green', desc: 'Sustainable hosting', color: 'from-lime-500 to-green-600', tooltip: 'Checks if hosting uses renewable energy via Green Web Foundation API.' } 
+    { id: 'echo', name: 'Echo Green', desc: 'Sustainable hosting', color: 'from-lime-500 to-green-600', tooltip: 'Checks if hosting uses renewable energy via Green Web Foundation API.' }
 ];
 
 // ------------------------------------------------------------------
