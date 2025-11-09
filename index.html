@@ -992,13 +992,13 @@ const metrics = [
     };
 
     // Split the METRICS array for the 4/4/3 grid arrangement
-    const p1Metrics = METRICS.slice(0, 4); // Karpov, Tyche, Vortex, Nexus (Performance)
-    const p2Metrics = METRICS.slice(4, 8); // Helix, Pulse, Nova, Eden (Quality & Trust)
-    const p3Metrics = METRICS.slice(8, 11); // Aether, Quantum, Echo (Future & Code)
+    const p1Metrics = metrics.slice(0, 4); // Karpov, Tyche, Vortex, Nexus (Performance)
+    const p2Metrics = metrics.slice(4, 8); // Helix, Pulse, Nova, Eden (Quality & Trust)
+    const p3Metrics = metrics.slice(8, 11); // Aether, Quantum, Echo (Future & Code)
     
-    document.getElementById('pillar1-performance-container').innerHTML = p1Metrics.map(cardHtml).join('');
-    document.getElementById('pillar2-quality-container').innerHTML = p2Metrics.map(cardHtml).join('');
-    document.getElementById('pillar3-future-container').innerHTML = p3Metrics.map(cardHtml).join('');
+    document.getElementById('pillar1-performance-container').innerHTML = p1metrics.map(cardHtml).join('');
+    document.getElementById('pillar2-quality-container').innerHTML = p2metrics.map(cardHtml).join('');
+    document.getElementById('pillar3-future-container').innerHTML = p3metrics.map(cardHtml).join('');
     
     // Save to leaderboard
     if (!fromCache) saveToLeaderboard(data);
