@@ -891,96 +891,61 @@ const metrics = [
         }, 75); // Typing speed
     }
 
-// index-7.html: Inside the <script> block
+    async function analyzeSite() {
+        playAnalyze(); // NEW
+        const url = document.getElementById('urlInput').value.trim();
+        if (!url || !url.startsWith('http')) {
+            alert('Please enter a valid URL starting with http:// or https://');
+            return;
+        }
 
-const WORKER_ENDPOINT = '/api/scan'; // This is the standard path for Cloudflare Pages Functions
+        const cached = getCachedScan(url);
+        if (cached) {
+            console.log('Using cached result');
+            currentData = cached;
+            displayResults(cached, true);
+            return;
+        }
 
-async function analyzeSite() {
-    // 1. Audio and Validation (as previously corrected)
-    if (audio && !audioPlayed) {
-        audio.play().catch(error => console.warn("Audio autoplay blocked.", error));
-        audioPlayed = true;
-    }
-
-    const url = document.getElementById('urlInput').value.trim();
-    if (!url || !url.startsWith('http')) {
-        alert('Please enter a valid URL starting with http:// or https://');
-        return;
-    }
-    
-    // Check cache before running
-    const cached = getCachedScan(url);
-    if (cached) {
-        console.log('Using cached result');
-        currentData = cached;
-        displayResults(cached, true);
-        return;
-    }
-
-    // 2. UI State
-    const scanBtn = document.getElementById('scanBtn');
-    const urlInput = document.getElementById('urlInput');
-
-    scanBtn.disabled = true;
-    scanBtn.textContent = 'Scanning...';
-    scanBtn.classList.add('scanning');
-    urlInput.disabled = true;
-
-    // Hide previous results
-    document.getElementById('pscoreContainer').classList.add('hidden');
-    document.getElementById('pillar1-performance-container').classList.add('hidden');
-    document.getElementById('pillar2-quality-container').classList.add('hidden');
-    document.getElementById('pillar3-future-container').classList.add('hidden');
-    document.getElementById('errorBox').classList.add('hidden'); // Clear any previous errors
-
-    playAnalyze(); // Start the visual analysis effect
-
-    try {
-        const response = await fetch(WORKER_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: url })
-        });
+        const scanBtn = document.getElementById('scanBtn');
+        const scanSpinner = document.getElementById('scanSpinner'); // NEW
+        scanBtn.disabled = true;
+        scanBtn.classList.add('scanning');
+        scanSpinner.style.display = 'inline-block'; // NEW
         
-        // === CRITICAL FIX 1: Robust Error Handling ===
-        if (!response.ok) {
-            let errorDetails = `Worker returned status ${response.status}.`;
-            try {
-                // Try to read JSON error body from worker
-                const errorBody = await response.json();
-                errorDetails += ` Backend message: ${errorBody.error || errorBody.details || 'No details provided.'}`;
-            } catch {
-                // Fallback if the response is not JSON (e.g., a simple HTML 502 page)
-                errorDetails += ` Could not parse error response from worker.`;
+        // Hide old results
+        document.getElementById('resultsContainer').classList.add('hidden');
+        document.getElementById('pscoreContainer').classList.add('hidden');
+        document.getElementById('exportBtn').style.display = 'none';
+
+        try {
+            const response = await fetch('/api/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
             }
-            throw new Error(errorDetails);
+            const data = await response.json();
+            if (data.error) {
+                throw new Error(data.message || 'Unknown error');
+            }
+            setCachedScan(url, data);
+            currentData = data;
+            displayResults(data, false);
+
+        } catch (error) {
+            alert(`Analysis failed: ${error.message}`);
+            console.error('Error:', error);
+        } finally {
+            scanBtn.disabled = false;
+            scanBtn.classList.remove('scanning');
+            scanSpinner.style.display = 'none'; // NEW
         }
-
-        // === CRITICAL FIX 2: Parse JSON ===
-        const data = await response.json();
-        
-        if (data.error) {
-            // Handle case where worker returns 200 but includes an error object
-            throw new Error(`Scan failed: ${data.error}`);
-        }
-
-        currentData = data;
-        displayResults(data, false);
-
-    } catch (error) {
-        console.error("Scan Error:", error);
-        document.getElementById('errorBox').textContent = `Scan failed: ${error.message}`;
-        document.getElementById('errorBox').classList.remove('hidden');
-    } finally {
-        // 3. UI Cleanup
-        scanBtn.disabled = false;
-        scanBtn.textContent = 'Analyze Site 🔮';
-        scanBtn.classList.remove('scanning');
-        urlInput.disabled = false;
-        playClick();
     }
-}
-        
+
   function displayResults(data, fromCache) {
     // 1. Display containers
     document.getElementById('pscoreContainer').classList.remove('hidden');
