@@ -234,12 +234,11 @@ export async function onRequest(context) {
 
 
     // FINAL PAYLOAD (Flat scores for frontend compatibility)
-    const fullResult = {
-      // FIX: Renamed 'pscore' to 'score' for consistency with common frontend expectations
-      score: pscore, 
-      url: result.url,
-      timestamp: result.timestamp,
-      
+   const fullResult = {
+  pscore: pscore,  // <- Now matches frontend 'data.pscore'
+  url: result.url,
+  timestamp: result.timestamp,
+
       // FLAT SCORES (This section was already correctly flattening the individual metrics)
       karpov: result.karpov,
       tyche: result.tyche,
