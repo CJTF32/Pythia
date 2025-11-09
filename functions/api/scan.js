@@ -248,8 +248,10 @@ export async function onRequest(context) {
     result.pscore = Math.round(pscore);
 
 
+    // scan-4.js: Replace the existing code from 'const fullResult = {' to '};' before the final return statement.
+
     // =================================================================
-    // STEP 6: FINAL RESPONSE STRUCTURE
+    // STEP 6: FINAL RESPONSE STRUCTURE (CORRECTED)
     // =================================================================
     
     const fullResult = {
@@ -259,22 +261,20 @@ export async function onRequest(context) {
       timestamp: result.timestamp,
       loadTime: loadTime,
 
-      // --- ALL FINAL SCORES ---
-      scores: {
-        karpov: result.karpov,
-        tyche: result.tyche,
-        vortex: result.vortex,
-        nexus: result.nexus,
-        helix: result.helix,
-        pulse: result.pulse,
-        nova: result.nova,
-        eden: result.eden,
-        aether: result.aether,
-        quantum: result.quantum,
-        echo: result.echo,
-      },
+      // --- ALL FINAL SCORES (FLAT STRUCTURE FOR FRONT-END COMPATIBILITY) ---
+      karpov: result.karpov,
+      tyche: result.tyche,
+      vortex: result.vortex,
+      nexus: result.nexus,
+      helix: result.helix,
+      pulse: result.pulse,
+      nova: result.nova,
+      eden: result.eden,
+      aether: result.aether,
+      quantum: result.quantum,
+      echo: result.echo,
       
-      // --- RAW DATA FOR INDICES ---
+      // --- RAW DATA FOR INDICES (Nested under 'data' as before) ---
       data: {
           karpov: { loadTime: loadTime, resourceCount: analysis.resourceCount },
           tyche: { inlineScripts: analysis.inlineScripts, thirdPartyScripts: analysis.thirdPartyScripts, hasAsync: analysis.hasAsync, hasDefer: analysis.hasDefer },
@@ -292,16 +292,6 @@ export async function onRequest(context) {
     
     return new Response(JSON.stringify(fullResult), {
       status: 200,
-      headers: corsHeaders
-    });
-    
-  } catch (error) {
-    console.error('Final Scan error:', error);
-    return new Response(JSON.stringify({
-      error: 'An internal server error occurred during scanning.',
-      details: error.message
-    }), {
-      status: 500,
       headers: corsHeaders
     });
   }
