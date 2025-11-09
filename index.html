@@ -1006,8 +1006,8 @@ async function analyzeSite() {
                 <div class="text-xs font-bold uppercase ${metric.id === 'echo' ? 'text-lime-800' : 'text-gray-500'}">
                     ${metric.id.toUpperCase()}
                     <div class="tooltip ml-1 inline-block cursor-pointer text-gray-400 hover:text-gray-700">
-                        ?
-                        <span class="tooltiptext">${metric.tooltip}</span>
+                    (i)
+                    <span class="tooltiptext">${metric.tooltip}</span>
                     </div>
                 </div>
                 <div class="text-2xl font-bold ${isRetro ? retroScoreColor : scoreColor} my-1">${score}</div>
