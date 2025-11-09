@@ -18,6 +18,7 @@ export async function onRequest(context) {
   }
 
   try {
+    // 1. INPUT PARSING
     const { url } = await context.request.json();
     
     if (!url) {
@@ -30,29 +31,32 @@ export async function onRequest(context) {
     const result = { url, timestamp: new Date().toISOString() };
     
     // =================================================================
-    // STEP 1: FETCH WEBSITE DATA (STABLE IMPLEMENTATION)
+    // STEP 2: FETCH WEBSITE DATA (Aggressive Error Handling)
     // =================================================================
     
     let html = '';
-    let siteHeaders = new Headers(); // Initialize to prevent null reference later
+    // Initialize siteHeaders as a new, empty Headers object if fetch fails
+    let siteHeaders = new Headers(); 
     let contentLength = 0;
     let loadTime = 0;
-    
+    let finalUrl = url; // Used to track potential redirects
+
     try {
       const fetchStart = Date.now();
       const response = await fetch(url, {
           method: 'GET',
           redirect: 'follow',
-          // Crucial: Use a recognizable User-Agent for service requests
+          // Crucial: Set a User-Agent to avoid blocking by some firewalls
           headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PythiaBot/1.0)' }
       });
 
       if (!response.ok) {
-        // Throw an error if the HTTP status is bad (e.g., 404, 500)
-        throw new Error(`HTTP error! Status: ${response.status} for URL: ${url}`);
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+      
+      finalUrl = response.url; // Capture the final URL after redirects
       siteHeaders = response.headers;
+      
       const arrayBuffer = await response.arrayBuffer();
       const decoder = new TextDecoder();
       html = decoder.decode(arrayBuffer);
@@ -60,23 +64,22 @@ export async function onRequest(context) {
       loadTime = Date.now() - fetchStart;
 
     } catch (error) {
-      console.error('Fetch error:', error);
-      // Exit gracefully if the site can't be fetched
+      console.error('Core Fetch Failed:', error);
+      // Return a 502 error if the main content cannot be fetched
       return new Response(JSON.stringify({ 
-        error: `Could not fetch URL or received bad response.`,
-        details: error.message
+        error: `Could not fetch URL: ${error.message}. Check URL validity or server status.`,
       }), {
-        status: 502, // Bad Gateway
+        status: 502,
         headers: corsHeaders
       });
     }
 
     // =================================================================
-    // STEP 2: STRING ANALYSIS
+    // STEP 3: STRING ANALYSIS
     // =================================================================
 
     const analysis = {};
-
+    // Defensive regex checks for analysis
     analysis.hasViewport = /<meta\s+name=["']viewport["']/i.test(html);
     analysis.images = (html.match(/<img\s[^>]*>/ig) || []).length;
     analysis.imagesWithAlt = (html.match(/<img\s[^>]*alt=["'][^"']+\s*["'][^>]*>/ig) || []).length;
@@ -106,30 +109,32 @@ export async function onRequest(context) {
 
 
     // =================================================================
-    // STEP 3: ECHO GREEN EXTERNAL CHECK
+    // STEP 4: ECHO GREEN EXTERNAL CHECK (Robust Hostname Extraction)
     // =================================================================
     
     let greenWebHosted = false;
+    let hostname;
     try {
-        const hostname = new URL(url).hostname;
+        hostname = new URL(finalUrl).hostname; // Use the final URL after redirects
         const greenWebResponse = await fetch(`https://api.thegreenwebfoundation.org/api/v3/greencheck/${hostname}`);
         const greenWebData = await greenWebResponse.json();
         greenWebHosted = greenWebData.green === true;
     } catch (error) {
         console.error('Green Web Check failed:', error);
+        // Green check failure should NOT stop the main scan
     }
 
 
     // =================================================================
-    // STEP 4: SCORING LOGIC FOR 11 INDICES
+    // STEP 5: SCORING LOGIC
     // =================================================================
 
-    // KARPOV SPEED (Load Time & Resources)
+    // KARPOV SPEED 
     let karpovScore = 100 - Math.min(100, Math.max(0, (loadTime - 1500) / 20));
     karpovScore -= Math.min(30, analysis.totalScripts + analysis.cssLinks);
     result.karpov = Math.min(100, Math.max(0, Math.round(karpovScore)));
 
-    // TYCHE INTERACTIVITY (Script Efficiency)
+    // TYCHE INTERACTIVITY 
     let tycheScore = 90;
     tycheScore -= Math.min(40, analysis.thirdPartyScripts * 5);
     tycheScore -= Math.min(15, analysis.inlineScripts * 1.5);
@@ -137,7 +142,7 @@ export async function onRequest(context) {
     if (analysis.hasAsync > 5 && analysis.hasDefer > 5) tycheScore += 10;
     result.tyche = Math.min(100, Math.max(0, Math.round(tycheScore)));
 
-    // VORTEX ACCESS (Accessibility)
+    // VORTEX ACCESS 
     let vortexScore = 100;
     if (analysis.images > 0) {
       const altRatio = analysis.imagesWithAlt / analysis.images;
@@ -147,10 +152,10 @@ export async function onRequest(context) {
     if (analysis.hasSemanticTags < 3) vortexScore -= 10;
     result.vortex = Math.min(100, Math.max(0, Math.round(vortexScore)));
 
-    // NEXUS MOBILE (Mobile Viewport)
+    // NEXUS MOBILE 
     result.nexus = analysis.hasViewport ? 100 : 0;
 
-    // PULSE SEO (Search & Social Optimization)
+    // PULSE SEO 
     let pulseScore = 50;
     if (analysis.title) pulseScore += 10;
     if (analysis.metaDescription) pulseScore += 10;
@@ -160,23 +165,22 @@ export async function onRequest(context) {
     if (analysis.metaDescription && analysis.metaDescription.length < 160) pulseScore += 5;
     result.pulse = Math.min(100, Math.max(0, Math.round(pulseScore)));
 
-    // EDEN EFFICIENCY (Page Weight)
+    // EDEN EFFICIENCY 
     const sizeMB = contentLength / (1024 * 1024);
     let edenScore = 100;
     if (sizeMB > 0.5) edenScore = 100 - (sizeMB * 15);
     if (sizeMB > 5.0) edenScore = 0;
     result.eden = Math.min(100, Math.max(0, Math.round(edenScore)));
 
-    // HELIX PRIVACY (Security & Tracking)
+    // HELIX PRIVACY (Uses siteHeaders)
     let helixScore = 100;
     helixScore -= Math.min(50, analysis.trackers.length * 10);
-    // Use the siteHeaders defined in the stable fetch
     if (siteHeaders.get('strict-transport-security')) helixScore += 10;
     if (siteHeaders.get('content-security-policy')) helixScore += 15;
     if (siteHeaders.get('x-frame-options')) helixScore += 5;
     result.helix = Math.min(100, Math.max(0, Math.round(helixScore)));
 
-    // NOVA SCALABILITY (Infrastructure)
+    // NOVA SCALABILITY (Uses siteHeaders)
     let novaScore = 50;
     const serverHeader = siteHeaders.get('server') || '';
     const viaHeader = siteHeaders.get('via') || '';
@@ -190,7 +194,7 @@ export async function onRequest(context) {
     
     result.nova = Math.min(100, Math.max(0, Math.round(novaScore)));
     
-    // AETHER TECH (Modern Technology)
+    // AETHER TECH 
     let aetherScore = 10;
     if (analysis.hasWebAssembly) aetherScore += 25;
     if (analysis.hasServiceWorker) aetherScore += 25;
@@ -198,18 +202,18 @@ export async function onRequest(context) {
     if (analysis.hasWebp) aetherScore += 15;
     result.aether = Math.min(100, Math.max(0, Math.round(aetherScore)));
 
-    // QUANTUM QUALITY (Code Best Practices)
+    // QUANTUM QUALITY 
     let quantumScore = 80;
     if (!analysis.hasDoctype) quantumScore -= 20;
     if (analysis.hasDeprecatedTags > 0) quantumScore -= Math.min(30, analysis.hasDeprecatedTags * 3);
     result.quantum = Math.min(100, Math.max(0, Math.round(quantumScore)));
 
-    // ECHO GREEN (Sustainable Hosting)
+    // ECHO GREEN 
     result.echo = greenWebHosted ? 100 : 0;
 
 
     // =================================================================
-    // STEP 5: OVERALL P-SCORE CALCULATION
+    // STEP 6: OVERALL P-SCORE CALCULATION & PAYLOAD
     // =================================================================
     
     const overallPScore = (
@@ -229,10 +233,7 @@ export async function onRequest(context) {
     const pscore = Math.min(100, Math.max(0, Math.round(overallPScore)));
 
 
-    // =================================================================
-    // STEP 6: CONSTRUCT FINAL PAYLOAD (Flat scores for frontend)
-    // =================================================================
-    
+    // FINAL PAYLOAD (Flat scores for frontend compatibility)
     const fullResult = {
       pscore: pscore,
       url: result.url,
@@ -273,10 +274,10 @@ export async function onRequest(context) {
     });
     
   } catch (error) {
-    console.error('Final Scan error:', error);
-    // Return 500 Internal Server Error for general execution errors
+    // Catch-all for scoring or final packaging errors
+    console.error('Catch-all Execution Error:', error);
     return new Response(JSON.stringify({
-      error: 'An internal server error occurred during scanning. Check URL for redirects or complex security.',
+      error: 'An internal server error occurred during scanning. Check the worker logs for details.',
       details: error.message
     }), {
       status: 500,
