@@ -1176,64 +1176,17 @@ async function analyzeSite() {
     // === TOP 50 SCANNER (MODIFIED) ===
     document.getElementById('scanTop50Btn').addEventListener('click', scanTop50Websites);
 
-    async function scanTop50Websites() {
-        playAnalyze(); // NEW
-        const TOP_50_URLS = [
-            'https://www.google.com', 'https://www.youtube.com', 'https://www.facebook.com', 'https://www.x.com', 'https://www.instagram.com', 'https://www.linkedin.com', 'https://www.reddit.com', 'https://www.wikipedia.org', 'https://www.amazon.com', 'https://www.netflix.com', 'https://www.yahoo.com', 'https://www.ebay.com', 'https://www.microsoft.com', 'https://www.apple.com', 'https://www.pinterest.com', 'https://www.github.com', 'https://www.stackoverflow.com', 'https://www.twitch.tv', 'https://www.wordpress.com', 'https://www.paypal.com', 'https://www.bbc.com', 'https://www.cnn.com', 'https://www.nytimes.com', 'https://www.espn.com', 'https://www.imdb.com', 'https://www.quora.com', 'https://www.medium.com', 'https://www.tumblr.com', 'https://www.shopify.com', 'https://www.etsy.com', 'https://www.target.com', 'https://www.walmart.com', 'https://www.bestbuy.com', 'https://www.homedepot.com', 'https://www.ikea.com', 'https://www.spotify.com', 'https://www.soundcloud.com', 'https://www.vimeo.com', 'https://www.dropbox.com', 'https://www.zoom.us', 'https://www.salesforce.com', 'https://www.adobe.com', 'https://www.oracle.com', 'https://www.ibm.com', 'https://www.cloudflare.com', 'https://www.airbnb.com', 'https://www.booking.com', 'https://www.tripadvisor.com', 'https://www.uber.com', 'https://www.tiktok.com'
-        ];
+    function displayTop50Results(results, isCached) {
+    const list = document.getElementById('top50List');
+    list.innerHTML = '';
+    
+    if (results.length === 0) {
+        list.innerHTML = '<li class="text-center py-4 text-gray-500">No scan data available.</li>';
+        return;
+    }
 
-        const btn = document.getElementById('scanTop50Btn');
-        const loading = document.getElementById('top50Loading');
-        const results = document.getElementById('top50Results');
-        const progress = document.getElementById('scanProgress');
-
-        btn.disabled = true;
-        btn.textContent = ' ⏳ SCANNING...'; // Original spinner logic is fine
-        loading.classList.remove('hidden');
-        results.classList.add('hidden');
-
-        try {
-            const scanResults = [];
-            let completed = 0;
-            for (let i = 0; i < TOP_50_URLS.length; i += 5) {
-                const batch = TOP_50_URLS.slice(i, i + 5);
-                const batchPromises = batch.map(async (url) => {
-                    const cached = getCachedScan(url);
-                    if (cached) {
-                        completed++;
-                        progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
-                        return { url, pscore: cached.pscore };
-                    }
-                    try {
-                        const response = await fetch('/api/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
-                        if (response.ok) {
-                            const data = await response.json();
-                            if (data && data.pscore !== undefined) {
-                                setCachedScan(url, data);
-                                completed++;
-                                progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
-                                return { url, pscore: data.pscore };
-                            }
-                        } else {
-                            console.error(`Failed ${url}: HTTP ${response.status}`);
-                        }
-                    } catch (error) {
-                        console.error(`Failed ${url}:`, error.message);
-                    }
-                    return null;
-                });
-                const batchResults = await Promise.all(batchPromises);
-                const validResults = batchResults.filter(r => r !== null && r.url && r.pscore !== undefined);
-                scanResults.push(...validResults);
-                console.log(`Batch complete. Total valid scans: ${scanResults.length}/${TOP_50_URLS.length}`);
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-
-            console.log(`Top 50 scan complete. Successfully scanned: ${scanResults.length} sites`);
-
-            if (scanResults.length >= 10) {
-                const sorted = scanResults.sort((a, b) => b.pscore - a.pscore);
-                const top5 = results.slice(0, 5);
+    // 1. TOP 5
+    const top5 = results.slice(0, 5);
     top5.forEach((item, index) => {
         const li = document.createElement('li');
         // Simple badge for 1st, 2nd, 3rd
@@ -1245,6 +1198,28 @@ async function analyzeSite() {
         `;
         list.appendChild(li);
     });
+
+    // Add a separator
+    const separator = document.createElement('li');
+    separator.className = 'text-center text-sm py-4 text-gray-400 border-t border-b border-gray-100 mt-2 mb-2';
+    separator.textContent = '--- Top 5 Complete ---';
+    list.appendChild(separator);
+
+    // 2. WOODEN SPOON AWARD (Lowest score is the last element in the sorted array)
+    // Filter out items with score 0 just in case the scan failed
+    const validResults = results.filter(item => item.pScore > 0);
+    const lowestScoreItem = validResults[validResults.length - 1];
+    
+    if (lowestScoreItem) {
+        const li = document.createElement('li');
+        li.className = 'flex justify-between items-center py-2 bg-red-50 rounded-lg border border-red-200 mt-4 px-2';
+        li.innerHTML = `
+            <span class="font-bold text-red-700">💩 Wooden Spoon Award: ${lowestScoreItem.url}</span>
+            <span class="text-lg font-bold text-red-600">${lowestScoreItem.pScore.toFixed(1)}</span>
+        `;
+        list.appendChild(li);
+    }
+}
 
     // Add a separator
     const separator = document.createElement('li');
