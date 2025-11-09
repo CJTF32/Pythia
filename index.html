@@ -946,43 +946,63 @@ const metrics = [
         }
     }
 
-    function displayResults(data, fromCache) {
-        // MODIFIED: Use typing animation for pscore
-        typeScore('pscoreValue', `P-SCORE: ${data.pscore || '--'}`);
-        playResult(data.pscore >= 60); // NEW
+  function displayResults(data, fromCache) {
+    // 1. Display containers
+    document.getElementById('pscoreContainer').classList.remove('hidden');
+    document.getElementById('exportBtn').style.display = 'inline-block';
+    
+    // Show the new pillar containers
+    document.getElementById('pillar1-performance-container').classList.remove('hidden');
+    document.getElementById('pillar2-quality-container').classList.remove('hidden');
+    document.getElementById('pillar3-future-container').classList.remove('hidden');
+
+    // 2. Type P-Score
+    typeScore('pscoreValue', `P-SCORE: ${data.pscore || '--'}`);
+    playResult(data.pscore >= 60);
+
+    // 3. Fix P-Score Sub-Text (addresses 'undefined')
+    const formattedTime = new Date(data.timestamp || Date.now()).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const resourceCount = data.data?.karpov?.resourceCount || 'N/A';
+    const sizeKB = Math.round(data.data?.eden?.sizeBytes / 1024) || 0;
+    
+    // The fixed sub-text structure: Resources • KB • Timestamp
+    document.getElementById('siteInfo').innerHTML = 
+        `<span class="font-bold">${resourceCount}</span> Resources • <span class="font-bold">${sizeKB}</span> KB • ${formattedTime} ${fromCache ? '🧊 Cached' : '🟢 Live'}`;
+
+    // 4. Generate and split the 11 score cards
+    const cardHtml = (metric) => {
+        // Since we fixed the backend to flatten scores, we can access them directly:
+        const score = data[metric.id] !== undefined ? data[metric.id] : '--'; 
+        const scoreColor = score >= 80 ? 'text-green-600' : (score >= 60 ? 'text-yellow-600' : 'text-red-600');
+        const retroScoreColor = score >= 80 ? 'text-green-400' : (score >= 60 ? 'text-yellow-400' : 'text-red-400');
         
-        const scanDate = new Date(data.timestamp || Date.now()).toLocaleString('en-US', {
-            month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
-        let cacheInfo = '';
-        if (fromCache && data.cacheAge) {
-            const mins = Math.floor(data.cacheAge / 60);
-            cacheInfo = `<span class="cache-badge cache-stored"> 💾 Cached ${mins}m ago</span>`;
-        } else {
-            cacheInfo = '<span class="cache-badge cache-live"> 🟢 Live</span>';
-        }
-        document.getElementById('siteInfo').innerHTML = `${data.pageSize} • ${data.loadTime} • ${scanDate} ${cacheInfo}`;
-        document.getElementById('pscoreContainer').classList.remove('hidden');
+        return `
+            <div class="score-card modern-card bg-white rounded-xl shadow-md p-4 flex flex-col justify-between transition transform hover:scale-[1.03]">
+                <div class="text-xs font-bold uppercase ${metric.id === 'echo' ? 'text-lime-800' : 'text-gray-500'}">
+                    ${metric.id.toUpperCase()}
+                    <div class="tooltip ml-1 inline-block cursor-pointer text-gray-400 hover:text-gray-700">
+                        ?
+                        <span class="tooltiptext">${metric.tooltip}</span>
+                    </div>
+                </div>
+                <div class="text-2xl font-bold ${isRetro ? retroScoreColor : scoreColor} my-1">${score}</div>
+                <div class="text-sm text-gray-700 font-medium">${metric.name}</div>
+            </div>
+        `;
+    };
 
-        const resultsContainer = document.getElementById('resultsContainer');
-        resultsContainer.innerHTML = '';
-        metrics.forEach(metric => {
-            const value = data[metric.id] ?? '--';
-            const card = document.createElement('div');
-            card.className = `tooltip score-card bg-gradient-to-br ${metric.color} text-white p-5 rounded-xl shadow-lg transform transition hover:scale-105`;
-            card.innerHTML = `
-                <div class="text-xs font-bold uppercase opacity-90 mb-1">${metric.name}</div>
-                <div class="text-4xl font-bold mb-1">${value}</div>
-                <div class="text-xs opacity-80">${metric.desc}</div>
-                <span class="tooltiptext">${metric.tooltip}</span>
-            `;
-            resultsContainer.appendChild(card);
-        });
-
-        resultsContainer.classList.remove('hidden');
-        document.getElementById('exportBtn').style.display = 'inline-block';
-        saveToLeaderboard(data);
-    }
+    // Split the METRICS array for the 4/4/3 grid arrangement
+    const p1Metrics = METRICS.slice(0, 4); // Karpov, Tyche, Vortex, Nexus (Performance)
+    const p2Metrics = METRICS.slice(4, 8); // Helix, Pulse, Nova, Eden (Quality & Trust)
+    const p3Metrics = METRICS.slice(8, 11); // Aether, Quantum, Echo (Future & Code)
+    
+    document.getElementById('pillar1-performance-container').innerHTML = p1Metrics.map(cardHtml).join('');
+    document.getElementById('pillar2-quality-container').innerHTML = p2Metrics.map(cardHtml).join('');
+    document.getElementById('pillar3-future-container').innerHTML = p3Metrics.map(cardHtml).join('');
+    
+    // Save to leaderboard
+    if (!fromCache) saveToLeaderboard(data);
+}
 
     // === EXPORT FUNCTION (Original) ===
     document.getElementById('exportBtn').addEventListener('click', () => {
