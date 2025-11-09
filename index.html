@@ -396,9 +396,9 @@
                         <div id="scanProgress" class="text-xs text-gray-400 mt-1"></div>
                     </div>
                     <div id="top50Results" class="hidden">
-                        <h3 class="text-lg font-bold text-green-600 mb-3"> 🥇 Top 10 Global Sites</h3>
+                        <h3 class="text-lg font-bold text-green-600 mb-3"> 🥇 Top 5 Global Sites</h3>
                         <div id="top50TopList" class="space-y-2 mb-6"></div>
-                        <h3 class="text-lg font-bold text-red-600 mb-3"> 🔻 Bottom 10 Global Sites (41-50)</h3>
+                        <h3 class="text-lg font-bold text-red-600 mb-3"> 🥄 Wooden Spoon Award (Worst Site)</h3>
                         <div id="top50BottomList" class="space-y-2"></div>
                     </div>
                 </div>
@@ -624,7 +624,7 @@
                         <p class="text-sm text-gray-500">
                             Questions? Feedback? Partnership inquiries?<br>
                             Contact us: <a href="mailto:hello@cronixholdings.com" class="text-indigo-600 font-bold hover:underline">hello@cronixholdings.com</a>
-                        </T>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -1177,97 +1177,98 @@ async function analyzeSite() {
     document.getElementById('scanTop50Btn').addEventListener('click', scanTop50Websites);
 
     async function scanTop50Websites() {
-        playAnalyze(); // NEW
-        const TOP_50_URLS = [
-            'https://www.google.com', 'https://www.youtube.com', 'https://www.facebook.com', 'https://www.x.com', 'https://www.instagram.com', 'https://www.linkedin.com', 'https://www.reddit.com', 'https://www.wikipedia.org', 'https://www.amazon.com', 'https://www.netflix.com', 'https://www.yahoo.com', 'https://www.ebay.com', 'https://www.microsoft.com', 'https://www.apple.com', 'https://www.pinterest.com', 'https://www.github.com', 'https://www.stackoverflow.com', 'https://www.twitch.tv', 'https://www.wordpress.com', 'https://www.paypal.com', 'https://www.bbc.com', 'https://www.cnn.com', 'https://www.nytimes.com', 'https://www.espn.com', 'https://www.imdb.com', 'https://www.quora.com', 'https://www.medium.com', 'https://www.tumblr.com', 'https://www.shopify.com', 'https://www.etsy.com', 'https://www.target.com', 'https://www.walmart.com', 'https://www.bestbuy.com', 'https://www.homedepot.com', 'https://www.ikea.com', 'https://www.spotify.com', 'https://www.soundcloud.com', 'https://www.vimeo.com', 'https://www.dropbox.com', 'https://www.zoom.us', 'https://www.salesforce.com', 'https://www.adobe.com', 'https://www.oracle.com', 'https://www.ibm.com', 'https://www.cloudflare.com', 'https://www.airbnb.com', 'https://www.booking.com', 'https://www.tripadvisor.com', 'https://www.uber.com', 'https://www.tiktok.com'
-        ];
+    playAnalyze(); // NEW
+    const TOP_50_URLS = [
+        'https://www.google.com', 'https://www.youtube.com', 'https://www.facebook.com', 'https://www.x.com', 'https://www.instagram.com', 'https://www.linkedin.com', 'https://www.reddit.com', 'https://www.wikipedia.org', 'https://www.amazon.com', 'https://www.netflix.com', 'https://www.yahoo.com', 'https://www.ebay.com', 'https://www.microsoft.com', 'https://www.apple.com', 'https://www.pinterest.com', 'https://www.github.com', 'https://www.stackoverflow.com', 'https://www.twitch.tv', 'https://www.wordpress.com', 'https://www.paypal.com', 'https://www.bbc.com', 'https://www.cnn.com', 'https://www.nytimes.com', 'https://www.espn.com', 'https://www.imdb.com', 'https://www.quora.com', 'https://www.medium.com', 'https://www.tumblr.com', 'https://www.shopify.com', 'https://www.etsy.com', 'https://www.target.com', 'https://www.walmart.com', 'https://www.bestbuy.com', 'https://www.homedepot.com', 'https://www.ikea.com', 'https://www.spotify.com', 'https://www.soundcloud.com', 'https://www.vimeo.com', 'https://www.dropbox.com', 'https://www.zoom.us', 'https://www.salesforce.com', 'https://www.adobe.com', 'https://www.oracle.com', 'https://www.ibm.com', 'https://www.cloudflare.com', 'https://www.airbnb.com', 'https://www.booking.com', 'https://www.tripadvisor.com', 'https://www.uber.com', 'https://www.tiktok.com'
+    ];
 
-        const btn = document.getElementById('scanTop50Btn');
-        const loading = document.getElementById('top50Loading');
-        const results = document.getElementById('top50Results');
-        const progress = document.getElementById('scanProgress');
+    const btn = document.getElementById('scanTop50Btn');
+    const loading = document.getElementById('top50Loading');
+    const results = document.getElementById('top50Results');
+    const progress = document.getElementById('scanProgress');
 
-        btn.disabled = true;
-        btn.textContent = ' ⏳ SCANNING...'; // Original spinner logic is fine
-        loading.classList.remove('hidden');
-        results.classList.add('hidden');
+    btn.disabled = true;
+    btn.textContent = ' ⏳ SCANNING...'; // Original spinner logic is fine
+    loading.classList.remove('hidden');
+    results.classList.add('hidden');
 
-        try {
-            const scanResults = [];
-            let completed = 0;
-            for (let i = 0; i < TOP_50_URLS.length; i += 5) {
-                const batch = TOP_50_URLS.slice(i, i + 5);
-                const batchPromises = batch.map(async (url) => {
-                    const cached = getCachedScan(url);
-                    if (cached) {
-                        completed++;
-                        progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
-                        return { url, pscore: cached.pscore };
-                    }
-                    try {
-                        const response = await fetch('/api/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
-                        if (response.ok) {
-                            const data = await response.json();
-                            if (data && data.pscore !== undefined) {
-                                setCachedScan(url, data);
-                                completed++;
-                                progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
-                                return { url, pscore: data.pscore };
-                            }
-                        } else {
-                            console.error(`Failed ${url}: HTTP ${response.status}`);
+    try {
+        const scanResults = [];
+        let completed = 0;
+        for (let i = 0; i < TOP_50_URLS.length; i += 5) {
+            const batch = TOP_50_URLS.slice(i, i + 5);
+            const batchPromises = batch.map(async (url) => {
+                const cached = getCachedScan(url);
+                if (cached) {
+                    completed++;
+                    progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
+                    return { url, pscore: cached.pscore };
+                }
+                try {
+                    const response = await fetch('/api/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data && data.pscore !== undefined) {
+                            setCachedScan(url, data);
+                            completed++;
+                            progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
+                            return { url, pscore: data.pscore };
                         }
-                    } catch (error) {
-                        console.error(`Failed ${url}:`, error.message);
+                    } else {
+                        console.error(`Failed ${url}: HTTP ${response.status}`);
                     }
-                    return null;
-                });
-                const batchResults = await Promise.all(batchPromises);
-                const validResults = batchResults.filter(r => r !== null && r.url && r.pscore !== undefined);
-                scanResults.push(...validResults);
-                console.log(`Batch complete. Total valid scans: ${scanResults.length}/${TOP_50_URLS.length}`);
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-
-            console.log(`Top 50 scan complete. Successfully scanned: ${scanResults.length} sites`);
-
-            if (scanResults.length >= 10) {
-                const sorted = scanResults.sort((a, b) => b.pscore - a.pscore);
-                const top10 = sorted.slice(0, 10);
-                const bottom10 = sorted.slice(-10);
-                const scanDate = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-                
-                document.getElementById('top50TopList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
-                    ${top10.map((site, i) => `
-                    <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-green-50">
-                        <span class="text-sm font-bold text-gray-700">${i + 1}. ${new URL(site.url).hostname}</span>
-                        <span class="text-lg font-bold text-green-600">${site.pscore}</span>
-                    </div>`).join('')}`;
-                
-                document.getElementById('top50BottomList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
-                    ${bottom10.reverse().map((site, i) => {
-                        const rank = sorted.length - (9 - i);
-                        return `
-                        <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-red-50">
-                            <span class="text-sm font-bold text-gray-700">${rank}. ${new URL(site.url).hostname}</span>
-                            <span class="text-lg font-bold text-red-600">${site.pscore}</span>
-                        </div>`;
-                    }).join('')}`;
-                
-                loading.classList.add('hidden');
-                results.classList.remove('hidden');
-            } else {
-                throw new Error(`Only ${scanResults.length} sites scanned successfully. Need at least 10.`);
-            }
-        } catch (error) {
-            alert(`Top 50 scan failed: ${error.message}`);
-            console.error('Error:', error);
-        } finally {
-            btn.textContent = ' 🚀 SCAN TOP 50 WEBSITES';
-            btn.disabled = false;
-            loading.classList.add('hidden');
+                } catch (error) {
+                    console.error(`Failed ${url}:`, error.message);
+                }
+                return null;
+            });
+            const batchResults = await Promise.all(batchPromises);
+            const validResults = batchResults.filter(r => r !== null && r.url && r.pscore !== undefined);
+            scanResults.push(...validResults);
+            console.log(`Batch complete. Total valid scans: ${scanResults.length}/${TOP_50_URLS.length}`);
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
+
+        console.log(`Top 50 scan complete. Successfully scanned: ${scanResults.length} sites`);
+
+        // CHANGE: Lowered threshold from >=10 to >=5 (for top 5 + at least one worst)
+        if (scanResults.length >= 5) {
+            const sorted = scanResults.sort((a, b) => b.pscore - a.pscore);
+            // CHANGE: Top 5 instead of top 10
+            const top5 = sorted.slice(0, 5);
+            // CHANGE: Get just the single worst site (lowest score)
+            const worst = sorted.slice(-1)[0];
+            const scanDate = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            
+            document.getElementById('top50TopList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
+                ${top5.map((site, i) => `
+                <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-green-50">
+                    <span class="text-sm font-bold text-gray-700">${i + 1}. ${new URL(site.url).hostname}</span>
+                    <span class="text-lg font-bold text-green-600">${site.pscore}</span>
+                </div>`).join('')}`;
+            
+            // CHANGE: Display just the single worst site (no map/reverse needed)
+            document.getElementById('top50BottomList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
+                <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-red-50">
+                    <span class="text-sm font-bold text-gray-700">50. ${new URL(worst.url).hostname}</span>
+                    <span class="text-lg font-bold text-red-600">${worst.pscore}</span>
+                </div>`;
+            
+            loading.classList.add('hidden');
+            results.classList.remove('hidden');
+        } else {
+            // CHANGE: Updated error message to match new minimum
+            throw new Error(`Only ${scanResults.length} sites scanned successfully. Need at least 5.`);
+        }
+    } catch (error) {
+        alert(`Top 50 scan failed: ${error.message}`);
+        console.error('Error:', error);
+    } finally {
+        btn.textContent = ' 🚀 SCAN TOP 50 WEBSITES';
+        btn.disabled = false;
+        loading.classList.add('hidden');
     }
+}
 
     // === SOCIAL SHARING (MODIFIED) ===
     function shareOn(platform) {
