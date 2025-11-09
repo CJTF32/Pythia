@@ -910,73 +910,67 @@ const metrics = [
         }, 75); // Typing speed
     }
 
-    async function analyzeSite() {
-        playAnalyze(); // NEW
-        const url = document.getElementById('urlInput').value.trim();
-        if (!url || !url.startsWith('http')) {
-            alert('Please enter a valid URL starting with http:// or https://');
-            return;
-        }
+async function analyzeSite() {
+    playAnalyze(); // NEW
+    const url = document.getElementById('urlInput').value.trim();
+    if (!url || !url.startsWith('http')) {
+        alert('Please enter a valid URL starting with http:// or https://');
+        return;
+    }
 
-        const cached = getCachedScan(url);
-        if (cached) {
-            console.log('Using cached result');
-            currentData = cached;
-            displayResults(cached, true);
-            return;
-        }
+    const cached = getCachedScan(url);
+    if (cached) {
+        console.log('Using cached result');
+        currentData = cached;
+        displayResults(cached, true);
+        return;
+    }
 
-        const scanBtn = document.getElementById('scanBtn');
-        const scanSpinner = document.getElementById('scanSpinner'); // NEW
-        scanBtn.disabled = true;
-        scanBtn.classList.add('scanning');
-        scanSpinner.style.display = 'inline-block'; // NEW
-        
-        // Hide old results (guard for missing elements)
-        const resultsContainer = document.getElementById('resultsContainer');
-        if (resultsContainer) resultsContainer.classList.add('hidden');
-        
-        const pscoreContainer = document.getElementById('pscoreContainer');
-        if (pscoreContainer) pscoreContainer.classList.add('hidden');
-        
-        const exportBtn = document.getElementById('exportBtn');
-        if (exportBtn) exportBtn.style.display = 'none';
+    const scanBtn = document.getElementById('scanBtn');
+    const scanSpinner = document.getElementById('scanSpinner'); // NEW
+    scanBtn.disabled = true;
+    scanBtn.classList.add('scanning');
+    scanSpinner.style.display = 'inline-block'; // NEW
+    
+    // Hide old results
+    const pscoreContainer = document.getElementById('pscoreContainer');
+    if (pscoreContainer) pscoreContainer.classList.add('hidden');
+    const exportBtn = document.getElementById('exportBtn');
+    if (exportBtn) exportBtn.style.display = 'none';
 
-        const response = await fetch(url, {
-        method: 'GET',
-        redirect: 'follow',
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Upgrade-Insecure-Requests': '1',  // Signals browser-like behavior
-            'Sec-Fetch-Mode': 'navigate',     // Mimics browser navigation
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1'
-            }
+    // --- THIS IS THE CORRECTED API CALL ---
+    try {
+        const response = await fetch('/api/scan', { // <-- Calls your API
+            method: 'POST',                         // <-- Uses POST
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })           // <-- Sends the URL in the body
         });
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            const data = await response.json();
-            if (data.error) {
-                throw new Error(data.message || 'Unknown error');
-            }
-            setCachedScan(url, data);
-            currentData = data;
-            displayResults(data, false);
-
-        } catch (error) {
-            alert(`Analysis failed: ${error.message}`);
-            console.error('Error:', error);
-        } finally {
-            scanBtn.disabled = false;
-            scanBtn.classList.remove('scanning');
-            scanSpinner.style.display = 'none'; // NEW
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            // Use the 'error' field from the backend response
+            throw new Error(errorData.error || `HTTP ${response.status} - ${response.statusText}`);
         }
+        
+        const data = await response.json();
+        if (data.error) {
+            throw new Error(data.message || data.error || 'Unknown error from API');
+        }
+        
+        setCachedScan(url, data);
+        currentData = data;
+        displayResults(data, false);
+
+    } catch (error) {
+        // This 'alert' will now show the specific error from the backend
+        alert(`Analysis failed: ${error.message}`);
+        console.error('Error:', error);
+    } finally {
+        scanBtn.disabled = false;
+        scanBtn.classList.remove('scanning');
+        scanSpinner.style.display = 'none'; // NEW
     }
+}
 
   function displayResults(data, fromCache) {
     // 1. Display containers
