@@ -396,9 +396,9 @@
                         <div id="scanProgress" class="text-xs text-gray-400 mt-1"></div>
                     </div>
                     <div id="top50Results" class="hidden">
-                        <h3 class="text-lg font-bold text-green-600 mb-3"> 🥇 Top 10 Global Sites</h3>
+                        <h3 class="text-lg font-bold text-green-600 mb-3"> 🥇 Top 5 Global Sites</h3>
                         <div id="top50TopList" class="space-y-2 mb-6"></div>
-                        <h3 class="text-lg font-bold text-red-600 mb-3"> 🔻 Bottom 10 Global Sites (41-50)</h3>
+                        <h3 class="text-lg font-bold text-red-600 mb-3"> 🥄 Wooden Spoon Award</h3>
                         <div id="top50BottomList" class="space-y-2"></div>
                     </div>
                 </div>
@@ -1231,21 +1231,45 @@ async function analyzeSite() {
 
             console.log(`Top 50 scan complete. Successfully scanned: ${scanResults.length} sites`);
 
-            if (scanResults.length >= 10) {
-                const sorted = scanResults.sort((a, b) => b.pscore - a.pscore);
-                const top10 = sorted.slice(0, 10);
-                const bottom10 = sorted.slice(-10);
-                const scanDate = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-                
-                document.getElementById('top50TopList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
-                    ${top10.map((site, i) => `
-                    <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-green-50">
-                        <span class="text-sm font-bold text-gray-700">${i + 1}. ${new URL(site.url).hostname}</span>
-                        <span class="text-lg font-bold text-green-600">${site.pscore}</span>
-                    </div>`).join('')}`;
-                
-                document.getElementById('top50BottomList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
-                    ${bottom10.reverse().map((site, i) => {
+            // Check if we have enough data to display the leaderboard
+                if (scanResults.length >= 5) { // Updated check: needs at least 5 for the Top 5
+                    const sorted = scanResults.sort((a, b) => b.pscore - a.pscore); 
+
+                    // MODIFICATION (a) LOGIC: Top 10 -> Top 5
+                    const top5 = sorted.slice(0, 5); 
+                    // MODIFICATION (b) LOGIC: Bottom 10 -> Single Worst
+                    const worstSite = sorted[sorted.length - 1]; 
+
+                    const scanDate = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+                    // RENDER TOP 5 LIST
+                    document.getElementById('top50TopList').innerHTML = top5.map((site, i) => \`
+                        <div class="leaderboard-entry flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition rivalry-item">
+                            <span class="text-sm font-bold text-gray-700">#\${i + 1}. \${new URL(site.url).hostname}</span>
+                            <span class="text-lg font-bold text-green-600">\${site.pscore}</span>
+                        </div>\`).join('');
+
+                    // RENDER WOODEN SPOON AWARD (Single Worst Site)
+                    document.getElementById('top50BottomList').innerHTML = \`
+                        <div class="leaderboard-entry flex flex-col items-center p-6 bg-red-50 rounded-lg border-4 border-red-500 shadow-xl transition rivalry-item text-center">
+                            <span class="text-sm font-black uppercase text-red-800 mb-1">P-Score:</span>
+                            <span class="text-5xl font-black text-red-600">\${worstSite.pscore}</span>
+                            <span class="text-xl font-extrabold text-red-800 mt-2">\${new URL(worstSite.url).hostname}</span>
+                            <p class="text-xs text-red-500 mt-3 italic">Ranked #\${sorted.length} of \${sorted.length}. Lowest score recorded in this scan batch.</p>
+                        </div>
+                    \`;
+
+                    // Update the loading text to completion/date
+                    document.getElementById('top50Loading').innerHTML = \`
+                        <div class="text-xl font-bold text-gray-700 mb-2">Scan Complete!</div>
+                        <div class="text-sm text-gray-500">Data Scanned: \${scanResults.length} sites</div>
+                        <div class="text-xs text-gray-400 mt-1">Last Run: \${scanDate}</div>
+                    \`;
+                    
+                    document.getElementById('top50Results').classList.remove('hidden');
+                } else {
+                    document.getElementById('top50Loading').innerHTML = '<div class="text-xl font-bold text-red-600">Scan Failed: Not enough sites scanned.</div>';
+                }
                         const rank = sorted.length - (9 - i);
                         return `
                         <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-red-50">
