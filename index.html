@@ -913,10 +913,15 @@ const metrics = [
         scanBtn.classList.add('scanning');
         scanSpinner.style.display = 'inline-block'; // NEW
         
-        // Hide old results
-        document.getElementById('resultsContainer').classList.add('hidden');
-        document.getElementById('pscoreContainer').classList.add('hidden');
-        document.getElementById('exportBtn').style.display = 'none';
+        // Hide old results (guard for missing elements)
+        const resultsContainer = document.getElementById('resultsContainer');
+        if (resultsContainer) resultsContainer.classList.add('hidden');
+        
+        const pscoreContainer = document.getElementById('pscoreContainer');
+        if (pscoreContainer) pscoreContainer.classList.add('hidden');
+        
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) exportBtn.style.display = 'none';
 
         try {
             const response = await fetch('/api/scan', {
