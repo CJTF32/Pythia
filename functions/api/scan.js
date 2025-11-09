@@ -30,11 +30,11 @@ export async function onRequest(context) {
     const result = { url, timestamp: new Date().toISOString() };
     
     // =================================================================
-    // STEP 1: FETCH WEBSITE DATA
+    // STEP 1: FETCH WEBSITE DATA (STABLE IMPLEMENTATION)
     // =================================================================
     
     let html = '';
-    let siteHeaders = null;
+    let siteHeaders = new Headers(); // Initialize to prevent null reference later
     let contentLength = 0;
     let loadTime = 0;
     
@@ -43,11 +43,13 @@ export async function onRequest(context) {
       const response = await fetch(url, {
           method: 'GET',
           redirect: 'follow',
+          // Crucial: Use a recognizable User-Agent for service requests
           headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PythiaBot/1.0)' }
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Throw an error if the HTTP status is bad (e.g., 404, 500)
+        throw new Error(`HTTP error! Status: ${response.status} for URL: ${url}`);
       }
 
       siteHeaders = response.headers;
@@ -59,15 +61,18 @@ export async function onRequest(context) {
 
     } catch (error) {
       console.error('Fetch error:', error);
-      // Return 502 Bad Gateway if fetch fails
-      return new Response(JSON.stringify({ error: `Could not fetch URL: ${error.message}` }), {
-        status: 502,
+      // Exit gracefully if the site can't be fetched
+      return new Response(JSON.stringify({ 
+        error: `Could not fetch URL or received bad response.`,
+        details: error.message
+      }), {
+        status: 502, // Bad Gateway
         headers: corsHeaders
       });
     }
 
     // =================================================================
-    // STEP 2: STRING ANALYSIS (POPULATING 'analysis' OBJECT)
+    // STEP 2: STRING ANALYSIS
     // =================================================================
 
     const analysis = {};
@@ -165,6 +170,7 @@ export async function onRequest(context) {
     // HELIX PRIVACY (Security & Tracking)
     let helixScore = 100;
     helixScore -= Math.min(50, analysis.trackers.length * 10);
+    // Use the siteHeaders defined in the stable fetch
     if (siteHeaders.get('strict-transport-security')) helixScore += 10;
     if (siteHeaders.get('content-security-policy')) helixScore += 15;
     if (siteHeaders.get('x-frame-options')) helixScore += 5;
@@ -201,74 +207,76 @@ export async function onRequest(context) {
     // ECHO GREEN (Sustainable Hosting)
     result.echo = greenWebHosted ? 100 : 0;
 
-// scan-5.js: After all scoring logic (e.g., after the 'echo' score calculation)
-// Add all individual scores to the overall result object and calculate the final pscore.
 
-// =================================================================
-// STEP 5: FINAL P-SCORE CALCULATION
-// =================================================================
-const overallPScore = (
-    result.karpov * 0.20 +
-    result.tyche * 0.15 +
-    result.vortex * 0.10 +
-    result.nexus * 0.05 +
-    result.helix * 0.15 +
-    result.pulse * 0.05 +
-    result.nova * 0.10 +
-    result.eden * 0.10 +
-    result.aether * 0.05 +
-    result.quantum * 0.03 +
-    result.echo * 0.02 // Total must equal 1.00 or 100%
-);
-
-// =================================================================
-// STEP 6: CONSTRUCT FINAL PAYLOAD
-// =================================================================
-const fullResult = {
-    pscore: Math.min(100, Math.max(0, Math.round(overallPScore))),
-    url: result.url,
-    timestamp: result.timestamp,
+    // =================================================================
+    // STEP 5: OVERALL P-SCORE CALCULATION
+    // =================================================================
     
-    // Crucially, include all individual scores at the top level for the front-end
-    karpov: result.karpov,
-    tyche: result.tyche,
-    vortex: result.vortex,
-    nexus: result.nexus,
-    helix: result.helix,
-    pulse: result.pulse,
-    nova: result.nova,
-    eden: result.eden,
-    aether: result.aether,
-    quantum: result.quantum,
-    echo: result.echo,
+    const overallPScore = (
+        (result.karpov * 0.18) +
+        (result.tyche * 0.20) +
+        (result.vortex * 0.12) +
+        (result.nexus * 0.10) +
+        (result.helix * 0.10) +
+        (result.pulse * 0.08) +
+        (result.nova * 0.08) +
+        (result.eden * 0.05) +
+        (result.aether * 0.04) +
+        (result.quantum * 0.03) +
+        (result.echo * 0.02)
+    ) / 1.0; 
 
-    // Nested data for sub-pages
-    data: {
-        karpov: { loadTime: loadTime, resourceCount: analysis.resourceCount },
-        tyche: { totalScripts: analysis.totalScripts, thirdPartyScripts: analysis.thirdPartyScripts, hasAsync: analysis.hasAsync, hasDefer: analysis.hasDefer },
-        vortex: { totalImages: analysis.images, imagesWithAlt: analysis.imagesWithAlt, hasSemanticTags: analysis.hasSemanticTags },
-        nexus: { hasViewport: analysis.hasViewport },
-        pulse: { hasTitle: !!analysis.title, hasMetaDescription: !!analysis.metaDescription, ogTags: analysis.ogTags, hasCanonical: analysis.canonical },
-        eden: { sizeBytes: contentLength }, // sizeMB is calculated on the front-end now
-        helix: { trackerCount: analysis.trackers.length, securityHeaders: { hsts: !!siteHeaders.get('strict-transport-security'), csp: !!siteHeaders.get('content-security-policy'), xFrame: !!siteHeaders.get('x-frame-options') } },
-        nova: { isCDN: isCDN, hasCache: !!siteHeaders.get('cache-control'), compression: encoding },
-        aether: { hasWebAssembly: analysis.hasWebAssembly, hasServiceWorker: analysis.hasServiceWorker, hasModules: analysis.hasModules, hasWebp: analysis.hasWebp },
-        quantum: { hasDoctype: analysis.hasDoctype, hasDeprecatedTags: analysis.hasDeprecatedTags },
-        echo: { isGreenHosted: greenWebHosted }
-    }
-};
+    const pscore = Math.min(100, Math.max(0, Math.round(overallPScore)));
 
-return new Response(JSON.stringify(fullResult), {
-    status: 200,
-    headers: corsHeaders
-});
-// ... end of the try block
+
+    // =================================================================
+    // STEP 6: CONSTRUCT FINAL PAYLOAD (Flat scores for frontend)
+    // =================================================================
+    
+    const fullResult = {
+      pscore: pscore,
+      url: result.url,
+      timestamp: result.timestamp,
+      
+      // FLAT SCORES
+      karpov: result.karpov,
+      tyche: result.tyche,
+      vortex: result.vortex,
+      nexus: result.nexus,
+      helix: result.helix,
+      pulse: result.pulse,
+      nova: result.nova,
+      eden: result.eden,
+      aether: result.aether,
+      quantum: result.quantum,
+      echo: result.echo,
+      
+      // RAW DATA
+      data: {
+          karpov: { loadTime: loadTime, resourceCount: analysis.resourceCount },
+          tyche: { inlineScripts: analysis.inlineScripts, thirdPartyScripts: analysis.thirdPartyScripts, hasAsync: analysis.hasAsync, hasDefer: analysis.hasDefer },
+          vortex: { images: analysis.images, imagesWithAlt: analysis.imagesWithAlt, hasSemanticTags: analysis.hasSemanticTags },
+          nexus: { hasViewport: analysis.hasViewport },
+          pulse: { hasTitle: !!analysis.title, hasMetaDescription: !!analysis.metaDescription, ogTags: analysis.ogTags, hasCanonical: analysis.canonical },
+          eden: { sizeBytes: contentLength, sizeMB: sizeMB },
+          helix: { trackerCount: analysis.trackers.length, securityHeaders: { hsts: !!siteHeaders.get('strict-transport-security'), csp: !!siteHeaders.get('content-security-policy'), xFrame: !!siteHeaders.get('x-frame-options') } },
+          nova: { isCDN: isCDN, hasCache: !!siteHeaders.get('cache-control'), compression: encoding },
+          aether: { hasWebAssembly: analysis.hasWebAssembly, hasServiceWorker: analysis.hasServiceWorker, hasModules: analysis.hasModules, hasWebp: analysis.hasWebp },
+          quantum: { hasDoctype: analysis.hasDoctype, hasDeprecatedTags: analysis.hasDeprecatedTags },
+          echo: { isGreenHosted: greenWebHosted }
+      }
+    };
+    
+    return new Response(JSON.stringify(fullResult), {
+      status: 200,
+      headers: corsHeaders
+    });
     
   } catch (error) {
     console.error('Final Scan error:', error);
     // Return 500 Internal Server Error for general execution errors
     return new Response(JSON.stringify({
-      error: 'An internal server error occurred during scanning.',
+      error: 'An internal server error occurred during scanning. Check URL for redirects or complex security.',
       details: error.message
     }), {
       status: 500,
