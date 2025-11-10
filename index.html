@@ -726,16 +726,16 @@ const metrics = [
     
     // New: Retro music playlist (ZX Spectrum style tracks from public sources)
     const retroPlaylist = [
-        'https://music.zxart.ee/music/579814_V0yager_NoMoreBlobbs.mp3',
-        'https://music.zxart.ee/music/579813_V0yager_Krunel____BlobbJobb__menu_tune_.mp3',
-        'https://music.zxart.ee/music/579812_V0yager_Blobbzgame.mp3',
-        'https://zxart.ee/file/id:576306_tracker/filename:zen_Shaman_-_Mother_Booo_%282025%29_%28Quantum_Oscillation_2025%2C_3%29.mp3',
-        'https://music.zxart.ee/music/576305_Moran___________________.mp3',
-        'https://music.zxart.ee/music/576109_Pator_Parallel_Visions.mp3',
-        'https://music.zxart.ee/music/575526_Baxsoft_SCATMBAX.mp3',
-        'https://music.zxart.ee/music/575525_Baxsoft_BAXRAVE_.mp3',
-        'https://music.zxart.ee/music/575524_Baxsoft_BAXAXEL_.mp3',
-        'https://music.zxart.ee/music/575465_dvsn_Gyroscope_Ending_Theme.mp3'
+        'http://soundimage.org/wp-content/uploads/2017/10/8-Bit-Perplexion.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/07/Arcade-Puzzler.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/07/Arcade-Puzzler_v001.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/06/Bonkers-for-Arcades.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/05/Funky-Chiptune.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/04/Its-Raining-Pixels.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/04/Its-Always-Sunny-in-the-80s.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/04/The-Ice-Cream-Man.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/03/Arcade-Heroes.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/03/Inky-and-Blinkys-Band.mp3'
     ];
 
     // New: Sigh sound URL
@@ -849,6 +849,7 @@ const metrics = [
         // Run original setup
         updateLeaderboardDisplay();
         renderRivalries();
+        updateRetroMusic(); // Auto-start music on load in retro mode
     }
     
     // Start boot sequence on load
