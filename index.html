@@ -739,7 +739,7 @@ const metrics = [
     ];
 
     // New: Sigh sound URL
-    const sighSoundUrl = 'https://orangefreesounds.com/wp-content/uploads/2025/04/Frustrated-sigh-sound-effect.mp3';
+    const sighSoundUrl = 'https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-zapsplat-people/people_male_sigh_in_an_angry_grumpy_or_frustrated_way_004.mp3';
 
     // --- NEW: BOOT SEQUENCE CONFIG ---
     const BOOT_LOG_LINES = [
@@ -850,18 +850,6 @@ const metrics = [
         updateLeaderboardDisplay();
         renderRivalries();
         updateRetroMusic(); // Auto-start music on load in retro mode
-
-        / Fallback: If autoplay blocked, start on first user interaction
-    if (isRetro && isMusicEnabled && document.getElementById('retroMusic').paused) {
-        const startMusicOnInteraction = () => {
-            updateRetroMusic();
-            document.removeEventListener('click', startMusicOnInteraction);
-        };
-        document.addEventListener('click', startMusicOnInteraction);
-    }
-} catch (error) {
-    console.error('Music initialization error:', error); // Log to console for debugging
-}
     }
     
     // Start boot sequence on load
