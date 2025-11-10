@@ -233,6 +233,10 @@
         display: none !important;
         }
         
+        /* Fix: Hide PythiaQuote wrapper in boring mode to allow centering of logo/title */
+        body:not(.retro) .flex-1.flex.justify-end {
+            display: none !important; 
+        }
         /* Center Pythia logo in boring mode, keep left-aligned in retro */
         body:not(.retro) .flex-1.flex.justify-start {
             justify-content: center !important;
