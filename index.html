@@ -551,27 +551,6 @@ body:not(.retro) #pscoreExplainerPage .text-green-600 {
             </div>
         </div>
 
-                /* Duke Nukem Popover */
-        #dukeQuote {
-            display: none;
-            text-shadow: 0 0 5px #00ff00;
-            box-shadow: 0 0 20px #00ff00;
-        }
-        #dukeQuote.fadeInOut {
-            animation: fadeInOut 3s ease-in-out;
-        }
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        }
-        body.retro #dukeQuote {
-            background: #001a00 !important;
-            border-color: #00ff00 !important;
-            color: #00ff00 !important;
-        }
-        
         <div id="componentsPage" class="page-content">
             <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
             <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
@@ -1674,56 +1653,5 @@ function downloadBadgeAsImage(element) {
 
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-   // Duke Nukem Easter Egg (with spoken audio)
-    document.getElementById('oracleImage').addEventListener('dblclick', function() {
-    if (!isRetro || !soundsEnabled) return; // Only in retro mode with sounds on
-    
-    playBeep(440, 0.3, 'sawtooth'); // "Weapon pickup" sound
-    
-    // Animate image (quick spin like grabbing a weapon)
-    this.style.transform = 'rotate(360deg) scale(1.2)';
-    this.style.transition = 'transform 0.5s ease-out';
-    
-    // Show quote popover
-    let popover = document.getElementById('dukeQuote');
-    if (!popover) {
-        popover = document.createElement('div');
-        popover.id = 'dukeQuote';
-        popover.innerHTML = '<div class="bg-black border-2 border-green-500 p-4 rounded text-green-400 font-mono text-sm max-w-xs mx-auto"><strong>DUKE NUKEM:</strong><br>"Where is it?"<br><span class="text-xs opacity-75 mt-2">Groovy! 🔫</span></div>';
-        popover.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 animate-pulse';
-        document.body.appendChild(popover);
-    }
-    popover.style.display = 'block';
-    popover.classList.add('fadeInOut');
-    
-    // Spoken audio: Use Web Speech API
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance('Where is it?');
-        utterance.volume = 0.8; // Loud but not blasting
-        utterance.rate = 0.8;    // Slower for dramatic effect
-        utterance.pitch = 0.5;   // Deeper pitch for Duke-like gravel
-        utterance.lang = 'en-US'; // US English for accent
-        
-        // Try to select a deep male voice (fallback to default)
-        const voices = speechSynthesis.getVoices();
-        const dukeVoice = voices.find(voice => 
-            voice.name.includes('Google') && voice.lang === 'en-US' && voice.gender === 'male' // Or similar deep voices
-        ) || voices.find(voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('male'));
-        if (dukeVoice) {
-            utterance.voice = dukeVoice;
-        }
-        
-        speechSynthesis.speak(utterance);
-        } else {
-            console.warn('Speech synthesis not supported in this browser.');
-        }
-        
-        // Auto-hide and reset
-        setTimeout(() => {
-            popover.style.display = 'none';
-            this.style.transform = 'rotate(0deg) scale(1)';
-        }, 3000);
-});
-    
 </body>
 </html>
