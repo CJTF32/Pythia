@@ -1130,12 +1130,18 @@ async function analyzeSite() {
         currentData = data;
         displayResults(data, false);
 
-       // === START: ADD AUTO-SCROLL LOGIC HERE ===
-        const resultsTarget = document.getElementById('scanResultsAnchor');
+       // === START: CORRECTED AUTO-SCROLL LOGIC HERE ===
+        // Target the main, now-visible results container (pscoreContainer)
+        const resultsTarget = document.getElementById('pscoreContainer');
         if (resultsTarget) {
+            // Scroll to the element, adding a small margin above it to account for fixed headers/layout
             resultsTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // OPTIONAL: If the element is still slightly hidden under a fixed header,
+            // you can use this more advanced method instead:
+            // window.scrollBy(0, resultsTarget.getBoundingClientRect().top - 20); 
         }
-        // === END: ADD AUTO-SCROLL LOGIC HERE ===
+        // === END: CORRECTED AUTO-SCROLL LOGIC HERE ===
         
     } catch (error) {
         // This 'alert' will now show the specific error from the backend
