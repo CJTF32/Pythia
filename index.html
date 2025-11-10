@@ -831,6 +831,36 @@ const metrics = [
         }
     }
 
+    // 🛠️ FIX: ADDED MISSING playSigh AND playYay FUNCTIONS
+    // (Note: These point to the audio tags you need to add to your HTML)
+    function playSigh() {
+        if (!soundsEnabled) return;
+        // This assumes you added <audio id="sighSound" src="sigh.mp3"></audio> to your HTML
+        const sound = document.getElementById('sighSound');
+        if (sound) {
+            sound.currentTime = 0; 
+            sound.play().catch(e => console.error('Sigh sound error:', e));
+        } else {
+            // Fallback beep if audio tag is missing
+            playBeep(400, 0.15, 'sine');
+            setTimeout(() => playBeep(250, 0.2, 'sine'), 100);
+        }
+    }
+
+    function playYay() {
+        if (!soundsEnabled) return;
+        // This assumes you added <audio id="yaySound" src="yay.mp3"></audio> to your HTML
+        const sound = document.getElementById('yaySound');
+        if (sound) {
+            sound.currentTime = 0;
+            sound.play().catch(e => console.error('Yay sound error:', e));
+        } else {
+            // Fallback beep if audio tag is missing
+            playBeep(1000, 0.08, 'square');
+            setTimeout(() => playBeep(1500, 0.08, 'square'), 80);
+        }
+    }
+
     // --- NEW: BOOT SEQUENCE LOGIC ---
     function typeBootLine(line, targetElement, delay) {
         return new Promise(resolve => {
@@ -1419,92 +1449,127 @@ async function analyzeSite() {
     }
 
         // === Extract core scan logic as a function ===
+// === Extract core scan logic as a function ===
 async function runScan(url) {
-  // mimic what your main scanBtn click handler does
-  // e.g., show spinner, fetch data, calculate P-Score, update cache
+    // This helper function fetches scan data without updating the main UI
+    // It respects the cache.
+    const existing = getCachedScan(url);
+    if (existing) {
+        console.log("runScan: Using cached result");
+        return existing;
+    }
 
-  const existing = getCachedScan(url);
-  if (existing) return existing;
+    console.log("runScan: Fetching live result for", url);
+    try {
+        const response = await fetch('/api/scan', { // <-- USES CORRECT API
+            method: 'POST',                         
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })           
+        });
 
-  try {
-    const res = await fetch(`https://your-api-endpoint/scan?url=${encodeURIComponent(url)}`);
-    const data = await res.json();
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (data.error) {
+            throw new Error(data.message || data.error || 'Unknown error from API');
+        }
+        
+        setCachedScan(url, data); // Save to cache
+        return data; // Return full data object
 
-    const result = {
-      url,
-      pscore: data.pscore || data.score || 0,
-      components: data.components || []
-    };
-    setCachedScan(url, result);
-    return result;
-  } catch (e) {
-    console.error('Scan failed:', e);
-    return { url, pscore: 0 };
-  }
+    } catch (e) {
+        console.error(`runScan failed for ${url}:`, e);
+        return { url: url, pscore: 0, error: e.message }; // Return an error object
+    }
 }
 
         // === NEW: "Better than X" Comparison Logic ===
-document.getElementById('scanBtn').addEventListener('click', async () => {
-  const url = document.getElementById('urlInput').value.trim();
-  if (!url.startsWith('http')) {
-    alert('Please enter a valid URL starting with https://');
-    return;
-  }
-  const data = await runScan(url);
-  }
-
-  const compareResult = document.getElementById('compareResult');
-  const badgeDiv = document.getElementById('compareBadge');
-  const downloadBtn = document.getElementById('downloadBadgeBtn');
-  compareResult.classList.remove('hidden');
-  badgeDiv.textContent = 'Analyzing...';
-  badgeDiv.className = 'p-6 rounded-xl border-4 font-bold text-xl text-gray-700 bg-gray-50 animate-pulse';
-
-  // Use your existing scan function for a single URL
-  const userData = await runScan(url);
-  const userScore = userData?.pscore || 0;
-
-  // Trigger top 50 scan (existing function)
-  const top50Data = await scanTop50Sites();
-
-  // Find X.com P-Score
-  const xData = top50Data.find(s => s.url.includes('x.com')) || {};
-  const xScore = xData.pscore || 0;
-
-  let badgeText = '';
-  let badgeColor = '';
-  let badgeBg = '';
-  let isBetter = false;
-
-  if (userScore > xScore) {
-    isBetter = true;
-    badgeText = `${url} IS BETTER THAN X! Certified by Pythia, the Web Performance Oracle`;
-    badgeColor = isRetro ? '#00ff00' : '#4f46e5';
-    badgeBg = isRetro ? '#000000' : '#f9fafb';
-  } else {
-    // Pick a top site with lower score than user's
-    const lowerSite = top50Data
-      .filter(s => s.pscore < userScore)
-      .sort((a, b) => b.pscore - a.pscore)[0];
-    if (lowerSite) {
-      badgeText = `BETTER THAN ${lowerSite.name}! Certified by Pythia, the Web Performance Oracle`;
-    } else {
-      badgeText = `Still impressive! Certified by Pythia, the Web Performance Oracle`;
+// === NEW: "Better than X" Comparison Logic ===
+document.getElementById('compareScanBtn').addEventListener('click', async () => {
+    playAnalyze(); // Play sound
+    const url = document.getElementById('compareUrlInput').value.trim();
+    if (!url || !url.startsWith('http')) {
+        alert('Please enter a valid URL starting with https://');
+        return;
     }
-    badgeColor = isRetro ? '#ff00ff' : '#dc2626';
-    badgeBg = isRetro ? '#000000' : '#fff7ed';
-  }
 
-  // Render badge
-  badgeDiv.className = 'p-6 rounded-xl border-4 font-bold text-xl text-center';
-  badgeDiv.style.borderColor = badgeColor;
-  badgeDiv.style.color = badgeColor;
-  badgeDiv.style.background = badgeBg;
-  badgeDiv.textContent = badgeText;
+    const compareResult = document.getElementById('compareResult');
+    const badgeDiv = document.getElementById('compareBadge');
+    const downloadBtn = document.getElementById('downloadBadgeBtn');
+    
+    // Show loading state
+    compareResult.classList.remove('hidden');
+    badgeDiv.textContent = 'Analyzing...';
+    badgeDiv.className = 'p-6 rounded-xl border-4 font-bold text-xl text-gray-700 bg-gray-50 animate-pulse';
+    downloadBtn.classList.add('hidden');
 
-  // Enable download
-  downloadBtn.classList.remove('hidden');
-  downloadBtn.onclick = () => downloadBadgeAsImage(badgeDiv);
+    try {
+        // Use your existing scan function for a single URL
+        const userData = await runScan(url); // This function is fixed in Step 2
+        if (!userData || userData.pscore === undefined) throw new Error("Failed to scan your URL.");
+        
+        const userScore = userData.pscore || 0;
+
+        // Trigger top 50 scan (existing function)
+        const top50Data = await scanTop50Websites(); // This function must be working
+        if (!top50Data || top50Data.length === 0) throw new Error("Failed to get Top 50 data for comparison.");
+
+        // Find X.com P-Score
+        const xData = top50Data.find(s => s.url.includes('x.com')) || {};
+        const xScore = xData.pscore || 0;
+
+        let badgeText = '';
+        let badgeColor = '';
+        let badgeBg = '';
+        let isBetter = false;
+
+        if (userScore > xScore) {
+            isBetter = true;
+            badgeText = `YOUR SITE (${userScore}) IS BETTER THAN X.COM (${xScore})! Certified by Pythia, the Web Performance Oracle`;
+            badgeColor = isRetro ? '#00ff00' : '#4f46e5';
+            badgeBg = isRetro ? '#000000' : '#f9fafb';
+        } else {
+            // Pick a top site with lower score than user's
+            const lowerSite = top50Data
+                .filter(s => s.pscore < userScore)
+                .sort((a, b) => b.pscore - a.pscore)[0];
+            
+            if (lowerSite) {
+                badgeText = `YOUR SITE (${userScore}) IS BETTER THAN ${lowerSite.name.toUpperCase()} (${lowerSite.pscore})! Certified by Pythia.`;
+            } else {
+                badgeText = `YOUR SCORE: ${userScore}. Certified by Pythia, the Web Performance Oracle`;
+            }
+            badgeColor = isRetro ? '#ff00ff' : '#dc2626';
+            badgeBg = isRetro ? '#000000' : '#fff7ed';
+        }
+
+        // Render badge
+        badgeDiv.className = 'p-6 rounded-xl border-4 font-bold text-xl text-center';
+        badgeDiv.style.borderColor = badgeColor;
+        badgeDiv.style.color = badgeColor;
+        badgeDiv.style.background = badgeBg;
+        badgeDiv.textContent = badgeText;
+
+        // Enable download
+        downloadBtn.classList.remove('hidden');
+        downloadBtn.onclick = () => {
+            playClick();
+            downloadBadgeAsImage(badgeDiv);
+        };
+        
+        playResult(isBetter); // Play good/bad sound
+
+    } catch (error) {
+        console.error("Badge generation failed:", error);
+        badgeDiv.className = 'p-6 rounded-xl border-4 font-bold text-xl text-center';
+        badgeDiv.style.borderColor = 'red';
+        badgeDiv.style.color = 'red';
+        badgeDiv.textContent = `Error: ${error.message}`;
+        playResult(false);
+    }
 });
 
 // === Helper: Convert badge div to downloadable PNG ===
