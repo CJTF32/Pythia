@@ -966,33 +966,42 @@ function playYay() {
         }
         
               // ---- FIXED: LAYOUT CONTROL FOR RETRO vs BORING ----
-       const headerWrapper = document.querySelector('.flex.flex-col.md\\:flex-row.items-center.justify-center');
-       const leftCol = headerWrapper.children[0];   // Quote box
-       const midCol = headerWrapper.children[1];    // Image
-       const rightCol = headerWrapper.children[2];  // Pythia™ text
+       const headerWrapper = document.getElementById('headerLayout');
+       const leftCol = headerWrapper.children[0];     // Quote
+        const midCol = headerWrapper.children[1];      // Image container
+        const rightCol = headerWrapper.children[2];    // Title
 
        if (!isRetro) {
-           // BORING MODE: Stack + center everything
-           headerWrapper.classList.remove('md:flex-row', 'gap-6');
-           headerWrapper.classList.add('flex-col', 'items-center', 'text-center');
-           leftCol.classList.remove('justify-end');
-           leftCol.classList.add('justify-center', 'mb-4');
-           midCol.classList.add('order-first', 'mb-4');
-           rightCol.classList.add('justify-center');
-           document.getElementById('oracleImage').style.display = 'none';
-           document.getElementById('pythiaQuote').style.display = 'none';
-       } else {
-           // RETRO MODE: Restore original side-by-side
-           headerWrapper.classList.add('md:flex-row', 'gap-6');
-           headerWrapper.classList.remove('flex-col', 'items-center', 'text-center');
-           leftCol.classList.remove('justify-center', 'mb-4');
-           leftCol.classList.add('justify-end');
-           midCol.classList.remove('order-first', 'mb-4');
-           rightCol.classList.remove('justify-center');
-           rightCol.classList.add('justify-start');
-           document.getElementById('oracleImage').style.display = 'block';
-           document.getElementById('pythiaQuote').style.display = 'block';
-       }
+    // BORING MODE: Stack, center title, hide image & quote
+    headerWrapper.classList.remove('md:flex-row', 'gap-6');
+    headerWrapper.classList.add('flex-col', 'items-center', 'text-center');
+
+    // Hide quote & image
+    document.getElementById('pythiaQuote').style.display = 'none';
+    document.getElementById('oracleImage').style.display = 'none';
+
+    // Center only the title
+    leftCol.style.display = 'none';
+    midCol.style.display = 'none';
+    rightCol.classList.add('w-full', 'justify-center');
+}
+      } else {
+    // RETRO MODE: Full side-by-side
+    headerWrapper.classList.add('md:flex-row', 'gap-6');
+    headerWrapper.classList.remove('flex-col', 'items-center', 'text-center');
+
+    // Reset visibility
+    document.getElementById('pythiaQuote').style.display = 'block';
+    document.getElementById('oracleImage').style.display = 'block';
+
+    // Reset layout
+    leftCol.style.display = 'flex';
+    midCol.style.display = 'flex';
+    rightCol.classList.remove('w-full', 'justify-center');
+
+    leftCol.classList.add('justify-end');
+    rightCol.classList.add('justify-start');
+}
     
     // --- NEW: MUSIC TOGGLE ---
     document.getElementById('musicToggle').addEventListener('click', () => {
