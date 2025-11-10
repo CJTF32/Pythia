@@ -741,8 +741,8 @@ const metrics = [
     ];
 
     // New: Sigh sound URL
-    const sighSoundUrl = 'https://freesound.org/data/previews/411/411022_7358205-lq.mp3'; // Disappointed/bored sigh (soft, frustrated)
-    const yaySoundUrl = 'https://www.soundjay.com/misc/sounds/cheer-1.mp3'; // Cheery "Yay!" cheer (MP3, crowd excitement)
+    const sighSoundUrl = 'https://www.soundjay.com/human/sounds/sigh-1.mp3';
+    const yaySoundUrl  = 'https://www.soundjay.com/human/sounds/cheer-1.mp3';
         
     // --- NEW: BOOT SEQUENCE CONFIG ---
     const BOOT_LOG_LINES = [
@@ -805,13 +805,12 @@ const metrics = [
     }
         
    function playYay() {
-    console.log('playYay() called!'); // Keep this for debugging
+    function playYay() {
+    console.log('playYay() called!');
     if (!soundsEnabled) return;
-    setTimeout(() => { // Add 100ms delay for browser to register interaction
-        const yayAudio = new Audio(yaySoundUrl);
-        yayAudio.volume = 0.5;
-        yayAudio.play().catch(e => console.error('Yay sound error:', e));
-    }, 100);
+    const yayAudio = new Audio(yaySoundUrl);
+    yayAudio.volume = 0.5;
+    yayAudio.play().catch(e => console.error('Yay sound error:', e));
 }
     // --- NEW: BOOT SEQUENCE LOGIC ---
     function typeBootLine(line, targetElement, delay) {
@@ -933,18 +932,16 @@ const metrics = [
         playYay(); // Play excited yay when returning to retro
         }
         
-        // Centering fix
-    const titleContainer = document.querySelector('.flex.flex-col.md\\:flex-row.items-center.justify-center');
+       // ----  CENTER LOGO IN BORING MODE  ----
+    const headerContainer = document.querySelector('.flex.flex-col.md\\:flex-row.items-center.justify-center');
     if (!isRetro) {
-        titleContainer.classList.add('text-center');
-        titleContainer.style.overflow = 'visible';
-        titleContainer.style.minHeight = 'auto';
+        headerContainer.classList.remove('justify-center');
+        headerContainer.classList.add('justify-center', 'text-center');
     } else {
-        titleContainer.classList.remove('text-center');
-        titleContainer.style.overflow = '';
-        titleContainer.style.minHeight = '';
+        headerContainer.classList.remove('text-center');
+        headerContainer.classList.add('justify-center');
     }
-    });
+});
     
     // --- NEW: MUSIC TOGGLE ---
     document.getElementById('musicToggle').addEventListener('click', () => {
