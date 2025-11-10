@@ -235,6 +235,8 @@
 </head>
 <body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8 retro">
 
+    <audio id="retroMusic" loop></audio> <!-- Added for background music -->
+
     <div id="bootSequence">
         <pre id="bootLog"></pre>
     </div>
@@ -273,8 +275,9 @@
                 <div class="flex justify-between items-center mb-2">
                     <button id="hamburger" onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition"> ☰ </button>
                     <div>
+                        <button id="musicToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition"> 🎵 Music ON </button>
                         <button id="soundToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition ml-2"> 🔊 Sounds ON </button>
-                        <button id="themeToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition"> ✨ BORING MODE </button>
+                        <button id="themeToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition ml-2"> ✨ BORING MODE </button>
                     </div>
                 </div>
                 <div class="flex flex-col md:flex-row items-center justify-center gap-6 mb-2">
@@ -719,7 +722,25 @@ const metrics = [
     // --- NEW STATE VARIABLES ---
     let isRetro = true; // Default to RETRO
     let soundsEnabled = true; // Default to ON
+    let isMusicEnabled = true; // New for music toggle
     
+    // New: Retro music playlist (ZX Spectrum style tracks from public sources)
+    const retroPlaylist = [
+        'https://music.zxart.ee/music/579814_V0yager_NoMoreBlobbs.mp3',
+        'https://music.zxart.ee/music/579813_V0yager_Krunel____BlobbJobb__menu_tune_.mp3',
+        'https://music.zxart.ee/music/579812_V0yager_Blobbzgame.mp3',
+        'https://zxart.ee/file/id:576306_tracker/filename:zen_Shaman_-_Mother_Booo_%282025%29_%28Quantum_Oscillation_2025%2C_3%29.mp3',
+        'https://music.zxart.ee/music/576305_Moran___________________.mp3',
+        'https://music.zxart.ee/music/576109_Pator_Parallel_Visions.mp3',
+        'https://music.zxart.ee/music/575526_Baxsoft_SCATMBAX.mp3',
+        'https://music.zxart.ee/music/575525_Baxsoft_BAXRAVE_.mp3',
+        'https://music.zxart.ee/music/575524_Baxsoft_BAXAXEL_.mp3',
+        'https://music.zxart.ee/music/575465_dvsn_Gyroscope_Ending_Theme.mp3'
+    ];
+
+    // New: Sigh sound URL
+    const sighSoundUrl = 'https://orangefreesounds.com/wp-content/uploads/2025/04/Frustrated-sigh-sound-effect.mp3';
+
     // --- NEW: BOOT SEQUENCE CONFIG ---
     const BOOT_LOG_LINES = [
         "Initializing Oracle...",
@@ -770,6 +791,14 @@ const metrics = [
         } else {
             playBeep(300, 0.2, 'sawtooth');
         }
+    }
+
+    // New: Function to play sigh sound
+    function playSigh() {
+        if (!soundsEnabled) return;
+        const sighAudio = new Audio(sighSoundUrl);
+        sighAudio.volume = 0.5; // Reasonably quiet
+        sighAudio.play().catch(e => console.error('Sigh sound error:', e));
     }
 
     // --- NEW: BOOT SEQUENCE LOGIC ---
@@ -882,14 +911,38 @@ const metrics = [
         document.getElementById('retroQuote').style.display = isRetro ? 'block' : 'none';
         document.getElementById('pythiaQuote').style.display = isRetro ? 'block' : 'none'; // NEW
         playToggle(); // NEW
+        updateRetroMusic(); // New: Handle music on theme change
+        if (!isRetro) {
+            playSigh(); // New: Play sigh when switching to boring mode
+        }
     });
     
-    // --- NEW: SOUND TOGGLE ---
-    document.getElementById('soundToggle').addEventListener('click', () => {
-        soundsEnabled = !soundsEnabled;
-        document.getElementById('soundToggle').textContent = soundsEnabled ? ' 🔊 Sounds ON' : ' 🔇 Sounds OFF';
+    // --- NEW: MUSIC TOGGLE ---
+    document.getElementById('musicToggle').addEventListener('click', () => {
+        isMusicEnabled = !isMusicEnabled;
+        document.getElementById('musicToggle').textContent = isMusicEnabled ? ' 🎵 Music ON' : ' 🎵 Music OFF';
+        updateRetroMusic();
         playToggle();
     });
+
+    // New: Function to update retro music
+    function updateRetroMusic() {
+        const music = document.getElementById('retroMusic');
+        if (isRetro && isMusicEnabled) {
+            // Select random track
+            const randomTrack = retroPlaylist[Math.floor(Math.random() * retroPlaylist.length)];
+            music.src = randomTrack;
+            music.volume = 0.2; // Quietly
+            music.play().catch(e => console.error('Music play error:', e));
+            // When ends, play next random
+            music.onended = () => {
+                updateRetroMusic(); // Play next random
+            };
+        } else {
+            music.pause();
+            music.currentTime = 0;
+        }
+    }
 
     // === MAIN SCAN FUNCTION (MODIFIED) ===
     document.getElementById('scanBtn').addEventListener('click', analyzeSite);
