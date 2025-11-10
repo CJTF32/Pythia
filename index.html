@@ -393,7 +393,7 @@ body:not(.retro) #pscoreExplainerPage .text-green-600 {
               </div>
             </div>
             
-           <div id="scanResultsAnchor" class="hidden mb-8">
+           <div id="pscoreContainer" class="hidden mb-8">
                 <div class="modern-card bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-2xl p-8 text-center text-white">
                     <div class="text-sm font-bold uppercase tracking-wider opacity-90 mb-2">Overall P-Score</div>
                     <div id="pscoreValue" class="text-7xl font-bold mb-2">--</div>
@@ -1130,7 +1130,7 @@ async function analyzeSite() {
         currentData = data;
         displayResults(data, false);
 
-        // === START: ADD AUTO-SCROLL LOGIC HERE ===
+       // === START: ADD AUTO-SCROLL LOGIC HERE ===
         const resultsTarget = document.getElementById('scanResultsAnchor');
         if (resultsTarget) {
             resultsTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
