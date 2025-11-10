@@ -1007,43 +1007,7 @@ const metrics = [
         localStorage.setItem(cacheKey, JSON.stringify(cacheData));
     }
 
-    // === THEME TOGGLE (MODIFIED) ===
-    document.getElementById('themeToggle').addEventListener('click', () => {
-        isRetro = !isRetro;
-        document.body.classList.toggle('retro');
-        document.getElementById('themeToggle').textContent = isRetro ? ' ✨  BORING MODE' : ' 🕹️  RETRO MODE';
-        document.getElementById('oracleImage').style.display = isRetro ? 'block' : 'none';
-        document.getElementById('retroQuote').style.display = isRetro ? 'block' : 'none';
-        document.getElementById('pythiaQuote').style.display = isRetro ? 'block' : 'none'; // NEW
-        // NEW
-        document.getElementById('musicToggle').style.display = isRetro ? 'inline-block' : 'none';
-        document.getElementById('soundToggle').style.display = isRetro ? 'inline-block' : 'none';
-        playToggle(); // NEW
-        updateRetroMusic(); // New: Handle music on theme change
-        if (!isRetro) {
-            playSigh(); // New: Play sigh when switching to boring mode
-        }
-        if (isRetro) {
-        playYay(); // Play excited yay when returning to retro
-        }
-    });
-    
-    // --- NEW: SOUND TOGGLE ---
-    document.getElementById('soundToggle').addEventListener('click', () => {
-        soundsEnabled = !soundsEnabled;
-        document.getElementById('soundToggle').textContent = soundsEnabled ? ' 🔊 Sounds ON' : ' 🔇 Sounds OFF';
-        playToggle();
-    });
-
-// --- NEW: MUSIC TOGGLE ---
-    document.getElementById('musicToggle').addEventListener('click', () => {
-        isMusicEnabled = !isMusicEnabled;
-        document.getElementById('musicToggle').textContent = isMusicEnabled ? ' 🎵 Music ON' : ' 🎵 Music OFF';
-        updateRetroMusic();
-        playToggle();
-    });
-    
-    // New: Function to update retro music with fade and 3-minute rotation
+        // === MUSIC FUNCTION - Must be defined before theme toggle ===
     let currentMusicTimer = null;
     let lastPlayedTrack = null;
     let fadeInInterval = null;
@@ -1136,6 +1100,43 @@ const metrics = [
             }
         }
     }
+
+    // === THEME TOGGLE (MODIFIED) ===
+    document.getElementById('themeToggle').addEventListener('click', () => {
+        isRetro = !isRetro;
+        document.body.classList.toggle('retro');
+        document.getElementById('themeToggle').textContent = isRetro ? ' ✨  BORING MODE' : ' 🕹️  RETRO MODE';
+        document.getElementById('oracleImage').style.display = isRetro ? 'block' : 'none';
+        document.getElementById('retroQuote').style.display = isRetro ? 'block' : 'none';
+        document.getElementById('pythiaQuote').style.display = isRetro ? 'block' : 'none'; // NEW
+        // NEW
+        document.getElementById('musicToggle').style.display = isRetro ? 'inline-block' : 'none';
+        document.getElementById('soundToggle').style.display = isRetro ? 'inline-block' : 'none';
+        playToggle(); // NEW
+        updateRetroMusic(); // New: Handle music on theme change
+        if (!isRetro) {
+            playSigh(); // New: Play sigh when switching to boring mode
+        }
+        if (isRetro) {
+        playYay(); // Play excited yay when returning to retro
+        }
+    });
+    
+    // --- NEW: SOUND TOGGLE ---
+    document.getElementById('soundToggle').addEventListener('click', () => {
+        soundsEnabled = !soundsEnabled;
+        document.getElementById('soundToggle').textContent = soundsEnabled ? ' 🔊 Sounds ON' : ' 🔇 Sounds OFF';
+        playToggle();
+    });
+
+// --- NEW: MUSIC TOGGLE ---
+    document.getElementById('musicToggle').addEventListener('click', () => {
+        isMusicEnabled = !isMusicEnabled;
+        document.getElementById('musicToggle').textContent = isMusicEnabled ? ' 🎵 Music ON' : ' 🎵 Music OFF';
+        updateRetroMusic();
+        playToggle();
+    });
+    
 
     // === MAIN SCAN FUNCTION (MODIFIED) ===
     document.getElementById('scanBtn').addEventListener('click', analyzeSite);
