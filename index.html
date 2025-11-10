@@ -256,21 +256,8 @@ body:not(.retro) #pscoreExplainerPage .text-green-600 {
         body:not(.retro) h1 {
             margin-bottom: 2rem;
         }
-
-        /* Oracle Box & Modal */
-        #oracleBox { animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        #oracleModal { animation: fadeInModal 0.3s ease-out; }
-        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
-        #oracleModal.hidden { display: none; }
-        body.retro #oracleBox { background: linear-gradient(to bottom right, #003300, #001a00) !important; border: 2px solid #00ff00 !important; color: #00ff00 !important; text-shadow: 0 0 5px #00ff00; }
-        body.retro #oracleBox:hover { box-shadow: 0 0 15px #00ff00; }
-        body.retro .retro-modal { background: #000 !important; border: 4px solid #00ff00 !important; box-shadow: 0 0 30px #00ff00 !important; font-family: 'Courier New', monospace !important; }
-        body.retro #oracleModal .text-green-400 { color: #00ff00 !important; text-shadow: 0 0 5px #00ff00; }
-        body.retro #oracleModal button { background: #003300 !important; border: 2px solid #00ff00 !important; color: #00ff00 !important; }
-        body.retro #oracleModal input { background: #000 !important; border: 2px solid #00ff00 !important; color: #00ff00 !important; }
-        body.retro #grok-oracle { background: repeating-linear-gradient(0deg, #000 0px, #004400 1px, #000 2px); }
         
+    </style>
     </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8 retro">
@@ -278,7 +265,7 @@ body:not(.retro) #pscoreExplainerPage .text-green-600 {
     <audio id="retroMusic" loop></audio> <!-- Added for background music -->
 <audio id="sighSound" src="sigh.mp3"></audio>
 <audio id="yaySound" src="yay.mp3"></audio>
-
+    
     <div id="bootSequence">
         <pre id="bootLog"></pre>
     </div>
@@ -509,14 +496,60 @@ body:not(.retro) #pscoreExplainerPage .text-green-600 {
             </div>
         </div>
 
-        <!-- Oracle Box -->
-<div id="oracleBox" class="fixed top-4 left-4 z-50 hidden md:block">
-    <div class="bg-gradient-to-br from-indigo-600 to-purple-600 text-white p-3 rounded-lg shadow-lg border-2 border-white/20 backdrop-blur-sm max-w-xs cursor-pointer hover:scale-105 transition" onclick="openOracleModal()">
-        <h3 class="font-bold text-sm mb-1">🔮 Consult the Oracle</h3>
-        <p class="text-xs opacity-90 mb-2">Ask questions, receive cryptic wisdom</p>
-        <span class="inline-block text-xs px-2 py-1 bg-white/20 rounded-full">Speak Now</span>
-    </div>
-</div>
+        <div id="pscoreExplainerPage" class="page-content">
+            <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
+            <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
+                <h1 class="text-4xl font-bold text-indigo-600 mb-6"> 📊 P-Score Explainer</h1>
+                <div class="prose max-w-none">
+                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">What is the P-Score?</h2>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        The P-Score (Performance Score) is Pythia<sup>TM</sup>'s unified metric that distills complex website analysis into a single, actionable number from 0-100. Think of it as a health checkup for your digital presence.
+                    </p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">How It Works</h2>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        Pythia<sup>TM</sup> analyzes 10 distinct aspects of your website—from lightning-fast loading times to privacy practices—and intelligently weighs them based on what matters most to modern users and search engines. </p>
+                    <div class="bg-indigo-50 p-6 rounded-lg my-6">
+                        <h3 class="text-xl font-bold text-green-800 mb-3">Weighting Philosophy</h3>
+                        <p class="weighting-philosophy text-green-800 mb-2">The P-Score intelligently balances multiple factors:</p>
+                        <ul class="weighting-philosophy list-disc ml-6 text-green-800 space-y-1">
+                            <li><strong>Performance</strong> - Speed and responsiveness</li>
+                            <li><strong>Accessibility</strong> - Inclusive design for all users</li>
+                            <li><strong>Privacy & Security</strong> - User protection</li>
+                            <li><strong>SEO & Discoverability</strong> - Search engine optimization</li>
+                            <li><strong>Mobile Experience</strong> - Responsive design</li>
+                            <li><strong>Sustainability</strong> - Environmental impact</li>
+                            <li><strong>Modern Technology</strong> - Future-readiness</li>
+                            <li><strong>And more...</strong></li>
+                        </ul>
+                        <p class="text-sm text-green-800 mt-3 italic">Each factor is weighted according to its impact on user experience and modern web standards.</p>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Score Ranges</h2>
+                    <div class="grid md:grid-cols-3 gap-4 my-4">
+                        <div class="p-4 bg-green-50 border-2 border-green-500 rounded-lg">
+                            <div class="text-3xl font-bold text-green-800">80-100</div>
+                            <div class="text-sm text-gray-700">Excellent - Top tier performance</div>
+                        </div>
+                        <div class="p-4 bg-yellow-50 border-2 border-yellow-500 rounded-lg">
+                            <div class="text-3xl font-bold text-yellow-600">60-79</div>
+                            <div class="text-sm text-green-800">Good - Room for optimization</div>
+                        </div>
+                        <div class="p-4 bg-red-50 border-2 border-red-500 rounded-lg">
+                            <div class="text-3xl font-bold text-red-600">0-59</div>
+                            <div class="text-sm text-gray-700">Needs Work - Critical issues</div>
+                        </div>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Why Trust P-Score?</h2>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        Unlike single-metric tools, the P-Score considers the complete picture: a blazing-fast site that tracks users aggressively won't score well.
+                        We reward holistic excellence—speed, privacy, sustainability, and future-readiness working in harmony.
+                    </p>
+                    <p class="text-sm text-gray-500 italic mt-6">
+                        Note: Scores are cached for 5 minutes to ensure consistency and reduce API load.
+                        Minor variations (±2 points) between scans are normal due to network conditions.
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <div id="componentsPage" class="page-content">
             <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
@@ -657,86 +690,6 @@ body:not(.retro) #pscoreExplainerPage .text-green-600 {
                             Contact us: <a href="mailto:cronixholdings@gmail.com" class="text-indigo-600 font-bold hover:underline">hello@cronixholdings.com</a>
                         </p>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        
-        <!-- Oracle Modal -->
-<div id="oracleModal" class="fixed inset-0 z-1000 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="w-full max-w-4xl h-[80vh] bg-black border-4 border-green-500 rounded-lg relative overflow-hidden retro-modal">
-        <!-- Close Button -->
-        <button onclick="closeOracleModal()" class="absolute top-2 right-2 text-green-400 hover:text-green-600 text-xl font-bold z-10">&times;</button>
-        
-        <!-- Modal Header -->
-        <div class="p-4 bg-green-900/50 border-b-2 border-green-500 text-center">
-            <h2 class="text-xl font-bold text-green-300 mb-2">🔮 Pythia's Chamber</h2>
-            <p class="text-sm text-green-200" id="modalPrompt">Whisper your query to the oracle...</p>
-        </div>
-        
-        <!-- Grok Chat Container -->
-        <div id="grok-oracle" class="w-full h-full p-4 overflow-y-auto font-mono text-sm text-green-400">
-            <!-- Responses appear here -->
-        </div>
-        
-        <!-- Input for Chat -->
-        <div class="absolute bottom-4 left-4 right-4 flex gap-2">
-            <input id="oracleInput" type="text" placeholder="Thy query..." class="flex-1 p-2 bg-black border border-green-500 text-green-400 rounded">
-            <button onclick="sendOracleQuery()" class="px-4 py-2 bg-green-700 hover:bg-green-600 text-black font-bold rounded">Consult</button>
-        </div>
-    </div>
-</div>
-        <div id="pscoreExplainerPage" class="page-content">
-            <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
-            <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
-                <h1 class="text-4xl font-bold text-indigo-600 mb-6"> 📊 P-Score Explainer</h1>
-                <div class="prose max-w-none">
-                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">What is the P-Score?</h2>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        The P-Score (Performance Score) is Pythia<sup>TM</sup>'s unified metric that distills complex website analysis into a single, actionable number from 0-100. Think of it as a health checkup for your digital presence.
-                    </p>
-                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">How It Works</h2>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        Pythia<sup>TM</sup> analyzes 10 distinct aspects of your website—from lightning-fast loading times to privacy practices—and intelligently weighs them based on what matters most to modern users and search engines. </p>
-                    <div class="bg-indigo-50 p-6 rounded-lg my-6">
-                        <h3 class="text-xl font-bold text-green-800 mb-3">Weighting Philosophy</h3>
-                        <p class="weighting-philosophy text-green-800 mb-2">The P-Score intelligently balances multiple factors:</p>
-                        <ul class="weighting-philosophy list-disc ml-6 text-green-800 space-y-1">
-                            <li><strong>Performance</strong> - Speed and responsiveness</li>
-                            <li><strong>Accessibility</strong> - Inclusive design for all users</li>
-                            <li><strong>Privacy & Security</strong> - User protection</li>
-                            <li><strong>SEO & Discoverability</strong> - Search engine optimization</li>
-                            <li><strong>Mobile Experience</strong> - Responsive design</li>
-                            <li><strong>Sustainability</strong> - Environmental impact</li>
-                            <li><strong>Modern Technology</strong> - Future-readiness</li>
-                            <li><strong>And more...</strong></li>
-                        </ul>
-                        <p class="text-sm text-green-800 mt-3 italic">Each factor is weighted according to its impact on user experience and modern web standards.</p>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Score Ranges</h2>
-                    <div class="grid md:grid-cols-3 gap-4 my-4">
-                        <div class="p-4 bg-green-50 border-2 border-green-500 rounded-lg">
-                            <div class="text-3xl font-bold text-green-800">80-100</div>
-                            <div class="text-sm text-gray-700">Excellent - Top tier performance</div>
-                        </div>
-                        <div class="p-4 bg-yellow-50 border-2 border-yellow-500 rounded-lg">
-                            <div class="text-3xl font-bold text-yellow-600">60-79</div>
-                            <div class="text-sm text-green-800">Good - Room for optimization</div>
-                        </div>
-                        <div class="p-4 bg-red-50 border-2 border-red-500 rounded-lg">
-                            <div class="text-3xl font-bold text-red-600">0-59</div>
-                            <div class="text-sm text-gray-700">Needs Work - Critical issues</div>
-                        </div>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Why Trust P-Score?</h2>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        Unlike single-metric tools, the P-Score considers the complete picture: a blazing-fast site that tracks users aggressively won't score well.
-                        We reward holistic excellence—speed, privacy, sustainability, and future-readiness working in harmony.
-                    </p>
-                    <p class="text-sm text-gray-500 italic mt-6">
-                        Note: Scores are cached for 5 minutes to ensure consistency and reduce API load.
-                        Minor variations (±2 points) between scans are normal due to network conditions.
-                    </p>
                 </div>
             </div>
         </div>
@@ -1706,81 +1659,12 @@ function downloadBadgeAsImage(element) {
   });
 }
 
- // Load Puter.js for Grok (lazy, no impact on rest)
-function loadPuterJS() {
-    if (window.puter) return; // Already loaded
-    const script = document.createElement('script');
-    script.src = 'https://js.puter.com/v2/puter.js';
-    script.onload = () => console.log('Puter.js loaded for Grok');
-    document.head.appendChild(script);
-}
-
-// Oracle Modal Functions
-function openOracleModal(scanData = null) {
-    if (!isRetro) return; // Retro only
-    loadPuterJS(); // Lazy load
-    playBeep(660, 0.2, 'sine');
-    document.getElementById('oracleModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    if (scanData) {
-        const prompt = `As Pythia oracle, analyze this scan: ${JSON.stringify(scanData)}. Give cryptic fixes with code snippets. End: 'Heed, or thy site crumbles.'`;
-        document.getElementById('modalPrompt').textContent = prompt.substring(0, 100) + '...'; // Teaser
-        sendOracleQuery(prompt); // Auto-send first advice
-    }
-}
-
-function closeOracleModal() {
-    playClick();
-    document.getElementById('oracleModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-    document.getElementById('grok-oracle').innerHTML = ''; // Clear chat
-}
-
-// Send Query to Grok
-function sendOracleQuery(userPrompt = null) {
-    const input = document.getElementById('oracleInput');
-    const query = userPrompt || input.value.trim();
-    if (!query) return;
-    if (!window.puter) { alert('Grok loading... Try again.'); return; }
-    
-    const chatDiv = document.getElementById('grok-oracle');
-    chatDiv.innerHTML += `<div class="mb-2 text-yellow-400">You: ${query}</div>`; // User message
-    input.value = ''; // Clear input
-    
-    puter.ai.chat(query, { model: 'grok-4' }, (response) => {
-        chatDiv.innerHTML += `<div class="mb-4 text-green-400 border-l-2 border-green-500 pl-2"><strong>Pythia:</strong> ${response}</div>`;
-        chatDiv.scrollTop = chatDiv.scrollHeight; // Auto-scroll
-    }).catch(e => chatDiv.innerHTML += `<div class="text-red-400">Oracle mumbles... ${e.message}</div>`);
-}
-
-// Button in Scans (Add to end of displayResults function)
-function addAdviceButton() {
-    const adviceBtn = document.createElement('button');
-    adviceBtn.innerHTML = '🔮 Seek Oracle\'s Advice';
-    adviceBtn.className = 'retro-button mt-4 px-4 py-2 bg-purple-600 text-white rounded font-bold';
-    adviceBtn.onclick = () => openOracleModal(currentData); // Passes real scan data
-    document.getElementById('pscoreContainer').appendChild(adviceBtn);
-}
-
-// Show Box After Boot (Add to end of initializePage function)
-function showOracleBox() {
-    setTimeout(() => document.getElementById('oracleBox').classList.remove('hidden'), 2000);
-}
-
-// Close on Esc/Backdrop (Add once, after script loads)
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeOracleModal(); });
-document.getElementById('oracleModal').addEventListener('click', (e) => { if (e.target.id === 'oracleModal') closeOracleModal(); });
-addAdviceButton();
-
-
-// Call in displayResults: addAdviceButton(); (Add this line inside displayResults, after pillar containers)   
-        // === INITIALIZE (Original) ===
+    // === INITIALIZE (Original) ===
     // updateLeaderboardDisplay(); // Moved to initializePage
     // renderRivalries(); // Moved to initializePage
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-    
 </body>
 </html>
