@@ -660,6 +660,86 @@ body:not(.retro) #pscoreExplainerPage .text-green-600 {
                 </div>
             </div>
         </div>
+
+        
+        <!-- Oracle Modal -->
+<div id="oracleModal" class="fixed inset-0 z-1000 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-4xl h-[80vh] bg-black border-4 border-green-500 rounded-lg relative overflow-hidden retro-modal">
+        <!-- Close Button -->
+        <button onclick="closeOracleModal()" class="absolute top-2 right-2 text-green-400 hover:text-green-600 text-xl font-bold z-10">&times;</button>
+        
+        <!-- Modal Header -->
+        <div class="p-4 bg-green-900/50 border-b-2 border-green-500 text-center">
+            <h2 class="text-xl font-bold text-green-300 mb-2">🔮 Pythia's Chamber</h2>
+            <p class="text-sm text-green-200" id="modalPrompt">Whisper your query to the oracle...</p>
+        </div>
+        
+        <!-- Grok Chat Container -->
+        <div id="grok-oracle" class="w-full h-full p-4 overflow-y-auto font-mono text-sm text-green-400">
+            <!-- Responses appear here -->
+        </div>
+        
+        <!-- Input for Chat -->
+        <div class="absolute bottom-4 left-4 right-4 flex gap-2">
+            <input id="oracleInput" type="text" placeholder="Thy query..." class="flex-1 p-2 bg-black border border-green-500 text-green-400 rounded">
+            <button onclick="sendOracleQuery()" class="px-4 py-2 bg-green-700 hover:bg-green-600 text-black font-bold rounded">Consult</button>
+        </div>
+    </div>
+</div>
+        <div id="pscoreExplainerPage" class="page-content">
+            <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
+            <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
+                <h1 class="text-4xl font-bold text-indigo-600 mb-6"> 📊 P-Score Explainer</h1>
+                <div class="prose max-w-none">
+                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">What is the P-Score?</h2>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        The P-Score (Performance Score) is Pythia<sup>TM</sup>'s unified metric that distills complex website analysis into a single, actionable number from 0-100. Think of it as a health checkup for your digital presence.
+                    </p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">How It Works</h2>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        Pythia<sup>TM</sup> analyzes 10 distinct aspects of your website—from lightning-fast loading times to privacy practices—and intelligently weighs them based on what matters most to modern users and search engines. </p>
+                    <div class="bg-indigo-50 p-6 rounded-lg my-6">
+                        <h3 class="text-xl font-bold text-green-800 mb-3">Weighting Philosophy</h3>
+                        <p class="weighting-philosophy text-green-800 mb-2">The P-Score intelligently balances multiple factors:</p>
+                        <ul class="weighting-philosophy list-disc ml-6 text-green-800 space-y-1">
+                            <li><strong>Performance</strong> - Speed and responsiveness</li>
+                            <li><strong>Accessibility</strong> - Inclusive design for all users</li>
+                            <li><strong>Privacy & Security</strong> - User protection</li>
+                            <li><strong>SEO & Discoverability</strong> - Search engine optimization</li>
+                            <li><strong>Mobile Experience</strong> - Responsive design</li>
+                            <li><strong>Sustainability</strong> - Environmental impact</li>
+                            <li><strong>Modern Technology</strong> - Future-readiness</li>
+                            <li><strong>And more...</strong></li>
+                        </ul>
+                        <p class="text-sm text-green-800 mt-3 italic">Each factor is weighted according to its impact on user experience and modern web standards.</p>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Score Ranges</h2>
+                    <div class="grid md:grid-cols-3 gap-4 my-4">
+                        <div class="p-4 bg-green-50 border-2 border-green-500 rounded-lg">
+                            <div class="text-3xl font-bold text-green-800">80-100</div>
+                            <div class="text-sm text-gray-700">Excellent - Top tier performance</div>
+                        </div>
+                        <div class="p-4 bg-yellow-50 border-2 border-yellow-500 rounded-lg">
+                            <div class="text-3xl font-bold text-yellow-600">60-79</div>
+                            <div class="text-sm text-green-800">Good - Room for optimization</div>
+                        </div>
+                        <div class="p-4 bg-red-50 border-2 border-red-500 rounded-lg">
+                            <div class="text-3xl font-bold text-red-600">0-59</div>
+                            <div class="text-sm text-gray-700">Needs Work - Critical issues</div>
+                        </div>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Why Trust P-Score?</h2>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        Unlike single-metric tools, the P-Score considers the complete picture: a blazing-fast site that tracks users aggressively won't score well.
+                        We reward holistic excellence—speed, privacy, sustainability, and future-readiness working in harmony.
+                    </p>
+                    <p class="text-sm text-gray-500 italic mt-6">
+                        Note: Scores are cached for 5 minutes to ensure consistency and reduce API load.
+                        Minor variations (±2 points) between scans are normal due to network conditions.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div> <script>
     // === CONFIGURATION ===
     const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
@@ -851,85 +931,6 @@ const metrics = [
             setTimeout(() => playBeep(1500, 0.08, 'square'), 80);
         }
     }
-
-        <!-- Oracle Modal -->
-<div id="oracleModal" class="fixed inset-0 z-1000 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="w-full max-w-4xl h-[80vh] bg-black border-4 border-green-500 rounded-lg relative overflow-hidden retro-modal">
-        <!-- Close Button -->
-        <button onclick="closeOracleModal()" class="absolute top-2 right-2 text-green-400 hover:text-green-600 text-xl font-bold z-10">&times;</button>
-        
-        <!-- Modal Header -->
-        <div class="p-4 bg-green-900/50 border-b-2 border-green-500 text-center">
-            <h2 class="text-xl font-bold text-green-300 mb-2">🔮 Pythia's Chamber</h2>
-            <p class="text-sm text-green-200" id="modalPrompt">Whisper your query to the oracle...</p>
-        </div>
-        
-        <!-- Grok Chat Container -->
-        <div id="grok-oracle" class="w-full h-full p-4 overflow-y-auto font-mono text-sm text-green-400">
-            <!-- Responses appear here -->
-        </div>
-        
-        <!-- Input for Chat -->
-        <div class="absolute bottom-4 left-4 right-4 flex gap-2">
-            <input id="oracleInput" type="text" placeholder="Thy query..." class="flex-1 p-2 bg-black border border-green-500 text-green-400 rounded">
-            <button onclick="sendOracleQuery()" class="px-4 py-2 bg-green-700 hover:bg-green-600 text-black font-bold rounded">Consult</button>
-        </div>
-    </div>
-</div>
-        <div id="pscoreExplainerPage" class="page-content">
-            <button onclick="showPage('main')" class="back-button mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Back</button>
-            <div class="modern-card bg-white rounded-2xl shadow-xl p-8">
-                <h1 class="text-4xl font-bold text-indigo-600 mb-6"> 📊 P-Score Explainer</h1>
-                <div class="prose max-w-none">
-                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">What is the P-Score?</h2>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        The P-Score (Performance Score) is Pythia<sup>TM</sup>'s unified metric that distills complex website analysis into a single, actionable number from 0-100. Think of it as a health checkup for your digital presence.
-                    </p>
-                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">How It Works</h2>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        Pythia<sup>TM</sup> analyzes 10 distinct aspects of your website—from lightning-fast loading times to privacy practices—and intelligently weighs them based on what matters most to modern users and search engines. </p>
-                    <div class="bg-indigo-50 p-6 rounded-lg my-6">
-                        <h3 class="text-xl font-bold text-green-800 mb-3">Weighting Philosophy</h3>
-                        <p class="weighting-philosophy text-green-800 mb-2">The P-Score intelligently balances multiple factors:</p>
-                        <ul class="weighting-philosophy list-disc ml-6 text-green-800 space-y-1">
-                            <li><strong>Performance</strong> - Speed and responsiveness</li>
-                            <li><strong>Accessibility</strong> - Inclusive design for all users</li>
-                            <li><strong>Privacy & Security</strong> - User protection</li>
-                            <li><strong>SEO & Discoverability</strong> - Search engine optimization</li>
-                            <li><strong>Mobile Experience</strong> - Responsive design</li>
-                            <li><strong>Sustainability</strong> - Environmental impact</li>
-                            <li><strong>Modern Technology</strong> - Future-readiness</li>
-                            <li><strong>And more...</strong></li>
-                        </ul>
-                        <p class="text-sm text-green-800 mt-3 italic">Each factor is weighted according to its impact on user experience and modern web standards.</p>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Score Ranges</h2>
-                    <div class="grid md:grid-cols-3 gap-4 my-4">
-                        <div class="p-4 bg-green-50 border-2 border-green-500 rounded-lg">
-                            <div class="text-3xl font-bold text-green-800">80-100</div>
-                            <div class="text-sm text-gray-700">Excellent - Top tier performance</div>
-                        </div>
-                        <div class="p-4 bg-yellow-50 border-2 border-yellow-500 rounded-lg">
-                            <div class="text-3xl font-bold text-yellow-600">60-79</div>
-                            <div class="text-sm text-green-800">Good - Room for optimization</div>
-                        </div>
-                        <div class="p-4 bg-red-50 border-2 border-red-500 rounded-lg">
-                            <div class="text-3xl font-bold text-red-600">0-59</div>
-                            <div class="text-sm text-gray-700">Needs Work - Critical issues</div>
-                        </div>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">Why Trust P-Score?</h2>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        Unlike single-metric tools, the P-Score considers the complete picture: a blazing-fast site that tracks users aggressively won't score well.
-                        We reward holistic excellence—speed, privacy, sustainability, and future-readiness working in harmony.
-                    </p>
-                    <p class="text-sm text-gray-500 italic mt-6">
-                        Note: Scores are cached for 5 minutes to ensure consistency and reduce API load.
-                        Minor variations (±2 points) between scans are normal due to network conditions.
-                    </p>
-                </div>
-            </div>
-        </div>
 
     // --- NEW: BOOT SEQUENCE LOGIC ---
     function typeBootLine(line, targetElement, delay) {
