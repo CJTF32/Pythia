@@ -1015,22 +1015,67 @@ const metrics = [
         playToggle();
     });
 
-    // New: Function to update retro music
+    // New: Function to update retro music with fade and 3-minute rotation
+    let currentMusicTimer = null;
+    let lastPlayedTrack = null;
+    
     function updateRetroMusic() {
         const music = document.getElementById('retroMusic');
+        
+        // Clear any existing timer
+        if (currentMusicTimer) {
+            clearTimeout(currentMusicTimer);
+            currentMusicTimer = null;
+        }
+        
         if (isRetro && isMusicEnabled) {
-            // Select random track
-            const randomTrack = retroPlaylist[Math.floor(Math.random() * retroPlaylist.length)];
+            // Select random track (avoid repeating the last one)
+            let randomTrack;
+            do {
+                randomTrack = retroPlaylist[Math.floor(Math.random() * retroPlaylist.length)];
+            } while (randomTrack === lastPlayedTrack && retroPlaylist.length > 1);
+            
+            lastPlayedTrack = randomTrack;
             music.src = randomTrack;
-            music.volume = 0.2; // Quietly
+            
+            // Fade in from 0 to 0.2 over 2 seconds
+            music.volume = 0;
             music.play().catch(e => console.error('Music play error:', e));
-            // When ends, play next random
-            music.onended = () => {
-                updateRetroMusic(); // Play next random
-            };
+            
+            let fadeInInterval = setInterval(() => {
+                if (music.volume < 0.19) {
+                    music.volume = Math.min(0.2, music.volume + 0.02);
+                } else {
+                    clearInterval(fadeInInterval);
+                }
+            }, 100); // Fade step every 100ms
+            
+            // After 3 minutes (180 seconds), fade out and switch
+            currentMusicTimer = setTimeout(() => {
+                // Fade out over 2 seconds
+                let fadeOutInterval = setInterval(() => {
+                    if (music.volume > 0.02) {
+                        music.volume = Math.max(0, music.volume - 0.02);
+                    } else {
+                        clearInterval(fadeOutInterval);
+                        music.pause();
+                        music.currentTime = 0;
+                        updateRetroMusic(); // Start next track
+                    }
+                }, 100);
+            }, 180000); // 180000ms = 3 minutes
+            
         } else {
-            music.pause();
-            music.currentTime = 0;
+            // Fade out when music is disabled
+            let fadeOutInterval = setInterval(() => {
+                if (music.volume > 0.02) {
+                    music.volume = Math.max(0, music.volume - 0.02);
+                } else {
+                    clearInterval(fadeOutInterval);
+                    music.pause();
+                    music.currentTime = 0;
+                }
+            }, 100);
         }
     }
 
