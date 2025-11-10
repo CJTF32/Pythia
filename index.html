@@ -164,6 +164,8 @@
         }
         .pixellated-fade {
             animation: pixellated-fade 2s ease-in-out forwards;
+            document.getElementById('musicToggle').style.display = 'inline-block';
+            document.getElementById('soundToggle').style.display = 'inline-block';
         }
 
         /* Retro Spinner */
@@ -739,8 +741,8 @@ const metrics = [
     ];
 
     // New: Sigh sound URL
-    const sighSoundUrl = 'https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-zapsplat-people/people_male_sigh_in_an_angry_grumpy_or_frustrated_way_004.mp3';
-
+    const sighSoundUrl = 'https://orangefreesounds.com/wp-content/uploads/2025/04/Frustrated-sigh-sound-effect.mp3';
+        
     // --- NEW: BOOT SEQUENCE CONFIG ---
     const BOOT_LOG_LINES = [
         "Initializing Oracle...",
@@ -910,6 +912,8 @@ const metrics = [
         document.getElementById('oracleImage').style.display = isRetro ? 'block' : 'none';
         document.getElementById('retroQuote').style.display = isRetro ? 'block' : 'none';
         document.getElementById('pythiaQuote').style.display = isRetro ? 'block' : 'none'; // NEW
+        document.getElementById('musicToggle').style.display = isRetro ? 'inline-block' : 'none';
+        document.getElementById('soundToggle').style.display = isRetro ? 'inline-block' : 'none';
         playToggle(); // NEW
         updateRetroMusic(); // New: Handle music on theme change
         if (!isRetro) {
