@@ -850,13 +850,6 @@ const metrics = [
         updateLeaderboardDisplay();
         renderRivalries();
         updateRetroMusic(); // Auto-start music on load in retro mode
-        // Fallback: If autoplay blocked, start on first user interaction
-    if (isRetro && isMusicEnabled && document.getElementById('retroMusic').paused) {
-        const startMusicOnInteraction = () => {
-            updateRetroMusic();
-            document.removeEventListener('click', startMusicOnInteraction);
-        };
-        document.addEventListener('click', startMusicOnInteraction);
     }
     
     // Start boot sequence on load
