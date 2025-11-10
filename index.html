@@ -101,6 +101,7 @@
         .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
         .leaderboard-entry { transition: all 0.2s; }
         .leaderboard-entry:hover { transform: translateX(4px); background: rgba(99, 102, 241, 0.1); }
+        .hidden { display: none; }
         
         /* Cache Badge */
         .cache-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; margin-left: 8px; }
@@ -294,8 +295,8 @@
         </div>
     </div>
 
-    <div id="mainWrapper" class="max-w-7xl mx-auto" style="display:none;">
-
+    <div id="mainWrapper" class="max-w-7xl mx-auto hidden">
+        
         <div id="mainPage" class="page-content active">
 
             <div class="text-center mb-6">
@@ -919,7 +920,6 @@ const metrics = [
 
     async function initializePage() {
         const bootLog = document.getElementById('bootLog');
-        const mainWrapper = document.getElementById('mainWrapper');
         
         for (const line of BOOT_LOG_LINES) {
             await typeBootLine(line, bootLog, BOOT_SEQUENCE_TIME_PER_LINE * (0.5 + Math.random()));
@@ -928,8 +928,28 @@ const metrics = [
         await new Promise(resolve => setTimeout(resolve, BOOT_PAUSE_TIME));
         
         // Fade out boot screen
-        document.getElementById('bootSequence').style.transition = 'opacity 0.5s';
-        document.getElementById('bootSequence').style.opacity = 0;
+                await new Promise(resolve => setTimeout(resolve, BOOT_PAUSE_TIME));
+
+        // Fade out boot screen
+        const bootSequence = document.getElementById('bootSequence');
+        bootSequence.style.transition = 'opacity 0.5s';
+        bootSequence.style.opacity = 0;
+
+        // Show main content
+        const mainWrapper = document.getElementById('mainWrapper');
+        mainWrapper.classList.remove('hidden');
+        mainWrapper.classList.add('pixellated-fade');
+
+        setTimeout(() => {
+            bootSequence.style.display = 'none';
+            document.body.style.overflow = 'auto';
+
+            // Show music / sound toggles (they are inside the header)
+            const musicToggle = document.getElementById('musicToggle');
+            const soundToggle = document.getElementById('soundToggle');
+            if (musicToggle) musicToggle.style.display = 'inline-block';
+            if (soundToggle) soundToggle.style.display = 'inline-block';
+        }, 500);
         
         // Fade in main content
         mainWrapper.style.display = 'block';
@@ -951,8 +971,6 @@ const metrics = [
         renderRivalries();
     }
     
-    // Start boot sequence on load
-    document.addEventListener('DOMContentLoaded', initializePage);
 
     // === MENU FUNCTIONS (Original) ===
     function openMenu() {
@@ -1747,6 +1765,8 @@ function downloadBadgeAsImage(element) {
     // === INITIALIZE (Original) ===
     // updateLeaderboardDisplay(); // Moved to initializePage
     // renderRivalries(); // Moved to initializePage
+        initializePage();   // start boot sequence
+        
     </script>
 
 </body>
