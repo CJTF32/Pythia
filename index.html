@@ -164,8 +164,6 @@
         }
         .pixellated-fade {
             animation: pixellated-fade 2s ease-in-out forwards;
-            document.getElementById('musicToggle').style.display = 'inline-block';
-            document.getElementById('soundToggle').style.display = 'inline-block';
         }
 
         /* Retro Spinner */
@@ -797,19 +795,44 @@ const metrics = [
     }
 
     // New: Function to play sigh sound
-    function playSigh() {
-        if (!soundsEnabled) return;
-        const sighAudio = new Audio(sighSoundUrl);
-        sighAudio.volume = 0.5; // Reasonably quiet
-        sighAudio.play().catch(e => console.error('Sigh sound error:', e));
-    }
-        
-   function playYay() {
-    console.log('playYay() called!');
-    if (!soundsEnabled) return;
-    const yayAudio = new Audio(yaySoundUrl);
-    yayAudio.volume = 0.5;
-    yayAudio.play().catch(e => console.error('Yay sound error:', e));
+    // --- FIXED: SIGH & YAY USING AudioContext (unblockable) ---
+function playSigh() {
+    if (!soundsEnabled || !audioCtx) return;
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.8);
+
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.8);
+    } catch (e) { console.error('Sigh error:', e); }
+}
+
+function playYay() {
+    if (!soundsEnabled || !audioCtx) return;
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(1000, audioCtx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(1200, audioCtx.currentTime + 0.2);
+
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.4);
+    } catch (e) { console.error('Yay error:', e); }
 }
     // --- NEW: BOOT SEQUENCE LOGIC ---
     function typeBootLine(line, targetElement, delay) {
@@ -847,13 +870,19 @@ const metrics = [
         document.getElementById('bootSequence').style.transition = 'opacity 0.5s';
         document.getElementById('bootSequence').style.opacity = 0;
         
-        // Fade in main content
+                // Fade in main content
         mainWrapper.style.display = 'block';
         mainWrapper.classList.add('pixellated-fade');
-        
+
+        // SHOW MUSIC & SOUND TOGGLES AFTER FADE
+        setTimeout(() => {
+            document.getElementById('musicToggle').style.display = 'inline-block';
+            document.getElementById('soundToggle').style.display = 'inline-block';
+        }, 100); // Slight delay to ensure fade starts
+
         setTimeout(() => {
             document.getElementById('bootSequence').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Re-enable scrolling
+            document.body.style.overflow = 'auto';
         }, 500);
         
         // Run original setup
@@ -932,15 +961,27 @@ const metrics = [
         }
         
        // ----  CENTER LOGO IN BORING MODE  ----
-    const headerContainer = document.querySelector('.flex.flex-col.md\\:flex-row.items-center.justify-center');
-    if (!isRetro) {
-        headerContainer.classList.remove('justify-center');
-        headerContainer.classList.add('justify-center', 'text-center');
-    } else {
-        headerContainer.classList.remove('text-center');
-        headerContainer.classList.add('justify-center');
-    }
-});
+          // ---- FIXED: CENTER PYTHIA LOGO & TEXT IN BORING MODE ----
+       const headerFlex = document.querySelector('.flex.flex-col.md\\:flex-row.items-center.justify-center');
+       const logoContainer = headerFlex.querySelector('.flex-1.flex.justify-end');
+       const textContainer = headerFlex.querySelector('.flex-1.flex.justify-start');
+
+       if (!isRetro) {
+           // Boring mode: stack + center everything
+           headerFlex.classList.remove('md:flex-row');
+           headerFlex.classList.add('flex-col', 'text-center');
+           logoContainer.classList.replace('justify-end', 'justify-center');
+           textContainer.classList.replace('justify-start', 'justify-center');
+           logoContainer.classList.add('mb-4');
+       } else {
+           // Retro mode: restore side-by-side
+           headerFlex.classList.add('md:flex-row');
+           headerFlex.classList.remove('flex-col', 'text-center');
+           logoContainer.classList.replace('justify-center', 'justify-end');
+           textContainer.classList.replace('justify-center', 'justify-start');
+           logoContainer.classList.remove('mb-4');
+       }
+    });
     
     // --- NEW: MUSIC TOGGLE ---
     document.getElementById('musicToggle').addEventListener('click', () => {
