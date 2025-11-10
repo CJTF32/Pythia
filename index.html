@@ -367,7 +367,39 @@
                     </button>
                 </div>
             </div>
-
+            
+            <div id="compareBlock" class="modern-card bg-white rounded-2xl shadow-xl p-6 mt-8 text-center">
+              <h2 id="compareTitle" class="text-2xl md:text-3xl font-bold text-indigo-600 mb-4">
+                IS YOUR URL BETTER THAN X?
+              </h2>
+            
+              <div class="flex flex-col md:flex-row gap-4 justify-center mb-4">
+                <input
+                  id="compareUrlInput"
+                  type="url"
+                  placeholder="https://yourwebsite.com"
+                  class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition w-full md:w-auto"
+                >
+                <button
+                  id="compareScanBtn"
+                  class="retro-button px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105"
+                >
+                  ANALYZE
+                </button>
+              </div>
+            
+              <p class="text-sm text-gray-600">
+                Enter your URL and see if it's better than <strong>X.com</strong>!
+              </p>
+            
+              <div id="compareResult" class="mt-6 hidden">
+                <div id="compareBadge" class="p-6 rounded-xl border-4 font-bold text-xl"></div>
+                <button id="downloadBadgeBtn" class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 hidden">
+                  ⬇️ Download Badge
+                </button>
+              </div>
+            </div>
+            
             <div id="pscoreContainer" class="hidden mb-8">
                 <div class="modern-card bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-2xl p-8 text-center text-white">
                     <div class="text-sm font-bold uppercase tracking-wider opacity-90 mb-2">Overall P-Score</div>
@@ -1325,60 +1357,104 @@ async function analyzeSite() {
 
     document.getElementById('scanTop50Btn').addEventListener('click', scanTop50Websites);
 
-    async function scanTop50Websites() {
-    playAnalyze(); // NEW
-    const TOP_50_URLS = [
-        'https://www.google.com', 'https://www.youtube.com', 'https://www.facebook.com', 'https://www.x.com', 'https://www.instagram.com', 'https://www.linkedin.com', 'https://www.reddit.com', 'https://www.wikipedia.org', 'https://www.amazon.com', 'https://www.netflix.com', 'https://www.yahoo.com', 'https://www.ebay.com', 'https://www.microsoft.com', 'https://www.apple.com', 'https://www.pinterest.com', 'https://www.github.com', 'https://www.stackoverflow.com', 'https://www.twitch.tv', 'https://www.wordpress.com', 'https://www.paypal.com', 'https://www.bbc.com', 'https://www.cnn.com', 'https://www.nytimes.com', 'https://www.espn.com', 'https://www.imdb.com', 'https://www.quora.com', 'https://www.medium.com', 'https://www.tumblr.com', 'https://www.shopify.com', 'https://www.etsy.com', 'https://www.target.com', 'https://www.walmart.com', 'https://www.bestbuy.com', 'https://www.homedepot.com', 'https://www.ikea.com', 'https://www.spotify.com', 'https://www.soundcloud.com', 'https://www.vimeo.com', 'https://www.dropbox.com', 'https://www.zoom.us', 'https://www.salesforce.com', 'https://www.adobe.com', 'https://www.oracle.com', 'https://www.ibm.com', 'https://www.cloudflare.com', 'https://www.airbnb.com', 'https://www.booking.com', 'https://www.tripadvisor.com', 'https://www.uber.com', 'https://www.tiktok.com'
-    ];
+   async function scanTop50Websites() {
+        playAnalyze(); // NEW
+        const TOP_50_URLS = [
+            'https://www.google.com', 'https://www.youtube.com', 'https://www.facebook.com', 'https://www.x.com', 'https://www.instagram.com', 'https://www.linkedin.com', 'https://www.reddit.com', 'https://www.wikipedia.org', 'https://www.amazon.com', 'https://www.netflix.com', 'https://www.yahoo.com', 'https://www.ebay.com', 'https://www.microsoft.com', 'https://www.apple.com', 'https://www.pinterest.com', 'https://www.github.com', 'https://www.stackoverflow.com', 'https://www.twitch.tv', 'https://www.wordpress.com', 'https://www.paypal.com', 'https://www.bbc.com', 'https://www.cnn.com', 'https://www.nytimes.com', 'https://www.espn.com', 'https://www.imdb.com', 'https://www.quora.com', 'https://www.medium.com', 'https://www.tumblr.com', 'https://www.shopify.com', 'https://www.etsy.com', 'https://www.target.com', 'https://www.walmart.com', 'https://www.bestbuy.com', 'https://www.homedepot.com', 'https://www.ikea.com', 'https://www.spotify.com', 'https://www.soundcloud.com', 'https://www.vimeo.com', 'https://www.dropbox.com', 'https://www.zoom.us', 'https://www.salesforce.com', 'https://www.adobe.com', 'https://www.oracle.com', 'https://www.ibm.com', 'https://www.cloudflare.com', 'https://www.airbnb.com', 'https://www.booking.com', 'https://www.tripadvisor.com', 'https://www.uber.com', 'https://www.tiktok.com'
+        ];
 
-    const btn = document.getElementById('scanTop50Btn');
-    const loading = document.getElementById('top50Loading');
-    const results = document.getElementById('top50Results');
-    const progress = document.getElementById('scanProgress');
+        const btn = document.getElementById('scanTop50Btn');
+        const loading = document.getElementById('top50Loading');
+        const results = document.getElementById('top50Results');
+        const progress = document.getElementById('scanProgress');
 
-    btn.disabled = true;
-    btn.textContent = ' ⏳ SCANNING...'; // Original spinner logic is fine
-    loading.classList.remove('hidden');
-    results.classList.add('hidden');
+        btn.disabled = true;
+        btn.textContent = ' ⏳ SCANNING...';
+        loading.classList.remove('hidden');
+        results.classList.add('hidden');
 
-    try {
-        const scanResults = [];
-        let completed = 0;
-        for (let i = 0; i < TOP_50_URLS.length; i += 5) {
-            const batch = TOP_50_URLS.slice(i, i + 5);
-            const batchPromises = batch.map(async (url) => {
-                const cached = getCachedScan(url);
-                if (cached) {
-                    completed++;
-                    progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
-                    return { url, pscore: cached.pscore };
-                }
-                try {
-                    const response = await fetch('/api/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data && data.pscore !== undefined) {
-                            setCachedScan(url, data);
-                            completed++;
-                            progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
-                            return { url, pscore: data.pscore };
-                        }
-                    } else {
-                        console.error(`Failed ${url}: HTTP ${response.status}`);
+        try {
+            const scanResults = [];
+            let completed = 0;
+            for (let i = 0; i < TOP_50_URLS.length; i += 5) {
+                const batch = TOP_50_URLS.slice(i, i + 5);
+                const batchPromises = batch.map(async (url) => {
+                    const cached = getCachedScan(url);
+                    // 🛠️ FIX: Added 'name' property for badge function
+                    const siteName = new URL(url).hostname; 
+                    
+                    if (cached) {
+                        completed++;
+                        progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
+                        return { url, pscore: cached.pscore, name: siteName };
                     }
-                } catch (error) {
-                    console.error(`Failed ${url}:`, error.message);
-                }
-                return null;
-            });
-            const batchResults = await Promise.all(batchPromises);
-            const validResults = batchResults.filter(r => r !== null && r.url && r.pscore !== undefined);
-            scanResults.push(...validResults);
-            console.log(`Batch complete. Total valid scans: ${scanResults.length}/${TOP_50_URLS.length}`);
-            await new Promise(resolve => setTimeout(resolve, 500));
-        }
+                    try {
+                        const response = await fetch('/api/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data && data.pscore !== undefined) {
+                                setCachedScan(url, data);
+                                completed++;
+                                progress.textContent = `Scanned ${completed} of ${TOP_50_URLS.length} sites...`;
+                                return { url, pscore: data.pscore, name: siteName };
+                            }
+                        } else {
+                            console.error(`Failed ${url}: HTTP ${response.status}`);
+                        }
+                    } catch (error) {
+                        console.error(`Failed ${url}:`, error.message);
+                    }
+                    return null;
+                });
+                const batchResults = await Promise.all(batchPromises);
+                const validResults = batchResults.filter(r => r !== null && r.url && r.pscore !== undefined);
+                scanResults.push(...validResults);
+                console.log(`Batch complete. Total valid scans: ${scanResults.length}/${TOP_50_URLS.length}`);
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
 
-        console.log(`Top 50 scan complete. Successfully scanned: ${scanResults.length} sites`);
+            console.log(`Top 50 scan complete. Successfully scanned: ${scanResults.length} sites`);
+
+            // 🛠️ FIX: Changed threshold to 35
+            if (scanResults.length >= 35) {
+                const sorted = scanResults.sort((a, b) => b.pscore - a.pscore);
+                const top5 = sorted.slice(0, 5);
+                const worst = sorted.slice(-1)[0]; // Get the single worst site
+                const scanDate = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                
+                document.getElementById('top50TopList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
+                    ${top5.map((site, i) => `
+                    <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-green-50">
+                        <span class="text-sm font-bold text-gray-700">${i + 1}. ${site.name}</span>
+                        <span class="text-lg font-bold text-green-600">${site.pscore}</span>
+                    </div>`).join('')}`;
+                
+                document.getElementById('top50BottomList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
+                    <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-red-50">
+                        <span class="text-sm font-bold text-gray-700">${scanResults.length}. ${worst.name}</span>
+                        <span class="text-lg font-bold text-red-600">${worst.pscore}</span>
+                    </div>`;
+                
+                loading.classList.add('hidden');
+                results.classList.remove('hidden');
+
+                // 🛠️ FIX: Return data for the badge function
+                return scanResults; 
+            } else {
+                // 🛠️ FIX: Updated error message
+                throw new Error(`Only ${scanResults.length} sites scanned successfully. Need at least 35.`);
+            }
+        } catch (error) {
+            alert(`Top 50 scan failed: ${error.message}`);
+            console.error('Error:', error);
+            // 🛠️ FIX: Return null on error
+            return null; 
+        } finally {
+            btn.textContent = ' 🚀 SCAN TOP 50 WEBSITES';
+            btn.disabled = false;
+            loading.classList.add('hidden');
+        }
+    }
 
         // CHANGE: Lowered threshold from >=10 to >=5 (for top 5 + at least one worst)
         if (scanResults.length >= 5) {
