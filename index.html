@@ -351,7 +351,7 @@
             <div id="pillar2-quality-container" class="hidden grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                 </div>
 
-            <div id="pillar3-future-container" class="hidden grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 max-w-lg mx-auto">
+            <div id="pillar3-future-container" class="hidden grid grid-cols-2 md:grid-cols-2 gap-4 mb-8 max-w-lg mx-auto">
                 </div>
 
             <div id="leaderboard" class="hidden modern-card bg-white rounded-2xl shadow-xl p-6 mb-8">
@@ -1163,8 +1163,7 @@ async function analyzeSite() {
     // Split the METRICS array into the three pillars for display. This defines the missing variables.
     const p1metrics = METRICS.slice(0, 4);  // Pillar 1: Performance (Karpov, Tyche, Vortex, Nexus)
     const p2metrics = METRICS.slice(4, 8);  // Pillar 2: Quality (Helix, Pulse, Nova, Aether)
-    const p3metrics = METRICS.slice(8, 11); // Pillar 3: Future (Quantum, Echo, Gaia)
-    
+    const p3metrics = METRICS.slice(8); // Take remaining (2)    
     // Update the DOM with the generated HTML
     document.getElementById('pillar1-performance-container').innerHTML = p1metrics.map(cardHtml).join('');
     document.getElementById('pillar2-quality-container').innerHTML = p2metrics.map(cardHtml).join('');
