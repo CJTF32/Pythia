@@ -275,7 +275,7 @@
                 <div class="flex justify-between items-center mb-2">
                     <button id="hamburger" onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition"> ☰ </button>
                     <div>
-                        <button id="musicToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition"> 🎵 Music ON </button>
+                        <button id="musicToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition"> 🎵 Music OFF </button>
                         <button id="soundToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition ml-2"> 🔊 Sounds ON </button>
                         <button id="themeToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition ml-2"> ✨ BORING MODE </button>
                     </div>
@@ -722,7 +722,7 @@ const metrics = [
     // --- NEW STATE VARIABLES ---
     let isRetro = true; // Default to RETRO
     let soundsEnabled = true; // Default to ON
-    let isMusicEnabled = true; // New for music toggle
+    let isMusicEnabled = false; // Default to OFF
     
     // New: Retro music playlist (ZX Spectrum style tracks from public sources)
     const retroPlaylist = [
@@ -849,7 +849,6 @@ const metrics = [
         // Run original setup
         updateLeaderboardDisplay();
         renderRivalries();
-        updateRetroMusic(); // Auto-start music on load in retro mode
     }
     
     // Start boot sequence on load
