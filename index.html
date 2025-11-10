@@ -220,14 +220,15 @@ body:not(.retro) #pscoreExplainerPage .text-green-600 {
             opacity: 0;
             white-space: nowrap;
         }
-        /* Fix for light-on-white text in modern mode sub-pages */
+       /* Fix for light-on-white text in modern mode sub-pages */
         .menu-overlay p, 
         .menu-overlay div:not(#rivalryList), 
         .menu-overlay span, 
         .menu-overlay a, 
         .menu-overlay li {
-            color: #1f2937 !important; /* Force dark gray for readability on white background */
-        }
+            /* CHANGED: Forces text to dark green (green-800) instead of dark gray */
+            color: #065F46 !important; 
+        }        
 
         /* Exception: ensure retro mode text is still bright green */
         body.retro .menu-overlay p, 
