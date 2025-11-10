@@ -342,6 +342,7 @@
                 <input
                   id="compareUrlInput"
                   type="url"
+                  value="https://"
                   placeholder="https://yourwebsite.com"
                   class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition w-full md:w-auto"
                 >
@@ -358,7 +359,7 @@
               </p>
             
               <div id="compareResult" class="mt-6 hidden">
-                <div id="compareBadge" class="p-6 rounded-xl border-4 font-bold text-xl"></div>
+                <div id="compareBadge"></div>
                 <button id="downloadBadgeBtn" class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 hidden">
                   ⬇️ Download Badge
                 </button>
@@ -1026,6 +1027,14 @@ const metrics = [
         if (e.key === 'Enter') analyzeSite();
     });
 
+        // 🛠️ FIX: Add keypress listener for the compare input
+    document.getElementById('compareUrlInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Stop form submission
+            document.getElementById('compareScanBtn').click(); // Trigger button click
+        }
+    });
+
     // --- NEW: Typing animation for score ---
     function typeScore(elementId, text) {
         const el = document.getElementById(elementId);
@@ -1488,8 +1497,7 @@ async function runScan(url) {
     }
 }
 
-        // === NEW: "Better than X" Comparison Logic ===
-// === NEW: "Better than X" Comparison Logic ===
+      // === NEW: "Better than X" Comparison Logic (REBUILT) ===
 document.getElementById('compareScanBtn').addEventListener('click', async () => {
     playAnalyze(); // Play sound
     const url = document.getElementById('compareUrlInput').value.trim();
@@ -1504,56 +1512,86 @@ document.getElementById('compareScanBtn').addEventListener('click', async () => 
     
     // Show loading state
     compareResult.classList.remove('hidden');
-    badgeDiv.textContent = 'Analyzing...';
+    badgeDiv.innerHTML = `<div class="p-6 text-center"><span class="retro-spinner" style="display:inline-block; margin-right: 10px;"></span><p>Generating certificate...</p></div>`;
     badgeDiv.className = 'p-6 rounded-xl border-4 font-bold text-xl text-gray-700 bg-gray-50 animate-pulse';
     downloadBtn.classList.add('hidden');
 
     try {
-        // Use your existing scan function for a single URL
-        const userData = await runScan(url); // This function is fixed in Step 2
-        if (!userData || userData.pscore === undefined) throw new Error("Failed to scan your URL.");
+        // Run scans
+        const userData = await runScan(url);
+        // Ensure score is a number, treat null/undefined as 0 but error if no data
+        if (!userData || userData.pscore === undefined) throw new Error("Failed to scan your URL. No score received.");
         
-        const userScore = userData.pscore || 0;
-
-        // Trigger top 50 scan (existing function)
-        const top50Data = await scanTop50Websites(); // This function must be working
+        const top50Data = await scanTop50Websites();
         if (!top50Data || top50Data.length === 0) throw new Error("Failed to get Top 50 data for comparison.");
 
-        // Find X.com P-Score
-        const xData = top50Data.find(s => s.url.includes('x.com')) || {};
-        const xScore = xData.pscore || 0;
+        // --- 🛠️ FIX 1: "Score of 0" Logic ---
+        const userScore = userData.pscore || 0;
+        const userUrlHostname = new URL(url).hostname;
+        
+        // Find X.com data
+        const xData = top50Data.find(s => s.url.includes('x.com')) || { pscore: 0, name: 'X.com' };
+        const xScore = xData.pscore;
 
-        let badgeText = '';
-        let badgeColor = '';
-        let badgeBg = '';
-        let isBetter = false;
+        let targetSiteName = '';
+        let isBetter = false; // Tracks if we beat X.com specifically
 
         if (userScore > xScore) {
+            // User beat X.com
             isBetter = true;
-            badgeText = `YOUR SITE (${userScore}) IS BETTER THAN X.COM (${xScore})! Certified by Pythia, the Web Performance Oracle`;
-            badgeColor = isRetro ? '#00ff00' : '#4f46e5';
-            badgeBg = isRetro ? '#000000' : '#f9fafb';
+            targetSiteName = xData.name;
         } else {
-            // Pick a top site with lower score than user's
+            // User did NOT beat X.com. Find the best site they *did* beat.
+            isBetter = false;
+            // Filter out X.com, find sites with lower scores, and take the highest-scoring one
             const lowerSite = top50Data
-                .filter(s => s.pscore < userScore)
+                .filter(s => s.pscore < userScore && !s.url.includes('x.com'))
                 .sort((a, b) => b.pscore - a.pscore)[0];
             
             if (lowerSite) {
-                badgeText = `YOUR SITE (${userScore}) IS BETTER THAN ${lowerSite.name.toUpperCase()} (${lowerSite.pscore})! Certified by Pythia.`;
+                // Found a site they beat
+                targetSiteName = lowerSite.name;
             } else {
-                badgeText = `YOUR SCORE: ${userScore}. Certified by Pythia, the Web Performance Oracle`;
+                // User's score is lower than or equal to ALL other top 50 sites (besides X).
+                // Per request, we find the ABSOLUTE WORST site (that isn't X) and use it to maintain the "Better than" message.
+                const worstSite = top50Data
+                    .filter(s => !s.url.includes('x.com'))
+                    .sort((a, b) => a.pscore - b.pscore)[0]; // Lowest score
+                
+                // Use worst site's name as the target for the badge message
+                targetSiteName = worstSite ? worstSite.name : 'A Global Leader'; 
             }
-            badgeColor = isRetro ? '#ff00ff' : '#dc2626';
-            badgeBg = isRetro ? '#000000' : '#fff7ed';
         }
+        // --- End of Fix 1 ---
 
-        // Render badge
-        badgeDiv.className = 'p-6 rounded-xl border-4 font-bold text-xl text-center';
+        // --- 🛠️ FIX 4: New Square Badge Design ---
+        const badgeColor = isBetter ? (isRetro ? '#00ff00' : '#4f46e5') : (isRetro ? '#ff00ff' : '#dc2626');
+        const badgeBg = isRetro ? '#000000' : '#ffffff'; // Retro uses black background, modern uses white
+
+        // Apply styles to the container
+        badgeDiv.className = 'p-0 border-4 grid grid-cols-2 gap-0 overflow-hidden shadow-lg mx-auto';
         badgeDiv.style.borderColor = badgeColor;
-        badgeDiv.style.color = badgeColor;
         badgeDiv.style.background = badgeBg;
-        badgeDiv.textContent = badgeText;
+        badgeDiv.style.color = badgeColor;
+        badgeDiv.style.maxWidth = '400px'; // Limit size
+        badgeDiv.style.aspectRatio = '1 / 1'; // Force square shape
+
+        // Populate the new badge structure
+        // Note: pythia-oracle.png must be uploaded to your project directory.
+        badgeDiv.innerHTML = `
+            <div class="flex items-center justify-center border-b-4 border-r-4 border-current p-4" style="border-color: ${badgeColor};">
+                <h3 class="${isRetro ? 'text-xl' : 'text-3xl'} font-extrabold p-2">Pythia™</h3>
+            </div>
+            <div class="flex items-center justify-center border-b-4 border-current p-4" style="border-color: ${badgeColor};">
+                <img src="pythia-oracle.png" alt="Pythia Oracle" class="w-24 h-24 object-contain">
+            </div>
+            <div class="col-span-2 text-center border-current p-4 flex flex-col justify-center" style="color: ${badgeColor};">
+                <p class="${isRetro ? 'text-lg' : 'text-xl'} font-bold">${userUrlHostname.toUpperCase()}</p>
+                <p class="text-sm">Pythia-certified as</p>
+                <p class="font-extrabold ${isRetro ? 'text-xl' : 'text-2xl'}">BETTER THAN ${targetSiteName.toUpperCase()}!</p>
+            </div>
+        `;
+        // --- End of Fix 4 ---
 
         // Enable download
         downloadBtn.classList.remove('hidden');
@@ -1562,14 +1600,12 @@ document.getElementById('compareScanBtn').addEventListener('click', async () => 
             downloadBadgeAsImage(badgeDiv);
         };
         
-        playResult(isBetter); // Play good/bad sound
+        playResult(isBetter); // Play good sound if they beat X.com
 
     } catch (error) {
         console.error("Badge generation failed:", error);
-        badgeDiv.className = 'p-6 rounded-xl border-4 font-bold text-xl text-center';
-        badgeDiv.style.borderColor = 'red';
-        badgeDiv.style.color = 'red';
-        badgeDiv.textContent = `Error: ${error.message}`;
+        badgeDiv.className = 'p-6 rounded-xl border-4 border-red-500 font-bold text-xl text-center text-red-500';
+        badgeDiv.innerHTML = `Error: ${error.message}`;
         playResult(false);
     }
 });
