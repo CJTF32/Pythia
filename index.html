@@ -235,6 +235,8 @@
 </head>
 <body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8 retro">
 
+    <audio id="retroMusic" loop></audio> <!-- Added for background music -->
+
     <div id="bootSequence">
         <pre id="bootLog"></pre>
     </div>
@@ -273,6 +275,7 @@
                 <div class="flex justify-between items-center mb-2">
                     <button id="hamburger" onclick="openMenu()" class="text-3xl text-gray-700 hover:text-indigo-600 transition"> ☰ </button>
                     <div>
+                        <button id="musicToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition"> 🎵 Music OFF </button>
                         <button id="soundToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition ml-2"> 🔊 Sounds ON </button>
                         <button id="themeToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition"> ✨ BORING MODE </button>
                     </div>
@@ -398,7 +401,7 @@
                     <div id="top50Results" class="hidden">
                         <h3 class="text-lg font-bold text-green-600 mb-3"> 🥇 Top 5 Global Sites</h3>
                         <div id="top50TopList" class="space-y-2 mb-6"></div>
-                        <h3 class="text-lg font-bold text-red-600 mb-3"> 🥄 Wooden Spoon Award (Worst Site)</h3>
+                        <h3 class="text-lg font-bold text-red-600 mb-3"> ⭐️ Five Stars for Effort Award</h3>
                         <div id="top50BottomList" class="space-y-2"></div>
                     </div>
                 </div>
@@ -719,7 +722,26 @@ const metrics = [
     // --- NEW STATE VARIABLES ---
     let isRetro = true; // Default to RETRO
     let soundsEnabled = true; // Default to ON
+    let isMusicEnabled = false; // Default to OFF
     
+    // New: Retro music playlist (ZX Spectrum style tracks from public sources)
+    const retroPlaylist = [
+        'http://soundimage.org/wp-content/uploads/2017/10/8-Bit-Perplexion.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/07/Arcade-Puzzler.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/07/Arcade-Puzzler_v001.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/06/Bonkers-for-Arcades.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/05/Funky-Chiptune.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/04/Its-Raining-Pixels.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/04/Its-Always-Sunny-in-the-80s.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/04/The-Ice-Cream-Man.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/03/Arcade-Heroes.mp3',
+    'http://soundimage.org/wp-content/uploads/2017/03/Inky-and-Blinkys-Band.mp3'
+    ];
+
+    // New: Sigh sound URL
+    const sighSoundUrl = 'https://www.soundjay.com/human/sounds/sigh-1.mp3';
+    const yaySoundUrl  = 'https://www.soundjay.com/human/sounds/cheer-1.mp3';
+        
     // --- NEW: BOOT SEQUENCE CONFIG ---
     const BOOT_LOG_LINES = [
         "Initializing Oracle...",
@@ -812,6 +834,12 @@ const metrics = [
         mainWrapper.style.display = 'block';
         mainWrapper.classList.add('pixellated-fade');
         
+        // SHOW MUSIC & SOUND TOGGLES AFTER FADE
+        setTimeout(() => {
+            document.getElementById('musicToggle').style.display = 'inline-block';
+            document.getElementById('soundToggle').style.display = 'inline-block';
+        }, 100); // Slight delay to ensure fade starts
+
         setTimeout(() => {
             document.getElementById('bootSequence').style.display = 'none';
             document.body.style.overflow = 'auto'; // Re-enable scrolling
@@ -881,7 +909,17 @@ const metrics = [
         document.getElementById('oracleImage').style.display = isRetro ? 'block' : 'none';
         document.getElementById('retroQuote').style.display = isRetro ? 'block' : 'none';
         document.getElementById('pythiaQuote').style.display = isRetro ? 'block' : 'none'; // NEW
+        // NEW
+        document.getElementById('musicToggle').style.display = isRetro ? 'inline-block' : 'none';
+        document.getElementById('soundToggle').style.display = isRetro ? 'inline-block' : 'none';
         playToggle(); // NEW
+        updateRetroMusic(); // New: Handle music on theme change
+        if (!isRetro) {
+            playSigh(); // New: Play sigh when switching to boring mode
+        }
+        if (isRetro) {
+        playYay(); // Play excited yay when returning to retro
+        }
     });
     
     // --- NEW: SOUND TOGGLE ---
@@ -890,6 +928,33 @@ const metrics = [
         document.getElementById('soundToggle').textContent = soundsEnabled ? ' 🔊 Sounds ON' : ' 🔇 Sounds OFF';
         playToggle();
     });
+
+// --- NEW: MUSIC TOGGLE ---
+    document.getElementById('musicToggle').addEventListener('click', () => {
+        isMusicEnabled = !isMusicEnabled;
+        document.getElementById('musicToggle').textContent = isMusicEnabled ? ' 🎵 Music ON' : ' 🎵 Music OFF';
+        updateRetroMusic();
+        playToggle();
+    });
+
+    // New: Function to update retro music
+    function updateRetroMusic() {
+        const music = document.getElementById('retroMusic');
+        if (isRetro && isMusicEnabled) {
+            // Select random track
+            const randomTrack = retroPlaylist[Math.floor(Math.random() * retroPlaylist.length)];
+            music.src = randomTrack;
+            music.volume = 0.2; // Quietly
+            music.play().catch(e => console.error('Music play error:', e));
+            // When ends, play next random
+            music.onended = () => {
+                updateRetroMusic(); // Play next random
+            };
+        } else {
+            music.pause();
+            music.currentTime = 0;
+        }
+    }
 
     // === MAIN SCAN FUNCTION (MODIFIED) ===
     document.getElementById('scanBtn').addEventListener('click', analyzeSite);
