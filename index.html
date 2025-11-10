@@ -229,16 +229,29 @@
             color: #33ff33 !important;
         }
 
-         #leaderboard {
+        #leaderboard {
         display: none !important;
         }
         
+        /* Center Pythia logo in boring mode, keep left-aligned in retro */
+        body:not(.retro) .flex-1.flex.justify-start {
+            justify-content: center !important;
+        }
+
+        /* Add space below logo in boring mode */
+        body:not(.retro) h1 {
+            margin-bottom: 1rem;
+        }
+        
+    </style>
     </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8 retro">
 
     <audio id="retroMusic" loop></audio> <!-- Added for background music -->
-
+<audio id="sighSound" src="sigh.mp3"></audio>
+<audio id="yaySound" src="yay.mp3"></audio>
+    
     <div id="bootSequence">
         <pre id="bootLog"></pre>
     </div>
