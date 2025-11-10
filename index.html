@@ -14,6 +14,15 @@
         }
         .scanning { animation: pulse-glow 2s infinite; }
 
+        /* HIGH-SPECIFICITY COLOR FIX for P-Score Explainer Page (Boring Mode) */
+/* This rule will ensure the main text within the explainer is dark green on light backgrounds */
+body:not(.retro) #pscoreExplainerPage p,
+body:not(.retro) #pscoreExplainerPage li,
+body:not(.retro) #pscoreExplainerPage .text-green-600 {
+    /* Forces a very dark, high-contrast green */
+    color: #065F46 !important; /* Tailwind's text-green-800 */
+}
+
         /* Original Menu */
         .menu-overlay { position: fixed; top: 0; left: -100%; width: 80%; max-width: 400px; height: 100vh; background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.3); transition: left 0.3s ease; z-index: 1000; overflow-y: auto; }
         .menu-overlay.open { left: 0; }
