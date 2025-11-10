@@ -307,41 +307,6 @@
                     <strong>Disclaimer:</strong> Pythia<sup>TM</sup> is an independent analysis tool. Scores are heuristic-based and for informational purposes only. </p>
             </div>
 
-            <!-- === NEW COMPARISON BLOCK === -->
-            <div id="compareBlock" class="modern-card bg-white rounded-2xl shadow-xl p-6 mt-8 text-center">
-              <h2 id="compareTitle" class="text-2xl md:text-3xl font-bold text-indigo-600 mb-4">
-                IS YOUR URL BETTER THAN X?
-              </h2>
-            
-              <!-- Scan bar -->
-              <div class="flex flex-col md:flex-row gap-4 justify-center mb-4">
-                <input
-                  id="compareUrlInput"
-                  type="url"
-                  placeholder="https://yourwebsite.com"
-                  class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition w-full md:w-auto"
-                >
-                <button
-                  id="compareScanBtn"
-                  class="retro-button px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105"
-                >
-                  ANALYZE
-                </button>
-              </div>
-            
-              <p class="text-sm text-gray-600">
-                Enter your URL and see if it's better than <strong>X.com</strong>!
-              </p>
-            
-              <!-- Badge display area -->
-              <div id="compareResult" class="mt-6 hidden">
-                <div id="compareBadge" class="p-6 rounded-xl border-4 font-bold text-xl"></div>
-                <button id="downloadBadgeBtn" class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 hidden">
-                  ⬇️ Download Badge
-                </button>
-              </div>
-            </div>
-
             <div class="modern-card bg-white rounded-2xl shadow-xl p-6 mb-8">
                 <div class="flex flex-col md:flex-row gap-4">
                     <input
@@ -1455,45 +1420,6 @@ async function analyzeSite() {
             loading.classList.add('hidden');
         }
     }
-
-        // CHANGE: Lowered threshold from >=10 to >=5 (for top 5 + at least one worst)
-        if (scanResults.length >= 5) {
-            const sorted = scanResults.sort((a, b) => b.pscore - a.pscore);
-            // CHANGE: Top 5 instead of top 10
-            const top5 = sorted.slice(0, 5);
-            // CHANGE: Get just the single worst site (lowest score)
-            const worst = sorted.slice(-1)[0];
-            const scanDate = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-            
-            document.getElementById('top50TopList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
-                ${top5.map((site, i) => `
-                <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-green-50">
-                    <span class="text-sm font-bold text-gray-700">${i + 1}. ${new URL(site.url).hostname}</span>
-                    <span class="text-lg font-bold text-green-600">${site.pscore}</span>
-                </div>`).join('')}`;
-            
-            // CHANGE: Display just the single worst site (no map/reverse needed)
-            document.getElementById('top50BottomList').innerHTML = `<div class="text-xs text-gray-500 mb-3 italic">Scanned: ${scanDate} (${scanResults.length} sites)</div>
-                <div class="leaderboard-entry flex justify-between items-center p-2 rounded bg-red-50">
-                    <span class="text-sm font-bold text-gray-700">50. ${new URL(worst.url).hostname}</span>
-                    <span class="text-lg font-bold text-red-600">${worst.pscore}</span>
-                </div>`;
-            
-            loading.classList.add('hidden');
-            results.classList.remove('hidden');
-        } else {
-            // CHANGE: Updated error message to match new minimum
-            throw new Error(`Only ${scanResults.length} sites scanned successfully. Need at least 5.`);
-        }
-    } catch (error) {
-        alert(`Top 50 scan failed: ${error.message}`);
-        console.error('Error:', error);
-    } finally {
-        btn.textContent = ' 🚀 SCAN TOP 50 WEBSITES';
-        btn.disabled = false;
-        loading.classList.add('hidden');
-    }
-}
 
     // === SOCIAL SHARING (MODIFIED) ===
     function shareOn(platform) {
