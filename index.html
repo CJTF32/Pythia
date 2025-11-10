@@ -267,7 +267,7 @@
         </div>
     </div>
 
-    <div id="mainWrapper" class="max-w-7xl mx-auto" style="display:none;">
+    <div <div id="mainWrapper" class="max-w-7xl mx-auto hidden">
 
         <div id="mainPage" class="page-content active">
 
@@ -608,7 +608,7 @@
                     </p>
                     <h2 class="text-2xl font-bold text-gray-800 mt-6 mb-3">How We're Different</h2>
                     <ul class="list-disc ml-6 text-gray-700 space-y-2 mb-4">
-                        <li><strong>Holistic Analysis</strong> - 10 metrics, not just speed</li>
+                        <li><strong>Holistic Analysis</strong> - 10 METRICS, not just speed</li>
                         <li><strong>Privacy-First</strong> - We penalize trackers, not reward them</li>
                         <li><strong>Sustainability Matters</strong> - Green hosting scores built-in</li>
                         <li><strong>No Vendor Lock-in</strong> - Export your data anytime</li>
@@ -641,21 +641,22 @@
     // === CONFIGURATION ===
     const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 // ------------------------------------------------------------------
-// 🛠️ FIX: INSERT THE METRICS DEFINITION HERE
-// ------------------------------------------------------------------
+
+// === METRICS DEFINITION ===
 const METRICS = [
-    { id: 'karpov', name: 'Karpov Speed', desc: 'Load time & efficiency', color: 'from-blue-500 to-indigo-500', tooltip: 'Measures page load time, resource count, and general optimization techniques (LCP proxy).' },
-    { id: 'tyche', name: 'Tyche Interactivity', desc: 'Script management & responsiveness', color: 'from-yellow-500 to-orange-500', tooltip: 'Measures script load efficiency, penalizing third-party and inline scripts while rewarding async/defer (INP/TBT proxy).' },
-    { id: 'vortex', name: 'Vortex Access', desc: 'Accessibility score', color: 'from-green-500 to-emerald-500', tooltip: 'Evaluates image alt text, ARIA labels, semantic HTML, and core accessibility features.' },
-    { id: 'nexus', name: 'Nexus Mobile', desc: 'Mobile responsiveness', color: 'from-cyan-500 to-blue-500', tooltip: 'Checks for viewport meta tag and responsive media/images—the mobile baseline.' },
-    { id: 'helix', name: 'Helix Privacy', desc: 'Security & tracking', color: 'from-gray-700 to-gray-900', tooltip: 'Counts trackers and checks security headers (HSTS, CSP, X-Frame-Options).' },
-    { id: 'pulse', name: 'Pulse SEO', desc: 'Search & social optimization', color: 'from-indigo-500 to-purple-500', tooltip: 'Analyzes title, meta description, canonical tags, Open Graph, and Twitter Cards.' },
-    { id: 'nova', name: 'Nova Scale', desc: 'Infrastructure & CDN', color: 'from-purple-500 to-pink-500', tooltip: 'Checks for CDN usage, caching headers, and compression.' },
-    { id: 'eden', name: 'Eden Efficiency', desc: 'Page weight & size', color: 'from-teal-500 to-green-500', tooltip: 'Scores based on total page weight. Smaller sites (under 500KB) score higher.' },
-    { id: 'aether', name: 'Aether Tech', desc: 'Modern technologies', color: 'from-orange-500 to-red-500', tooltip: 'Detects WebAssembly, Service Workers, ES6 modules, and modern frameworks.' },
-    { id: 'quantum', name: 'Quantum Quality', desc: 'Best practices & code', color: 'from-red-500 to-pink-500', tooltip: 'Checks for code quality, integrity, and adherence to HTML/CSS best practices.' },
-    { id: 'echo', name: 'Echo Green', desc: 'Sustainable hosting', color: 'from-lime-500 to-green-600', tooltip: 'Checks if hosting uses renewable energy via Green Web Foundation API.' }
+  { id: 'karpov', name: 'Karpov Speed', desc: 'Load time & efficiency', color: 'from-blue-500 to-indigo-500', tooltip: 'Measures page load time, resource count, and general optimization techniques (LCP proxy).' },
+  { id: 'tyche', name: 'Tyche Interactivity', desc: 'Script management & responsiveness', color: 'from-yellow-500 to-orange-500', tooltip: 'Measures script load efficiency, penalizing third-party and inline scripts while rewarding async/defer (INP/TBT proxy).' },
+  { id: 'vortex', name: 'Vortex Access', desc: 'Accessibility score', color: 'from-green-500 to-emerald-500', tooltip: 'Evaluates image alt text, ARIA labels, semantic HTML, and core accessibility features.' },
+  { id: 'nexus', name: 'Nexus Mobile', desc: 'Mobile responsiveness', color: 'from-cyan-500 to-blue-500', tooltip: 'Checks for viewport meta tag and responsive media/images—the mobile baseline.' },
+  { id: 'helix', name: 'Helix Privacy', desc: 'Security & tracking', color: 'from-gray-700 to-gray-900', tooltip: 'Counts trackers and checks security headers (HSTS, CSP, X-Frame-Options).' },
+  { id: 'pulse', name: 'Pulse SEO', desc: 'Search & social optimization', color: 'from-indigo-500 to-purple-500', tooltip: 'Analyzes title, meta description, canonical tags, Open Graph, and Twitter Cards.' },
+  { id: 'nova', name: 'Nova Scale', desc: 'Infrastructure & CDN', color: 'from-purple-500 to-pink-500', tooltip: 'Checks for CDN usage, caching headers, and compression.' },
+  { id: 'eden', name: 'Eden Efficiency', desc: 'Page weight & size', color: 'from-teal-500 to-green-500', tooltip: 'Scores based on total page weight. Smaller sites (under 500KB) score higher.' },
+  { id: 'aether', name: 'Aether Tech', desc: 'Modern technologies', color: 'from-orange-500 to-red-500', tooltip: 'Detects WebAssembly, Service Workers, ES6 modules, and modern frameworks.' },
+  { id: 'quantum', name: 'Quantum Quality', desc: 'Best practices & code', color: 'from-red-500 to-pink-500', tooltip: 'Checks for code quality, integrity, and adherence to HTML/CSS best practices.' },
+  { id: 'echo', name: 'Echo Green', desc: 'Sustainable hosting', color: 'from-lime-500 to-green-600', tooltip: 'Checks if hosting uses renewable energy via Green Web Foundation API.' }
 ];
+
 
 // ------------------------------------------------------------------
 // 🛠️ END OF FIX
@@ -703,23 +704,6 @@ const METRICS = [
         { category: 'Entertainment', name1: 'Nintendo', url1: 'https://www.nintendo.com', name2: 'PlayStation', url2: 'https://www.playstation.com' }
     ];
 
-    // === METRICS DATA (Original) ===
-    // index-5.html: Around line 1055, replace the entire 'metrics' array
-// index-5.html: Replace the existing 'metrics' array with this content.
-const metrics = [
-    { id: 'karpov', name: 'Karpov Speed', desc: 'Load time & resources', color: 'from-blue-500 to-indigo-500', tooltip: 'Measures page load time, resource count, and general optimization techniques (LCP proxy).' },
-    { id: 'tyche', name: 'Tyche Interact', desc: 'Script interactivity', color: 'from-yellow-500 to-orange-500', tooltip: 'Measures script load efficiency, penalizing third-party and inline scripts while rewarding async/defer (INP/TBT proxy).' },
-    { id: 'vortex', name: 'Vortex Access', desc: 'Accessibility score', color: 'from-green-500 to-emerald-500', tooltip: 'Evaluates image alt text, ARIA labels, semantic HTML, and core accessibility features.' },
-    { id: 'nexus', name: 'Nexus Mobile', desc: 'Mobile responsiveness', color: 'from-cyan-500 to-blue-500', tooltip: 'Checks for viewport meta tag and responsive media/images—the mobile baseline.' },
-    { id: 'helix', name: 'Helix Privacy', desc: 'Security & tracking', color: 'from-gray-700 to-gray-900', tooltip: 'Counts trackers and checks security headers (HSTS, CSP, X-Frame-Options).' },
-    { id: 'pulse', name: 'Pulse SEO', desc: 'Search & social optimization', color: 'from-indigo-500 to-purple-500', tooltip: 'Analyzes title, meta description, canonical tags, Open Graph, and Twitter Cards.' },
-    { id: 'nova', name: 'Nova Scale', desc: 'Infrastructure & CDN', color: 'from-purple-500 to-pink-500', tooltip: 'Checks for CDN usage, caching headers, and compression.' },
-    { id: 'eden', name: 'Eden Efficiency', desc: 'Page weight & size', color: 'from-teal-500 to-green-500', tooltip: 'Scores based on total page weight. Smaller sites (under 500KB) score higher.' },
-    { id: 'aether', name: 'Aether Tech', desc: 'Modern technologies', color: 'from-orange-500 to-red-500', tooltip: 'Detects WebAssembly, Service Workers, ES6 modules, and modern frameworks.' },
-    { id: 'quantum', name: 'Quantum Quality', desc: 'Best practices & code', color: 'from-red-500 to-pink-500', tooltip: 'Checks for code quality, integrity, and adherence to HTML/CSS best practices.' },
-    { id: 'echo', name: 'Echo Green', desc: 'Sustainable hosting', color: 'from-lime-500 to-green-600', tooltip: 'Checks if hosting uses renewable energy via Green Web Foundation API.' }
-];
-
     // === STATE (Original) ===
     let currentData = null;
     let currentBattleData = null;
@@ -751,7 +735,7 @@ const metrics = [
     const BOOT_LOG_LINES = [
         "Initializing Oracle...",
         "Booting Indices...",
-        "Calibrating Metrics...",
+        "Calibrating METRICS...",
         "Verifying System Integrity... OK",
         "Establishing Connection to Delphi...",
         "Loading Web Analysis Engine...",
@@ -1161,13 +1145,13 @@ async function analyzeSite() {
     };
     
     // Split the METRICS array into the three pillars for display. This defines the missing variables.
-    const p1metrics = METRICS.slice(0, 4);  // Pillar 1: Performance (Karpov, Tyche, Vortex, Nexus)
-    const p2metrics = METRICS.slice(4, 8);  // Pillar 2: Quality (Helix, Pulse, Nova, Aether)
-    const p3metrics = METRICS.slice(8); // Take remaining (2)    
+    const p1METRICS = METRICS.slice(0, 4);  // Pillar 1: Performance (Karpov, Tyche, Vortex, Nexus)
+    const p2METRICS = METRICS.slice(4, 8);  // Pillar 2: Quality (Helix, Pulse, Nova, Aether)
+    const p3METRICS = METRICS.slice(8); // Take remaining (2)    
     // Update the DOM with the generated HTML
-    document.getElementById('pillar1-performance-container').innerHTML = p1metrics.map(cardHtml).join('');
-    document.getElementById('pillar2-quality-container').innerHTML = p2metrics.map(cardHtml).join('');
-    document.getElementById('pillar3-future-container').innerHTML = p3metrics.map(cardHtml).join('');
+    document.getElementById('pillar1-performance-container').innerHTML = p1METRICS.map(cardHtml).join('');
+    document.getElementById('pillar2-quality-container').innerHTML = p2METRICS.map(cardHtml).join('');
+    document.getElementById('pillar3-future-container').innerHTML = p3METRICS.map(cardHtml).join('');
     
     // Save to leaderboard
     if (!fromCache) saveToLeaderboard(data);
@@ -1436,7 +1420,15 @@ async function analyzeSite() {
             window.open(shareUrl, '_blank', 'width=600,height=400');
         }
     }
-    
+    window.addEventListener('error', (e) => {
+  console.error('Runtime error:', e.message);
+  const boot = document.getElementById('bootSequence');
+  if (boot) {
+    boot.innerHTML += `\n\n⚠️ ${e.message}`;
+    boot.style.color = 'red';
+  }
+});
+
     // === INITIALIZE (Original) ===
     // updateLeaderboardDisplay(); // Moved to initializePage
     // renderRivalries(); // Moved to initializePage
