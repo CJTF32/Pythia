@@ -741,7 +741,7 @@ const metrics = [
     ];
 
     // New: Sigh sound URL
-    const sighSoundUrl = 'https://orangefreesounds.com/wp-content/uploads/2025/04/Frustrated-sigh-sound-effect.mp3';  
+    const sighSoundUrl = 'https://freesound.org/data/previews/411/411022_7358205-lq.mp3'; // Disappointed/bored sigh (soft, frustrated)
     const yaySoundUrl = 'https://freesound.org/data/previews/162/162395_2898467-lq.mp3'; // Cheerful group "Yay!" (2s)
         
     // --- NEW: BOOT SEQUENCE CONFIG ---
@@ -803,13 +803,16 @@ const metrics = [
         sighAudio.volume = 0.5; // Reasonably quiet
         sighAudio.play().catch(e => console.error('Sigh sound error:', e));
     }
-    function playYay() {
-        if (!soundsEnabled) return;
+        
+   function playYay() {
+    console.log('playYay() called!'); // Keep this for debugging
+    if (!soundsEnabled) return;
+    setTimeout(() => { // Add 100ms delay for browser to register interaction
         const yayAudio = new Audio(yaySoundUrl);
-        yayAudio.volume = 0.5; // Moderate volume
+        yayAudio.volume = 0.5;
         yayAudio.play().catch(e => console.error('Yay sound error:', e));
-    }
-
+    }, 100);
+}
     // --- NEW: BOOT SEQUENCE LOGIC ---
     function typeBootLine(line, targetElement, delay) {
         return new Promise(resolve => {
