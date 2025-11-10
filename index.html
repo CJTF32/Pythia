@@ -1042,16 +1042,13 @@ const metrics = [
         updateRetroMusic();
         playToggle();
     });
-
+    
     // New: Function to update retro music with fade and 3-minute rotation
     let currentMusicTimer = null;
     let lastPlayedTrack = null;
-    
-    // New: Function to update retro music with fade and 3-minute rotation
-    let currentMusicTimer = null;
     let fadeInInterval = null;
     let fadeOutInterval = null;
-    
+
     function updateRetroMusic() {
         const music = document.getElementById('retroMusic');
         
