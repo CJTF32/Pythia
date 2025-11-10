@@ -741,7 +741,8 @@ const metrics = [
     ];
 
     // New: Sigh sound URL
-    const sighSoundUrl = 'https://orangefreesounds.com/wp-content/uploads/2025/04/Frustrated-sigh-sound-effect.mp3';
+    const sighSoundUrl = 'https://orangefreesounds.com/wp-content/uploads/2025/04/Frustrated-sigh-sound-effect.mp3';  
+    const yaySoundUrl = 'https://freesound.org/data/previews/162/162395_2898467-lq.mp3'; // Cheerful group "Yay!" (2s)
         
     // --- NEW: BOOT SEQUENCE CONFIG ---
     const BOOT_LOG_LINES = [
@@ -801,6 +802,12 @@ const metrics = [
         const sighAudio = new Audio(sighSoundUrl);
         sighAudio.volume = 0.5; // Reasonably quiet
         sighAudio.play().catch(e => console.error('Sigh sound error:', e));
+    }
+    function playYay() {
+        if (!soundsEnabled) return;
+        const yayAudio = new Audio(yaySoundUrl);
+        yayAudio.volume = 0.5; // Moderate volume
+        yayAudio.play().catch(e => console.error('Yay sound error:', e));
     }
 
     // --- NEW: BOOT SEQUENCE LOGIC ---
@@ -919,6 +926,21 @@ const metrics = [
         if (!isRetro) {
             playSigh(); // New: Play sigh when switching to boring mode
         }
+        if (isRetro) {
+        playYay(); // Play excited yay when returning to retro
+        }
+        
+        // Centering fix
+    const titleContainer = document.querySelector('.flex.flex-col.md\\:flex-row.items-center.justify-center');
+    if (!isRetro) {
+        titleContainer.classList.add('text-center');
+        titleContainer.style.overflow = 'visible';
+        titleContainer.style.minHeight = 'auto';
+    } else {
+        titleContainer.classList.remove('text-center');
+        titleContainer.style.overflow = '';
+        titleContainer.style.minHeight = '';
+    }
     });
     
     // --- NEW: MUSIC TOGGLE ---
