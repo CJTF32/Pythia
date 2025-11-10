@@ -280,21 +280,26 @@
                         <button id="themeToggle" class="px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold hover:bg-gray-300 transition ml-2"> ✨ BORING MODE </button>
                     </div>
                 </div>
-                <div class="flex flex-col md:flex-row items-center justify-center gap-6 mb-2">
-                    <div class="flex-1 flex justify-end">
-                        <div id="pythiaQuote" class="border-4 border-green-500 p-4 bg-black text-green-400 max-w-md text-left">
-                            At Delphi in ancient Greece, the Pythia spoke cryptic truths from the gods. Now seek her oracle wisely — your site awaits her verdict!
-                        </div>
-                    </div>
-                    
-                    <img id="oracleImage" src="pythia-oracle.png" alt="PythiaTM Oracle" class="w-40 h-40" style="display:block; image-rendering: pixelated;">
-                    
-                    <div class="flex-1 flex justify-start">
-                        <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                            Pythia<sup>TM</sup> 
-                        </h1>
-                    </div>
-                </div>
+              <div id="headerLayout" class="flex flex-col md:flex-row items-center justify-center gap-6 mb-2">
+    <!-- LEFT: Quote -->
+    <div class="flex-1 flex justify-end">
+        <div id="pythiaQuote" class="border-4 border-green-500 p-4 bg-black text-green-400 max-w-md text-left">
+            At Delphi in ancient Greece, the Pythia spoke cryptic truths from the gods. Now seek her oracle wisely — your site awaits her verdict!
+        </div>
+    </div>
+
+    <!-- MIDDLE: Image -->
+    <div class="flex justify-center">
+        <img id="oracleImage" src="pythia-oracle.png" alt="PythiaTM Oracle" class="w-40 h-40" style="display:block; image-rendering: pixelated;">
+    </div>
+
+    <!-- RIGHT: Title -->
+    <div class="flex-1 flex justify-start">
+        <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Pythia<sup>TM</sup> 
+        </h1>
+    </div>
+</div>
                 <p class="text-gray-600 text-lg">
                     Complete website performance oracle <span class="text-sm bg-yellow-200 px-2 py-1 rounded">BETA</span>
                 </p>
@@ -960,28 +965,34 @@ function playYay() {
         playYay(); // Play excited yay when returning to retro
         }
         
-       // ----  CENTER LOGO IN BORING MODE  ----
-          // ---- FIXED: CENTER PYTHIA LOGO & TEXT IN BORING MODE ----
-       const headerFlex = document.querySelector('.flex.flex-col.md\\:flex-row.items-center.justify-center');
-       const logoContainer = headerFlex.querySelector('.flex-1.flex.justify-end');
-       const textContainer = headerFlex.querySelector('.flex-1.flex.justify-start');
+              // ---- FIXED: LAYOUT CONTROL FOR RETRO vs BORING ----
+       const headerWrapper = document.querySelector('.flex.flex-col.md\\:flex-row.items-center.justify-center');
+       const leftCol = headerWrapper.children[0];   // Quote box
+       const midCol = headerWrapper.children[1];    // Image
+       const rightCol = headerWrapper.children[2];  // Pythia™ text
 
        if (!isRetro) {
-           // Boring mode: stack + center everything
-           headerFlex.classList.remove('md:flex-row');
-           headerFlex.classList.add('flex-col', 'text-center');
-           logoContainer.classList.replace('justify-end', 'justify-center');
-           textContainer.classList.replace('justify-start', 'justify-center');
-           logoContainer.classList.add('mb-4');
+           // BORING MODE: Stack + center everything
+           headerWrapper.classList.remove('md:flex-row', 'gap-6');
+           headerWrapper.classList.add('flex-col', 'items-center', 'text-center');
+           leftCol.classList.remove('justify-end');
+           leftCol.classList.add('justify-center', 'mb-4');
+           midCol.classList.add('order-first', 'mb-4');
+           rightCol.classList.add('justify-center');
+           document.getElementById('oracleImage').style.display = 'none';
+           document.getElementById('pythiaQuote').style.display = 'none';
        } else {
-           // Retro mode: restore side-by-side
-           headerFlex.classList.add('md:flex-row');
-           headerFlex.classList.remove('flex-col', 'text-center');
-           logoContainer.classList.replace('justify-center', 'justify-end');
-           textContainer.classList.replace('justify-center', 'justify-start');
-           logoContainer.classList.remove('mb-4');
+           // RETRO MODE: Restore original side-by-side
+           headerWrapper.classList.add('md:flex-row', 'gap-6');
+           headerWrapper.classList.remove('flex-col', 'items-center', 'text-center');
+           leftCol.classList.remove('justify-center', 'mb-4');
+           leftCol.classList.add('justify-end');
+           midCol.classList.remove('order-first', 'mb-4');
+           rightCol.classList.remove('justify-center');
+           rightCol.classList.add('justify-start');
+           document.getElementById('oracleImage').style.display = 'block';
+           document.getElementById('pythiaQuote').style.display = 'block';
        }
-    });
     
     // --- NEW: MUSIC TOGGLE ---
     document.getElementById('musicToggle').addEventListener('click', () => {
